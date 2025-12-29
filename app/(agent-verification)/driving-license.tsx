@@ -73,6 +73,7 @@ const DrivingLicense = () => {
     const hasPermission = await requestMediaLibraryPermission();
     if (!hasPermission) return;
 
+    // ////
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,

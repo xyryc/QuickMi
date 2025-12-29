@@ -18,6 +18,7 @@ const Notification = () => {
     <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
       <StatusBar backgroundColor="#D3E6FF" barStyle="dark-content" />
 
+      {/* gradient */}
       <LinearGradient
         colors={["#D3E6FF", "#FFFFFF"]}
         locations={[0, 0.4]}
@@ -180,9 +181,6 @@ const Notification = () => {
                 <Text className="text-xs text-[#7A7A7A] font-sf-pro-medium">
                   09:30
                 </Text>
-                {/* <View className="ml-2 bg-[#0F73F7] w-5 h-5 rounded-full items-center justify-center mt-1">
-                  <Text className="text-center text-xs text-white">1</Text>
-                </View> */}
               </View>
             </TouchableOpacity>
           </ScrollView>

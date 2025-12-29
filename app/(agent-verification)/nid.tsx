@@ -265,6 +265,7 @@ const NationalId = () => {
               }}
               className="mt-5 h-36 rounded-xl bg-white overflow-hidden"
             >
+              {/*  */}
               {selectedNidBack ? (
                 // Show selected image
                 <View className="flex-1 relative">
