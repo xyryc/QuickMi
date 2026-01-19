@@ -181,7 +181,7 @@ const SignUp = () => {
                 }}
                 contentFit="contain"
               />
-              <Text className="font-sf-pro-regular text-sm text-custom-blue-900">
+              <Text className="font-sf-pro-medium text-custom-blue-900">
                 Continue with Google
               </Text>
             </TouchableOpacity>
@@ -195,7 +195,7 @@ const SignUp = () => {
                 }}
                 contentFit="contain"
               />
-              <Text className="font-sf-pro-regular text-sm text-custom-blue-900">
+              <Text className="font-sf-pro-medium text-custom-blue-900">
                 Continue with Apple
               </Text>
             </TouchableOpacity>

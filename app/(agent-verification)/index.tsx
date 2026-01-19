@@ -66,12 +66,12 @@ const UploadDocument = () => {
                 contentContainerStyle={{ paddingBottom: 120 }}
               >
                 {/* title */}
-                <Text className="text-2xl font-sf-pro-regular text-[#031731] text-center mt-5">
+                <Text className="text-2xl font-sf-pro-semibold text-[#031731] text-center mt-5">
                   Upload your documents
                 </Text>
 
                 {/* subtitle */}
-                <Text className="text-sm font-sf-pro-regular text-[#4D4D4D] text-center mt-5">
+                <Text className="font-sf-pro-regular text-[#4D4D4D] text-center mt-2">
                   Please upload the required documents to complete your
                   application process
                 </Text>
@@ -209,7 +209,7 @@ const UploadDocument = () => {
                   Congrats!
                 </Text>
 
-                <Text className="text-center mt-2 text-[#031731] font-sf-pro-regular text-sm w-1/2 mx-auto">
+                <Text className="text-center mt-1 text-[#031731] font-sf-pro-regular mx-auto">
                   Your account will be activated in 3 business days
                 </Text>
 

@@ -11,11 +11,13 @@ import {
 } from "@gorhom/bottom-sheet";
 
 import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   ScrollView,
   StatusBar,
   Text,
@@ -35,6 +37,7 @@ import { useUserRole } from "@/utils/useUserRole";
 const Profile = () => {
   const { role, loading } = useUserRole();
   const insets = useSafeAreaInsets();
+  const [image, setImage] = useState<string | null>(null);
 
   // Logout Confirmation Modal
   const logoutConfirmRef = useRef<BottomSheetModal>(null);
@@ -48,6 +51,58 @@ const Profile = () => {
   if (loading || !role) {
     return <ActivityIndicator size="small" color="#0F73F7" />;
   }
+
+  // Function to handle image selection
+  const pickImageAsync = async () => {
+    // Request media library permissions
+    let permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access media library is required!");
+      return;
+    }
+
+    // Ask user if they want to take a photo or choose from gallery
+    Alert.alert(
+      "Choose Option",
+      "Select an option to set your profile picture",
+      [
+        {
+          text: "Take Photo",
+          onPress: async () => {
+            const result = await ImagePicker.launchCameraAsync({
+              allowsEditing: true,
+              aspect: [4, 4],
+              quality: 1,
+            });
+
+            if (!result.canceled) {
+              setImage(result.assets[0].uri);
+            }
+          },
+        },
+        {
+          text: "Choose from Gallery",
+          onPress: async () => {
+            const result = await ImagePicker.launchImageLibraryAsync({
+              allowsEditing: true,
+              aspect: [4, 4],
+              quality: 1,
+            });
+
+            if (!result.canceled) {
+              setImage(result.assets[0].uri);
+            }
+          },
+        },
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+      ],
+    );
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -69,25 +124,33 @@ const Profile = () => {
             >
               {/* Personal info */}
               <View className="mt-8 bg-white rounded-xl p-3.5 border-spacing-0.5 border-[#E3E6F0] shadow-md">
-                <View className="flex items-center relative">
-                  <Image
-                    source={{
-                      uri: "https://randomuser.me/api/portraits/men/10.jpg",
-                    }}
-                    style={{ height: 100, width: 100, borderRadius: 100 }}
-                    contentFit="cover"
-                  />
-                  <Ionicons
-                    className="absolute left-52 bottom-3 bg-[#0F73F7] p-1 border border-white rounded-full"
-                    name="camera-outline"
-                    size={16}
-                    color="white"
-                  />
+                <View className="items-center">
+                  <View className="relative">
+                    <Image
+                      source={
+                        image ||
+                        "https://media.licdn.com/dms/image/v2/D5603AQFMeZ7i9ybZgw/profile-displayphoto-shrink_800_800/B56ZS29wLQHwAc-/0/1738236429558?e=1770249600&v=beta&t=0nlbdSQ74HEjCtyxgSTP_NJoSP6xCo7-D4etNNaME30"
+                      }
+                      style={{
+                        height: 100,
+                        width: 100,
+                        borderRadius: 100,
+                      }}
+                      contentFit="cover"
+                    />
+                    <Ionicons
+                      className="absolute right-1 bottom-2 bg-[#0F73F7] p-1 border border-white rounded-full"
+                      name="camera-outline"
+                      size={16}
+                      color="white"
+                      onPress={pickImageAsync}
+                    />
+                  </View>
                 </View>
 
                 {/* Profile name */}
                 <Text className="text-center mt-3.5 font-sf-pro-semibold text-xl text-black">
-                  Darlene Robertson
+                  Md Talath Un Nabi Anik
                 </Text>
 
                 {/* Buttons */}

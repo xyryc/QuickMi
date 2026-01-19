@@ -27,7 +27,7 @@ const UploadPicture = () => {
     if (status !== "granted") {
       Alert.alert(
         "Permission Denied",
-        "Camera permission is required to take photos."
+        "Camera permission is required to take photos.",
       );
       return false;
     }
@@ -40,7 +40,7 @@ const UploadPicture = () => {
     if (status !== "granted") {
       Alert.alert(
         "Permission Denied",
-        "Media library permission is required to select photos."
+        "Media library permission is required to select photos.",
       );
       return false;
     }
@@ -99,7 +99,7 @@ const UploadPicture = () => {
           style: "cancel",
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
