@@ -5,17 +5,19 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React from "react";
-import {
-  ScrollView,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Home = () => {
   const router = useRouter();
+  const locationLabel = "Set location";
+
+  const handleOpenLocationPicker = () => {
+    router.push({
+      pathname: "/(user)/location-picker",
+      params: { returnTo: "/(user)/home" },
+    });
+  };
 
   return (
     <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
@@ -39,7 +41,7 @@ const Home = () => {
               contentFit="cover"
             />
 
-            <View>
+            <TouchableOpacity onPress={handleOpenLocationPicker}>
               <View className="flex-row items-center gap-1">
                 <Text className="text-custom-blue-800">My Location</Text>
                 <MaterialIcons
@@ -52,10 +54,10 @@ const Home = () => {
               <View className="flex-row items-center gap-1 mt-0.5">
                 <SimpleLineIcons name="location-pin" size={14} color="black" />
                 <Text className="font-sf-pro-medium text-sm text-custom-blue-900">
-                  Los Angeles
+                  {locationLabel}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
 
           {/* notification */}
