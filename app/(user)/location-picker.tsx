@@ -2,8 +2,13 @@ import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
-import { Alert, TouchableOpacity, View } from "react-native";
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
+import MapView, {
+  MapPressEvent,
+  Marker,
+  Polyline,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const LocationPicker = () => {
@@ -14,6 +19,11 @@ const LocationPicker = () => {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    latitude: number;
+    longitude: number;
+    label: string;
+  } | null>(null);
 
   // Sample data - replace with actual data from params
   const pickupLocation = {
@@ -22,7 +32,10 @@ const LocationPicker = () => {
     address: "Block B, Banasree, Dhaka.",
   };
 
-  const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
+  const { returnTo, locationField } = useLocalSearchParams<{
+    returnTo?: string;
+    locationField?: "pickup" | "dropoff";
+  }>();
 
   const handleBack = () => {
     if (returnTo) {
@@ -39,7 +52,7 @@ const LocationPicker = () => {
       if (status !== "granted") {
         Alert.alert(
           "Location Permission",
-          "Please enable location permissions to see your current location on the map."
+          "Please enable location permissions to see your current location on the map.",
         );
         return;
       }
@@ -54,6 +67,16 @@ const LocationPicker = () => {
       };
       setUserLocation(currentLocation);
 
+      const reverseGeocode =
+        await Location.reverseGeocodeAsync(currentLocation);
+      const place = reverseGeocode[0];
+      const label = formatAddressLabel(place);
+
+      setSelectedLocation({
+        ...currentLocation,
+        label,
+      });
+
       if (mapRef.current) {
         mapRef.current.animateToRegion(
           {
@@ -62,21 +85,80 @@ const LocationPicker = () => {
             latitudeDelta: 0.005,
             longitudeDelta: 0.005,
           },
-          1000
+          1000,
         );
       }
     } catch (error) {
       console.error("Error getting location:", error);
       Alert.alert(
         "Location Error",
-        "Unable to retrieve your current location. Please try again."
+        "Unable to retrieve your current location. Please try again.",
       );
     }
   };
 
+  const formatAddressLabel = (
+    place?: Location.LocationGeocodedAddress | null,
+  ) => {
+    if (!place) return "Selected location";
+
+    const parts = [
+      place.name,
+      place.street,
+      place.district,
+      place.city,
+      place.region,
+      place.country,
+    ].filter(Boolean);
+
+    if (parts.length === 0) return "Selected location";
+    return parts.join(", ");
+  };
+
+  const resolveLocationLabel = async (latitude: number, longitude: number) => {
+    try {
+      const reverseGeocode = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
+      const place = reverseGeocode[0];
+      return formatAddressLabel(place);
+    } catch {
+      return "Selected location";
+    }
+  };
+
+  const handleMapPress = async (event: MapPressEvent) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    const label = await resolveLocationLabel(latitude, longitude);
+    setSelectedLocation({ latitude, longitude, label });
+  };
+
+  const handleUseLocation = () => {
+    if (!selectedLocation) return;
+
+    if (returnTo) {
+      router.replace({
+        pathname: returnTo as any,
+        params: {
+          selectedLocationLabel: selectedLocation.label,
+          selectedLocationField: locationField,
+        },
+      });
+      return;
+    }
+
+    router.back();
+  };
+
   return (
     <View className="flex-1">
-      <MapView ref={mapRef} provider={PROVIDER_GOOGLE} style={{ flex: 1 }}>
+      <MapView
+        ref={mapRef}
+        provider={PROVIDER_GOOGLE}
+        style={{ flex: 1 }}
+        onPress={handleMapPress}
+      >
         {/* Pickup Marker */}
         <Marker coordinate={pickupLocation}>
           <View className="items-center">
@@ -127,7 +209,7 @@ const LocationPicker = () => {
 
       <TouchableOpacity
         onPress={handleLocateMe}
-        className="absolute bottom-8 right-4 bg-white rounded-full w-11 h-11 items-center justify-center shadow-lg border border-[#0F73F7E5]"
+        className="absolute bottom-28 right-4 bg-white rounded-full w-14 h-14 items-center justify-center shadow-lg border border-[#0F73F7E5]"
         style={{
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 2 },
@@ -136,8 +218,26 @@ const LocationPicker = () => {
           elevation: 5,
         }}
       >
-        <MaterialIcons name="my-location" size={20} color="#0F73F7" />
+        <MaterialIcons name="my-location" size={24} color="#0F73F7" />
       </TouchableOpacity>
+
+      {selectedLocation && (
+        <TouchableOpacity
+          onPress={handleUseLocation}
+          className="absolute bottom-6 left-4 right-4 bg-[#0F73F7] rounded-xl py-4 items-center"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 3,
+            elevation: 4,
+          }}
+        >
+          <Text className="text-white font-sf-pro-medium text-base">
+            Use This Location
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

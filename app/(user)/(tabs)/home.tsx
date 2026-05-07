@@ -3,14 +3,16 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Home = () => {
   const router = useRouter();
-  const locationLabel = "Set location";
+  const { selectedLocationLabel } =
+    useLocalSearchParams<{ selectedLocationLabel?: string }>();
+  const locationLabel = selectedLocationLabel || "Set location";
 
   const handleOpenLocationPicker = () => {
     router.push({

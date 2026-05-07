@@ -1,12 +1,29 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import SearchBar from "@/components/Searchbar";
-import { useRouter } from "expo-router";
-import React from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const SelectLocation = () => {
   const router = useRouter();
+  const { selectedLocationLabel, selectedLocationField } = useLocalSearchParams<{
+    selectedLocationLabel?: string;
+    selectedLocationField?: "pickup" | "dropoff";
+  }>();
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [dropoffLocation, setDropoffLocation] = useState("");
+
+  useEffect(() => {
+    if (!selectedLocationLabel || !selectedLocationField) return;
+
+    if (selectedLocationField === "pickup") {
+      setPickupLocation(selectedLocationLabel);
+      return;
+    }
+
+    setDropoffLocation(selectedLocationLabel);
+  }, [selectedLocationField, selectedLocationLabel]);
 
   const handleConfirm = () => {
     router.push({
@@ -22,23 +39,31 @@ const SelectLocation = () => {
 
         <SearchBar
           placeholder="Search Pickup"
+          value={pickupLocation}
           showLocationPicker
           containerClassName="mb-3"
           locationPickerPath={() =>
             router.push({
               pathname: "/(user)/location-picker",
-              params: { returnTo: "/(user)/instant-delivery/select-location" },
+              params: {
+                returnTo: "/(user)/instant-delivery/select-location",
+                locationField: "pickup",
+              },
             })
           }
         />
 
         <SearchBar
           placeholder="Search Drop Off"
+          value={dropoffLocation}
           showLocationPicker
           locationPickerPath={() =>
             router.push({
               pathname: "/(user)/location-picker",
-              params: { returnTo: "/(user)/instant-delivery/select-location" },
+              params: {
+                returnTo: "/(user)/instant-delivery/select-location",
+                locationField: "dropoff",
+              },
             })
           }
         />
