@@ -49,12 +49,9 @@ const SelectLocation = () => {
   useEffect(() => {
     const loadSavedLocations = async () => {
       const savedLocations = await getInstantDeliveryLocations();
-      console.log("[SelectLocation] loaded from storage:", savedLocations);
-
-      setPickupLocation(savedLocations.pickupLocation);
-      setDropoffLocation(savedLocations.dropoffLocation);
+      setPickupLocation((prev) => prev || savedLocations.pickupLocation);
+      setDropoffLocation((prev) => prev || savedLocations.dropoffLocation);
       setIsHydrated(true);
-      console.log("[SelectLocation] hydration complete");
     };
 
     loadSavedLocations();
@@ -62,32 +59,22 @@ const SelectLocation = () => {
 
   useEffect(() => {
     if (pickupLocationParam !== undefined || dropoffLocationParam !== undefined) {
-      console.log("[SelectLocation] applying direct location params:", {
-        pickupLocationParam,
-        dropoffLocationParam,
-      });
-      if (pickupLocationParam !== undefined) {
+      if (pickupLocationParam && pickupLocationParam.trim().length > 0) {
         setPickupLocation(pickupLocationParam);
       }
-      if (dropoffLocationParam !== undefined) {
+      if (dropoffLocationParam && dropoffLocationParam.trim().length > 0) {
         setDropoffLocation(dropoffLocationParam);
       }
       return;
     }
 
-    console.log("[SelectLocation] params changed:", {
-      selectedLocationField,
-      selectedLocationLabel,
-    });
     if (!selectedLocationLabel || !selectedLocationField) return;
 
     if (selectedLocationField === "pickup") {
-      console.log("[SelectLocation] applying pickup from params");
       setPickupLocation(selectedLocationLabel);
       return;
     }
 
-    console.log("[SelectLocation] applying dropoff from params");
     setDropoffLocation(selectedLocationLabel);
   }, [
     dropoffLocationParam,
@@ -98,21 +85,8 @@ const SelectLocation = () => {
 
   useEffect(() => {
     if (!isHydrated) return;
-    console.log("[SelectLocation] persisting to storage:", {
-      pickupLocation,
-      dropoffLocation,
-    });
     void setInstantDeliveryLocations(pickupLocation, dropoffLocation);
   }, [isHydrated, pickupLocation, dropoffLocation]);
-
-  useEffect(() => {
-    console.log("[SelectLocation] state snapshot:", {
-      pickupLocation,
-      dropoffLocation,
-      isHydrated,
-      activeField,
-    });
-  }, [pickupLocation, dropoffLocation, isHydrated, activeField]);
 
   useEffect(() => {
     const query = activeField === "pickup" ? pickupLocation : dropoffLocation;
