@@ -7,11 +7,12 @@ import ReceiverDetails from "@/components/ReceiverDetails";
 import SelectRide from "@/components/SelectRide";
 import WaitForDriver from "@/components/WaitForDriver";
 import { getInstantDeliveryLocations } from "@/utils/storage";
-import { FontAwesome6, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { Alert, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -38,11 +39,23 @@ const SelectVehicle = () => {
     dropoffAddress?: string;
   }>();
   const [resolvedPickupAddress, setResolvedPickupAddress] = useState(
-    pickupAddress || ""
+    pickupAddress || "",
   );
   const [resolvedDropoffAddress, setResolvedDropoffAddress] = useState(
-    dropoffAddress || ""
+    dropoffAddress || "",
   );
+  const [pickupCoordinate, setPickupCoordinate] = useState({
+    latitude: 23.7808,
+    longitude: 90.4211,
+  });
+  const [dropoffCoordinate, setDropoffCoordinate] = useState({
+    latitude: 23.7461,
+    longitude: 90.3742,
+  });
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
 
   useEffect(() => {
     if (pickupAddress) {
@@ -71,16 +84,64 @@ const SelectVehicle = () => {
     loadSavedLocations();
   }, [pickupAddress, dropoffAddress]);
 
+  useEffect(() => {
+    const geocodeLocations = async () => {
+      try {
+        if (resolvedPickupAddress) {
+          const pickupResults = await Location.geocodeAsync(
+            resolvedPickupAddress,
+          );
+          if (pickupResults.length > 0) {
+            setPickupCoordinate({
+              latitude: pickupResults[0].latitude,
+              longitude: pickupResults[0].longitude,
+            });
+          }
+        }
+
+        if (resolvedDropoffAddress) {
+          const dropoffResults = await Location.geocodeAsync(
+            resolvedDropoffAddress,
+          );
+          if (dropoffResults.length > 0) {
+            setDropoffCoordinate({
+              latitude: dropoffResults[0].latitude,
+              longitude: dropoffResults[0].longitude,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error geocoding trip locations:", error);
+      }
+    };
+
+    geocodeLocations();
+  }, [resolvedPickupAddress, resolvedDropoffAddress]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    mapRef.current.animateToRegion(
+      {
+        latitude: pickupCoordinate.latitude,
+        longitude: pickupCoordinate.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      },
+      700,
+    );
+  }, [pickupCoordinate]);
+
   // Sample coordinates; address text comes from selected location params
   const pickupLocation = {
-    latitude: 23.7808,
-    longitude: 90.4211,
+    latitude: pickupCoordinate.latitude,
+    longitude: pickupCoordinate.longitude,
     address: resolvedPickupAddress || "Pickup location not selected",
   };
 
   const dropoffLocation = {
-    latitude: 23.7461,
-    longitude: 90.3742,
+    latitude: dropoffCoordinate.latitude,
+    longitude: dropoffCoordinate.longitude,
     address: resolvedDropoffAddress || "Drop-off location not selected",
   };
 
@@ -266,10 +327,52 @@ const SelectVehicle = () => {
     // You can use React Native Share API here
   };
 
+  const handleLocateMe = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        Alert.alert(
+          "Location Permission",
+          "Please enable location permissions to center the map on your location.",
+        );
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      const currentLocation = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setUserLocation(currentLocation);
+
+      if (mapRef.current) {
+        mapRef.current.animateToRegion(
+          {
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
+          700,
+        );
+      }
+    } catch (error) {
+      console.error("Error getting location:", error);
+      Alert.alert(
+        "Location Error",
+        "Unable to retrieve your current location. Please try again.",
+      );
+    }
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        <View className="flex-1">
+        <View className="flex-1 pb-96">
           <MapView
             ref={mapRef}
             provider={PROVIDER_GOOGLE}
@@ -290,10 +393,10 @@ const SelectVehicle = () => {
               description={pickupLocation.address}
             >
               <View className="items-center">
-                <View className="bg-black rounded-full p-2">
-                  <FontAwesome6 name="person" size={16} color="white" />
+                <View className="bg-[#22C55E] rounded-full p-2.5 border-2 border-white">
+                  <MaterialIcons name="my-location" size={16} color="white" />
                 </View>
-                <View className="w-0.5 h-4 bg-black" />
+                <View className="w-1 h-3 bg-[#22C55E] rounded-full" />
               </View>
             </Marker>
 
@@ -304,12 +407,29 @@ const SelectVehicle = () => {
               description={dropoffLocation.address}
             >
               <View className="items-center">
-                <View className="bg-blue-500 rounded-full p-2">
-                  <Ionicons name="location-sharp" size={20} color="white" />
+                <View className="bg-[#EF4444] rounded-full p-2.5 border-2 border-white">
+                  <Ionicons name="flag" size={16} color="white" />
                 </View>
-                <View className="w-1 h-1 bg-blue-500 rounded-full" />
+                <View className="w-1 h-3 bg-[#EF4444] rounded-full" />
               </View>
             </Marker>
+
+            {userLocation && (
+              <Marker coordinate={userLocation} title="You are here">
+                <View className="items-center">
+                  <View className="w-11 h-11 rounded-full bg-[#0F73F722] items-center justify-center">
+                    <View className="w-8 h-8 rounded-full bg-[#0F73F7] border-2 border-white items-center justify-center">
+                      <MaterialIcons
+                        name="person-pin-circle"
+                        size={16}
+                        color="white"
+                      />
+                    </View>
+                  </View>
+                  <View className="w-1 h-3 bg-[#0F73F7] rounded-full" />
+                </View>
+              </Marker>
+            )}
 
             {/* Route Line */}
             <Polyline
@@ -334,6 +454,20 @@ const SelectVehicle = () => {
             }}
           >
             <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleLocateMe}
+            className="absolute top-2/4 right-4 bg-white rounded-full w-14 h-14 items-center justify-center shadow-lg border border-[#0F73F7E5]"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+              elevation: 5,
+            }}
+          >
+            <MaterialIcons name="my-location" size={24} color="#0F73F7" />
           </TouchableOpacity>
         </View>
 

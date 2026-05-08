@@ -1,4 +1,4 @@
-import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
@@ -24,13 +24,6 @@ const LocationPicker = () => {
     longitude: number;
     label: string;
   } | null>(null);
-
-  // Sample data - replace with actual data from params
-  const defaultPickupLocation = {
-    latitude: 23.7808,
-    longitude: 90.4211,
-    address: "Block B, Banasree, Dhaka.",
-  };
 
   const { returnTo, locationField, pickupLocation, dropoffLocation } =
     useLocalSearchParams<{
@@ -173,22 +166,12 @@ const LocationPicker = () => {
         style={{ flex: 1 }}
         onPress={handleMapPress}
       >
-        {/* Pickup Marker */}
-        <Marker coordinate={defaultPickupLocation}>
-          <View className="items-center">
-            <View className="bg-black rounded-full p-2">
-              <FontAwesome6 name="person" size={16} color="white" />
-            </View>
-            <View className="w-0.5 h-4 bg-black" />
-          </View>
-        </Marker>
-
         {userLocation && (
           <Marker coordinate={userLocation} title="You are here">
             <View className="items-center">
               <View className="w-11 h-11 rounded-full bg-[#0F73F722] items-center justify-center">
                 <View className="w-8 h-8 rounded-full bg-[#0F73F7] border-2 border-white items-center justify-center">
-                  <FontAwesome6 name="person" size={13} color="white" />
+                  <MaterialIcons name="person" size={14} color="white" />
                 </View>
               </View>
               <View className="w-1 h-3 bg-[#0F73F7] rounded-full" />
@@ -196,9 +179,36 @@ const LocationPicker = () => {
           </Marker>
         )}
 
+        {selectedLocation && (
+          <Marker
+            coordinate={{
+              latitude: selectedLocation.latitude,
+              longitude: selectedLocation.longitude,
+            }}
+            title="Selected Location"
+            description={selectedLocation.label}
+          >
+            <View className="items-center">
+              <View className="bg-[#EF4444] rounded-full p-2.5 border-2 border-white">
+                <MaterialIcons name="place" size={18} color="white" />
+              </View>
+              <View className="w-1 h-3 bg-[#EF4444] rounded-full" />
+            </View>
+          </Marker>
+        )}
+
         {/* Route Line */}
         <Polyline
-          coordinates={[defaultPickupLocation]}
+          coordinates={
+            selectedLocation
+              ? [
+                  {
+                    latitude: selectedLocation.latitude,
+                    longitude: selectedLocation.longitude,
+                  },
+                ]
+              : []
+          }
           strokeColor="#0F73F7"
           strokeWidth={3}
           lineDashPattern={[1]}
