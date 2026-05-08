@@ -5,6 +5,8 @@ export const STORAGE_KEYS = {
   USER_ROLE: "userRole",
   HAS_COMPLETED_ONBOARDING: "hasCompletedOnboarding",
   AUTH_COMPLETED: "authCompleted",
+  INSTANT_PICKUP_LOCATION: "instantPickupLocation",
+  INSTANT_DROPOFF_LOCATION: "instantDropoffLocation",
 };
 
 export const setHasSelectedRole = async (role: "user" | "agent") => {
@@ -66,5 +68,39 @@ export const getAuthCompleted = async () => {
   } catch (error) {
     console.error("Error getting auth status:", error);
     return null;
+  }
+};
+
+export const setInstantDeliveryLocations = async (
+  pickupLocation: string,
+  dropoffLocation: string
+) => {
+  try {
+    await AsyncStorage.multiSet([
+      [STORAGE_KEYS.INSTANT_PICKUP_LOCATION, pickupLocation],
+      [STORAGE_KEYS.INSTANT_DROPOFF_LOCATION, dropoffLocation],
+    ]);
+  } catch (error) {
+    console.error("Error saving instant delivery locations:", error);
+  }
+};
+
+export const getInstantDeliveryLocations = async (): Promise<{
+  pickupLocation: string;
+  dropoffLocation: string;
+}> => {
+  try {
+    const values = await AsyncStorage.multiGet([
+      STORAGE_KEYS.INSTANT_PICKUP_LOCATION,
+      STORAGE_KEYS.INSTANT_DROPOFF_LOCATION,
+    ]);
+
+    const pickupLocation = values[0]?.[1] || "";
+    const dropoffLocation = values[1]?.[1] || "";
+
+    return { pickupLocation, dropoffLocation };
+  } catch (error) {
+    console.error("Error getting instant delivery locations:", error);
+    return { pickupLocation: "", dropoffLocation: "" };
   }
 };

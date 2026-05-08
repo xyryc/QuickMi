@@ -5,13 +5,20 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
-import { ScrollView, StatusBar, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Home = () => {
   const router = useRouter();
-  const { selectedLocationLabel } =
-    useLocalSearchParams<{ selectedLocationLabel?: string }>();
+  const { selectedLocationLabel } = useLocalSearchParams<{
+    selectedLocationLabel?: string;
+  }>();
   const locationLabel = selectedLocationLabel || "Set location";
 
   const handleOpenLocationPicker = () => {
@@ -32,7 +39,7 @@ const Home = () => {
       >
         {/* home header */}
         <View className="flex-row justify-between items-center py-3 px-5 bg-white rounded-b-[30px]">
-          <View className="flex-row items-center gap-2">
+          <View className="flex-row items-center gap-2 flex-1 min-w-0">
             <Image
               source="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXpdpAD2WforjNOXjrovpTAGSJKeFFn3AhKCYndxUUGoepbo36bvFeDhYYiv2EXdlauQtHqMjsrKvn103gY57FgYUN1xNrSnTW1h9bt_TqPQ&s=10"
               style={{
@@ -43,7 +50,10 @@ const Home = () => {
               contentFit="cover"
             />
 
-            <TouchableOpacity onPress={handleOpenLocationPicker}>
+            <TouchableOpacity
+              onPress={handleOpenLocationPicker}
+              className="flex-1 min-w-0"
+            >
               <View className="flex-row items-center gap-1">
                 <Text className="text-custom-blue-800">My Location</Text>
                 <MaterialIcons
@@ -55,7 +65,11 @@ const Home = () => {
 
               <View className="flex-row items-center gap-1 mt-0.5">
                 <SimpleLineIcons name="location-pin" size={14} color="black" />
-                <Text className="font-sf-pro-medium text-sm text-custom-blue-900">
+                <Text
+                  className="font-sf-pro-medium text-sm text-custom-blue-900"
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
                   {locationLabel}
                 </Text>
               </View>
@@ -65,7 +79,7 @@ const Home = () => {
           {/* notification */}
           <TouchableOpacity
             onPress={() => router.push("/(shared)/notification")}
-            className="w-9 h-9 items-center justify-center"
+            className="w-9 h-9 items-center justify-center shrink-0 ml-2"
           >
             <SimpleLineIcons
               className="p-1.5 border border-[#0A66C224] rounded-full bg-white"

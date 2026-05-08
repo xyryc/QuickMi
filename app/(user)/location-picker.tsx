@@ -26,16 +26,19 @@ const LocationPicker = () => {
   } | null>(null);
 
   // Sample data - replace with actual data from params
-  const pickupLocation = {
+  const defaultPickupLocation = {
     latitude: 23.7808,
     longitude: 90.4211,
     address: "Block B, Banasree, Dhaka.",
   };
 
-  const { returnTo, locationField } = useLocalSearchParams<{
+  const { returnTo, locationField, pickupLocation, dropoffLocation } =
+    useLocalSearchParams<{
     returnTo?: string;
     locationField?: "pickup" | "dropoff";
-  }>();
+    pickupLocation?: string;
+    dropoffLocation?: string;
+    }>();
 
   const handleBack = () => {
     if (returnTo) {
@@ -138,11 +141,22 @@ const LocationPicker = () => {
     if (!selectedLocation) return;
 
     if (returnTo) {
+      const nextPickupLocation =
+        locationField === "pickup"
+          ? selectedLocation.label
+          : pickupLocation || "";
+      const nextDropoffLocation =
+        locationField === "dropoff"
+          ? selectedLocation.label
+          : dropoffLocation || "";
+
       router.replace({
         pathname: returnTo as any,
         params: {
           selectedLocationLabel: selectedLocation.label,
           selectedLocationField: locationField,
+          pickupLocation: nextPickupLocation,
+          dropoffLocation: nextDropoffLocation,
         },
       });
       return;
@@ -160,7 +174,7 @@ const LocationPicker = () => {
         onPress={handleMapPress}
       >
         {/* Pickup Marker */}
-        <Marker coordinate={pickupLocation}>
+        <Marker coordinate={defaultPickupLocation}>
           <View className="items-center">
             <View className="bg-black rounded-full p-2">
               <FontAwesome6 name="person" size={16} color="white" />
@@ -184,7 +198,7 @@ const LocationPicker = () => {
 
         {/* Route Line */}
         <Polyline
-          coordinates={[pickupLocation]}
+          coordinates={[defaultPickupLocation]}
           strokeColor="#0F73F7"
           strokeWidth={3}
           lineDashPattern={[1]}

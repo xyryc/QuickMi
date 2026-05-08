@@ -6,10 +6,11 @@ import PaymentMethodSelection from "@/components/PaymentMethodSelection";
 import ReceiverDetails from "@/components/ReceiverDetails";
 import SelectRide from "@/components/SelectRide";
 import WaitForDriver from "@/components/WaitForDriver";
+import { getInstantDeliveryLocations } from "@/utils/storage";
 import { FontAwesome6, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
@@ -31,17 +32,56 @@ const SelectVehicle = () => {
   const insets = useSafeAreaInsets();
   const mapRef = useRef<MapView>(null);
 
-  // Sample data - replace with actual data from params
+  const { returnTo, pickupAddress, dropoffAddress } = useLocalSearchParams<{
+    returnTo?: string;
+    pickupAddress?: string;
+    dropoffAddress?: string;
+  }>();
+  const [resolvedPickupAddress, setResolvedPickupAddress] = useState(
+    pickupAddress || ""
+  );
+  const [resolvedDropoffAddress, setResolvedDropoffAddress] = useState(
+    dropoffAddress || ""
+  );
+
+  useEffect(() => {
+    if (pickupAddress) {
+      setResolvedPickupAddress(pickupAddress);
+    }
+    if (dropoffAddress) {
+      setResolvedDropoffAddress(dropoffAddress);
+    }
+  }, [pickupAddress, dropoffAddress]);
+
+  useEffect(() => {
+    const loadSavedLocations = async () => {
+      if (pickupAddress && dropoffAddress) return;
+
+      const savedLocations = await getInstantDeliveryLocations();
+
+      if (!pickupAddress && savedLocations.pickupLocation) {
+        setResolvedPickupAddress(savedLocations.pickupLocation);
+      }
+
+      if (!dropoffAddress && savedLocations.dropoffLocation) {
+        setResolvedDropoffAddress(savedLocations.dropoffLocation);
+      }
+    };
+
+    loadSavedLocations();
+  }, [pickupAddress, dropoffAddress]);
+
+  // Sample coordinates; address text comes from selected location params
   const pickupLocation = {
     latitude: 23.7808,
     longitude: 90.4211,
-    address: "Block B, Banasree, Dhaka.",
+    address: resolvedPickupAddress || "Pickup location not selected",
   };
 
   const dropoffLocation = {
     latitude: 23.7461,
     longitude: 90.3742,
-    address: "Green Road, Dhanmondi, Dhaka.",
+    address: resolvedDropoffAddress || "Drop-off location not selected",
   };
 
   // Create a ref for the bottom sheet
@@ -103,8 +143,6 @@ const SelectVehicle = () => {
   const [offeredPrice, setOfferedPrice] = useState<string>("$100");
   const selectedVehicleData = vehicles.find((v) => v.id === selectedVehicle);
   const suggestedPrice = selectedVehicleData?.price || "$100";
-  const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
-
   const handleBack = () => {
     if (returnTo) {
       router.replace(returnTo);
@@ -241,12 +279,16 @@ const SelectVehicle = () => {
                 (pickupLocation.latitude + dropoffLocation.latitude) / 2,
               longitude:
                 (pickupLocation.longitude + dropoffLocation.longitude) / 2,
-              latitudeDelta: 0.1,
-              longitudeDelta: 0.1,
+              latitudeDelta: 0.04,
+              longitudeDelta: 0.04,
             }}
           >
             {/* Pickup Marker */}
-            <Marker coordinate={pickupLocation}>
+            <Marker
+              coordinate={pickupLocation}
+              title="Pickup Location"
+              description={pickupLocation.address}
+            >
               <View className="items-center">
                 <View className="bg-black rounded-full p-2">
                   <FontAwesome6 name="person" size={16} color="white" />
@@ -256,7 +298,11 @@ const SelectVehicle = () => {
             </Marker>
 
             {/* Dropoff Marker */}
-            <Marker coordinate={dropoffLocation}>
+            <Marker
+              coordinate={dropoffLocation}
+              title="Drop-off Location"
+              description={dropoffLocation.address}
+            >
               <View className="items-center">
                 <View className="bg-blue-500 rounded-full p-2">
                   <Ionicons name="location-sharp" size={20} color="white" />
