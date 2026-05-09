@@ -8,25 +8,25 @@ import SelectRide from "@/components/SelectRide";
 import WaitForDriver from "@/components/WaitForDriver";
 import { getInstantDeliveryLocations } from "@/utils/storage";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetView,
+  useBottomSheetSpringConfigs,
+} from "@gorhom/bottom-sheet";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
-  LayoutChangeEvent,
   TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Type definition for booking steps
@@ -161,36 +161,20 @@ const SelectVehicle = () => {
   // Create a ref for the bottom sheet
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  // Define snap points: 20% and 80% of screen
-  const snapPoints = useMemo(() => ["60%"], []);
-  const [sheetHeight, setSheetHeight] = useState(0);
-  const SHEET_HANDLE_HEIGHT = 24;
+  const snapPoints = useMemo(() => ["82%"], []);
+  const animatedSheetPosition = useSharedValue(windowHeight * 0.5);
+  const animationConfigs = useBottomSheetSpringConfigs({
+    damping: 60,
+    stiffness: 280,
+    overshootClamping: false,
+    restDisplacementThreshold: 0.5,
+    restSpeedThreshold: 0.8,
+  });
 
-  const snapPointToPx = useCallback(
-    (snap: string | number) => {
-      if (typeof snap === "number") return snap;
-      if (typeof snap === "string" && snap.endsWith("%")) {
-        const percent = Number(snap.replace("%", ""));
-        if (Number.isFinite(percent)) {
-          return (windowHeight * percent) / 100;
-        }
-      }
-      return 0;
-    },
-    [windowHeight],
-  );
-
-  useEffect(() => {
-    setSheetHeight(snapPointToPx(snapPoints[0]));
-  }, [snapPointToPx, snapPoints]);
-
-  const handleBottomSheetLayout = useCallback(
-    (event: LayoutChangeEvent) => {
-      const contentHeight = event.nativeEvent.layout.height;
-      setSheetHeight(contentHeight + SHEET_HANDLE_HEIGHT);
-    },
-    [],
-  );
+  const locateButtonAnimatedStyle = useAnimatedStyle(() => {
+    const top = Math.max(0, animatedSheetPosition.value - 72);
+    return { top };
+  });
 
   // step flow
   const vehicles = [
@@ -423,8 +407,8 @@ const SelectVehicle = () => {
                 (pickupLocation.latitude + dropoffLocation.latitude) / 2,
               longitude:
                 (pickupLocation.longitude + dropoffLocation.longitude) / 2,
-              latitudeDelta: 0.04,
-              longitudeDelta: 0.04,
+              latitudeDelta: 0.02,
+              longitudeDelta: 0.02,
             }}
           >
             {/* Pickup Marker */}
@@ -503,13 +487,18 @@ const SelectVehicle = () => {
           ref={bottomSheetRef}
           index={0}
           snapPoints={snapPoints}
+          animatedPosition={animatedSheetPosition}
+          enableDynamicSizing
+          maxDynamicContentSize={windowHeight * 0.85}
           enablePanDownToClose={false}
-          onChange={(index) => {
-            if (index < 0) return;
-            const nextSnap = snapPoints[index];
-            if (nextSnap !== undefined) {
-              setSheetHeight(snapPointToPx(nextSnap));
-            }
+          animateOnMount
+          animationConfigs={animationConfigs}
+          overDragResistanceFactor={3}
+          enableOverDrag={false}
+          handleIndicatorStyle={{
+            width: 44,
+            height: 5,
+            backgroundColor: "#C7D2E5",
           }}
         >
           {/* content section */}
@@ -518,7 +507,6 @@ const SelectVehicle = () => {
             style={{
               paddingBottom: insets.bottom + 20,
             }}
-            onLayout={handleBottomSheetLayout}
           >
             {/* Step 1: Select Ride */}
             {currentStep === "select-ride" && (
@@ -603,20 +591,26 @@ const SelectVehicle = () => {
           </BottomSheetView>
         </BottomSheet>
 
-        <TouchableOpacity
-          onPress={handleLocateMe}
-          className="absolute right-4 bg-white rounded-full w-14 h-14 items-center justify-center shadow-lg border border-[#0F73F7E5] z-50"
-          style={{
-            bottom: sheetHeight + 12,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
-          }}
+        <Animated.View
+          className="absolute right-4 z-50"
+          style={[
+            locateButtonAnimatedStyle,
+            {
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+              elevation: 5,
+            },
+          ]}
         >
-          <MaterialIcons name="my-location" size={24} color="#0F73F7" />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleLocateMe}
+            className="bg-white rounded-full w-14 h-14 items-center justify-center border border-[#0F73F7E5]"
+          >
+            <MaterialIcons name="my-location" size={24} color="#0F73F7" />
+          </TouchableOpacity>
+        </Animated.View>
       </View>
     </GestureHandlerRootView>
   );
