@@ -11,8 +11,20 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, TouchableOpacity, View } from "react-native";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  Alert,
+  LayoutChangeEvent,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -31,6 +43,7 @@ type BookingStep =
 const SelectVehicle = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions();
   const mapRef = useRef<MapView>(null);
 
   const { returnTo, pickupAddress, dropoffAddress } = useLocalSearchParams<{
@@ -150,6 +163,34 @@ const SelectVehicle = () => {
 
   // Define snap points: 20% and 80% of screen
   const snapPoints = useMemo(() => ["60%"], []);
+  const [sheetHeight, setSheetHeight] = useState(0);
+  const SHEET_HANDLE_HEIGHT = 24;
+
+  const snapPointToPx = useCallback(
+    (snap: string | number) => {
+      if (typeof snap === "number") return snap;
+      if (typeof snap === "string" && snap.endsWith("%")) {
+        const percent = Number(snap.replace("%", ""));
+        if (Number.isFinite(percent)) {
+          return (windowHeight * percent) / 100;
+        }
+      }
+      return 0;
+    },
+    [windowHeight],
+  );
+
+  useEffect(() => {
+    setSheetHeight(snapPointToPx(snapPoints[0]));
+  }, [snapPointToPx, snapPoints]);
+
+  const handleBottomSheetLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const contentHeight = event.nativeEvent.layout.height;
+      setSheetHeight(contentHeight + SHEET_HANDLE_HEIGHT);
+    },
+    [],
+  );
 
   // step flow
   const vehicles = [
@@ -372,7 +413,7 @@ const SelectVehicle = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        <View className="flex-1 pb-96">
+        <View className="flex-1">
           <MapView
             ref={mapRef}
             provider={PROVIDER_GOOGLE}
@@ -455,20 +496,6 @@ const SelectVehicle = () => {
           >
             <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
           </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleLocateMe}
-            className="absolute top-2/4 right-4 bg-white rounded-full w-14 h-14 items-center justify-center shadow-lg border border-[#0F73F7E5]"
-            style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-              elevation: 5,
-            }}
-          >
-            <MaterialIcons name="my-location" size={24} color="#0F73F7" />
-          </TouchableOpacity>
         </View>
 
         {/* Bottom Sheet */}
@@ -477,14 +504,21 @@ const SelectVehicle = () => {
           index={0}
           snapPoints={snapPoints}
           enablePanDownToClose={false}
+          onChange={(index) => {
+            if (index < 0) return;
+            const nextSnap = snapPoints[index];
+            if (nextSnap !== undefined) {
+              setSheetHeight(snapPointToPx(nextSnap));
+            }
+          }}
         >
           {/* content section */}
-
           <BottomSheetView
             className="flex-1 px-5"
             style={{
               paddingBottom: insets.bottom + 20,
             }}
+            onLayout={handleBottomSheetLayout}
           >
             {/* Step 1: Select Ride */}
             {currentStep === "select-ride" && (
@@ -568,6 +602,21 @@ const SelectVehicle = () => {
             {/* </View> */}
           </BottomSheetView>
         </BottomSheet>
+
+        <TouchableOpacity
+          onPress={handleLocateMe}
+          className="absolute right-4 bg-white rounded-full w-14 h-14 items-center justify-center shadow-lg border border-[#0F73F7E5] z-50"
+          style={{
+            bottom: sheetHeight + 12,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+          }}
+        >
+          <MaterialIcons name="my-location" size={24} color="#0F73F7" />
+        </TouchableOpacity>
       </View>
     </GestureHandlerRootView>
   );
