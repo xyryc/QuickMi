@@ -164,11 +164,11 @@ const SelectVehicle = () => {
   const snapPoints = useMemo(() => ["82%"], []);
   const animatedSheetPosition = useSharedValue(windowHeight * 0.5);
   const animationConfigs = useBottomSheetSpringConfigs({
-    damping: 60,
-    stiffness: 280,
-    overshootClamping: false,
-    restDisplacementThreshold: 0.5,
-    restSpeedThreshold: 0.8,
+    damping: 40,
+    stiffness: 420,
+    overshootClamping: true,
+    restDisplacementThreshold: 0.2,
+    restSpeedThreshold: 0.2,
   });
 
   const locateButtonAnimatedStyle = useAnimatedStyle(() => {
@@ -397,7 +397,7 @@ const SelectVehicle = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        <View className="flex-1">
+        <View className="flex-1 pb-72">
           <MapView
             ref={mapRef}
             provider={PROVIDER_GOOGLE}
@@ -407,8 +407,8 @@ const SelectVehicle = () => {
                 (pickupLocation.latitude + dropoffLocation.latitude) / 2,
               longitude:
                 (pickupLocation.longitude + dropoffLocation.longitude) / 2,
-              latitudeDelta: 0.02,
-              longitudeDelta: 0.02,
+              latitudeDelta: 0.07,
+              longitudeDelta: 0.07,
             }}
           >
             {/* Pickup Marker */}

@@ -165,7 +165,7 @@ const SelectLocation = () => {
 
   const handleConfirm = () => {
     router.push({
-      pathname: "/(user)/select-vehicle",
+      pathname: "/(user)/delivery-booking",
       params: {
         returnTo: "/(user)/instant-delivery/select-location",
         pickupAddress: pickupLocation,
