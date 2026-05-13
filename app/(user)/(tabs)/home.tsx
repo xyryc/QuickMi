@@ -171,7 +171,7 @@ const Home = () => {
 
           {/* receive parcel */}
           <TouchableOpacity
-            onPress={() => router.push("/(user)/send-item/route-details")}
+            onPress={() => router.push("/(user)/receive-parcel/route-details")}
             className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3 elevation-md"
           >
             <View className="flex-row items-center gap-3">
