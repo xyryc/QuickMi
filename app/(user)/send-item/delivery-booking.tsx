@@ -1,7 +1,5 @@
-import AcceptDeclineOffer from "@/components/AcceptDeclineOffer";
 import ArrivingDetails from "@/components/ArrivingDetails";
 import DriverDetails from "@/components/DriverDetails";
-import OfferPrice from "@/components/OfferPrice";
 import PaymentMethodSelection from "@/components/PaymentMethodSelection";
 import ReceiverDetails from "@/components/ReceiverDetails";
 import SelectRide from "@/components/SelectRide";
@@ -28,17 +26,6 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-// Type definition for booking steps
-type BookingStep =
-  | "select-ride"
-  | "receiver-details"
-  | "offer-price"
-  | "payment-method-selection"
-  | "wait-driver"
-  | "accept-decline"
-  | "arriving-details"
-  | "driver-details";
 
 const SelectVehicle = () => {
   const router = useRouter();
@@ -226,9 +213,6 @@ const SelectVehicle = () => {
     phone: "",
     address: "",
   });
-  const [offeredPrice, setOfferedPrice] = useState<string>("$100");
-  const selectedVehicleData = vehicles.find((v) => v.id === selectedVehicle);
-  const suggestedPrice = selectedVehicleData?.price || "$100";
   const handleBack = () => {
     if (returnTo) {
       router.replace(returnTo);
@@ -253,12 +237,12 @@ const SelectVehicle = () => {
   // step 2
   // Called when user clicks "Confirm Receiver" button
   const handleReceiverDetailsNext = () => {
-    setCurrentStep("offer-price");
+    setCurrentStep("payment-method-selection");
   };
 
   // Called when user clicks "Skip" button
   const handleReceiverDetailsSkip = () => {
-    setCurrentStep("offer-price");
+    setCurrentStep("payment-method-selection");
   };
 
   // Called when user clicks back arrow
@@ -267,57 +251,25 @@ const SelectVehicle = () => {
   };
 
   // step 3
-  // Called when user clicks "Submit Offer" button
-  // Receives the price user entered/selected
-  const handleOfferPriceNext = (price: string) => {
-    setOfferedPrice(price);
-    setCurrentStep("wait-driver");
-  };
-
-  // Called when user clicks back arrow
-  const handleOfferPriceBack = () => {
-    setCurrentStep("receiver-details");
-  };
-
-  // step 3.5
-  const [paymentMethod, setPaymentMethod] = useState<string>("cash");
-
   // Payment Method handlers
   const handlePaymentMethodNext = (method: string) => {
-    setPaymentMethod(method);
+    void method;
     setCurrentStep("wait-driver");
   };
 
   const handlePaymentMethodBack = () => {
-    setCurrentStep("offer-price");
-  };
-
-  const handleCashPress = () => {
-    // Navigate to payment method or do something
-    // console.log("Cash button pressed");
-    setCurrentStep("payment-method-selection");
+    setCurrentStep("receiver-details");
   };
 
   // step 4
   // Called automatically when driver accepts (simulated after 5 seconds)
   const handleDriverAccepted = () => {
-    setCurrentStep("accept-decline");
+    setCurrentStep("arriving-details");
   };
 
   // Called when user clicks "Cancel Request" button
   const handleCancelSearch = () => {
-    setCurrentStep("offer-price");
-  };
-
-  // step 5
-  // Called when user clicks "Accept Offer" button
-  const handleAcceptOffer = () => {
-    setCurrentStep("arriving-details");
-  };
-
-  // Called when user clicks "Decline" button
-  const handleDeclineOffer = () => {
-    setCurrentStep("wait-driver");
+    setCurrentStep("payment-method-selection");
   };
 
   // step 6
@@ -529,19 +481,7 @@ const SelectVehicle = () => {
               />
             )}
 
-            {/* Step 3: Offer Price */}
-            {currentStep === "offer-price" && (
-              <OfferPrice
-                selectedVehicleData={selectedVehicleData}
-                suggestedPrice={suggestedPrice}
-                onNext={handleOfferPriceNext}
-                onBack={handleOfferPriceBack}
-                handleCancelRide={handleCancelRide}
-                onCashPress={handleCashPress}
-                bottomInset={insets.bottom}
-              />
-            )}
-            {/* Step 3.5: Payment Method */}
+            {/* Step 3: Payment Method */}
             {currentStep === "payment-method-selection" && (
               <PaymentMethodSelection
                 onNext={handlePaymentMethodNext}
@@ -558,17 +498,7 @@ const SelectVehicle = () => {
               />
             )}
 
-            {/* Step 5: Accept/Decline Offer */}
-            {currentStep === "accept-decline" && (
-              <AcceptDeclineOffer
-                driverOffer={driverOffer}
-                onAccept={handleAcceptOffer}
-                onDecline={handleDeclineOffer}
-                bottomInset={insets.bottom}
-              />
-            )}
-
-            {/* Step 6: Arriving Details */}
+            {/* Step 5: Arriving Details */}
             {currentStep === "arriving-details" && (
               <ArrivingDetails
                 driverDetails={driverOffer}
@@ -579,7 +509,7 @@ const SelectVehicle = () => {
               />
             )}
 
-            {/* Step 6.5: Driver Details */}
+            {/* Step 6: Driver Details */}
             {currentStep === "driver-details" && (
               <DriverDetails
                 driverDetails={driverOffer}

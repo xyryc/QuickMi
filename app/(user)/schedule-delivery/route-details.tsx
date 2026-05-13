@@ -20,7 +20,7 @@ const SelectLocation = () => {
 
   const handleConfirm = () => {
     router.push({
-      pathname: "/(user)/delivery-booking",
+      pathname: "/(user)/send-item/delivery-booking",
       params: { returnTo: "/(user)/schedule-delivery/route-details" },
     });
   };

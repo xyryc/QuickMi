@@ -9,7 +9,7 @@ export default function UserLayout() {
         options={{ animation: "slide_from_right" }}
       />
       <Stack.Screen
-        name="delivery-booking"
+        name="send-item/delivery-booking"
         options={{ animation: "slide_from_right" }}
       />
       <Stack.Screen
