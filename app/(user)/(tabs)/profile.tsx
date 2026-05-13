@@ -108,15 +108,29 @@ const Profile = () => {
                   />
 
                   <ButtonSecondary
-                    onPress={() =>
-                      router.push("/(user)/profile/payment/payments")
-                    }
+                    onPress={() => router.push("/(user)/profile/wallet/wallet")}
                     iconPosition="left"
                     className="flex-1 !border !border-[#E3E6F0]"
-                    title="Payments"
+                    title="Wallet"
                     icon={<Entypo name="wallet" size={20} color="#0F73F7" />}
                   />
                 </View>
+
+                <ButtonSecondary
+                  onPress={() =>
+                    router.push("/(user)/profile/payment/payments")
+                  }
+                  iconPosition="left"
+                  className="mt-2 !border !border-[#E3E6F0]"
+                  title="Payments & Offers"
+                  icon={
+                    <MaterialCommunityIcons
+                      name="ticket-percent-outline"
+                      size={20}
+                      color="#0F73F7"
+                    />
+                  }
+                />
 
                 <ButtonPrimary
                   onPress={() => router.replace("/(agent)/home")}

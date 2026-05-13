@@ -53,7 +53,6 @@ const Payments = () => {
             </TouchableOpacity>
 
             {/* Header */}
-
             <Text className="text-lg font-sf-pro-medium mt-4 mb-3">
               Payment Method
             </Text>
