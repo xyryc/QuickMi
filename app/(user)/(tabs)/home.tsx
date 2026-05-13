@@ -63,11 +63,11 @@ const Home = () => {
                 />
               </View>
 
-              <View className="flex-row items-center gap-1 mt-0.5">
+              <View className="flex-row gap-1 mt-1">
                 <SimpleLineIcons name="location-pin" size={14} color="black" />
                 <Text
                   className="font-sf-pro-medium text-sm text-custom-blue-900"
-                  numberOfLines={1}
+                  numberOfLines={2}
                   ellipsizeMode="tail"
                 >
                   {locationLabel}
@@ -137,7 +137,7 @@ const Home = () => {
 
           {/* receive item */}
           <TouchableOpacity
-            onPress={() => router.push("/(user)/send-item/route-details")}
+            onPress={() => router.push("/(user)/receive-item/route-details")}
             className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3 elevation-md"
           >
             <View className="flex-row items-center gap-3">
