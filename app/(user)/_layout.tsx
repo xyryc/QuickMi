@@ -57,11 +57,11 @@ export default function UserLayout() {
         options={{ animation: "slide_from_right" }}
       />
       <Stack.Screen
-        name="instant-delivery/select-location"
+        name="send-item/route-details"
         options={{ animation: "slide_from_right" }}
       />
       <Stack.Screen
-        name="schedule-delivery/select-location"
+        name="schedule-delivery/route-details"
         options={{ animation: "slide_from_right" }}
       />
     </Stack>

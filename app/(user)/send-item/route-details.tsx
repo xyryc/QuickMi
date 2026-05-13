@@ -4,10 +4,12 @@ import {
   getInstantDeliveryLocations,
   setInstantDeliveryLocations,
 } from "@/utils/storage";
+import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Text,
   TouchableOpacity,
@@ -45,6 +47,21 @@ const SelectLocation = () => {
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
+
+  const formatAddressLabel = (place?: Location.LocationGeocodedAddress | null) => {
+    if (!place) return "";
+
+    const parts = [
+      place.name,
+      place.street,
+      place.district,
+      place.city,
+      place.region,
+      place.country,
+    ].filter(Boolean);
+
+    return parts.join(", ");
+  };
 
   useEffect(() => {
     const loadSavedLocations = async () => {
@@ -87,6 +104,45 @@ const SelectLocation = () => {
     if (!isHydrated) return;
     void setInstantDeliveryLocations(pickupLocation, dropoffLocation);
   }, [isHydrated, pickupLocation, dropoffLocation]);
+
+  useEffect(() => {
+    const autoDetectPickup = async () => {
+      if (!isHydrated) return;
+      if (pickupLocation.trim().length > 0) return;
+
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          Alert.alert(
+            "Location Permission",
+            "Please enable location permission to auto-detect your pickup location."
+          );
+          return;
+        }
+
+        const current = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+        const reverseGeocode = await Location.reverseGeocodeAsync({
+          latitude: current.coords.latitude,
+          longitude: current.coords.longitude,
+        });
+
+        const label = formatAddressLabel(reverseGeocode[0]);
+        if (label) {
+          setPickupLocation(label);
+        }
+      } catch (error) {
+        console.error("Error auto detecting pickup location:", error);
+        Alert.alert(
+          "Location Error",
+          "Unable to auto-detect your pickup location. Please set it manually."
+        );
+      }
+    };
+
+    autoDetectPickup();
+  }, [isHydrated, pickupLocation]);
 
   useEffect(() => {
     const query = activeField === "pickup" ? pickupLocation : dropoffLocation;
@@ -167,7 +223,7 @@ const SelectLocation = () => {
     router.push({
       pathname: "/(user)/delivery-booking",
       params: {
-        returnTo: "/(user)/instant-delivery/select-location",
+        returnTo: "/(user)/send-item/route-details",
         pickupAddress: pickupLocation,
         dropoffAddress: dropoffLocation,
       },
@@ -189,7 +245,7 @@ const SelectLocation = () => {
             router.push({
               pathname: "/(user)/location-picker",
               params: {
-                returnTo: "/(user)/instant-delivery/select-location",
+                returnTo: "/(user)/send-item/route-details",
                 locationField: "pickup",
                 pickupLocation,
                 dropoffLocation,
@@ -207,7 +263,7 @@ const SelectLocation = () => {
             router.push({
               pathname: "/(user)/location-picker",
               params: {
-                returnTo: "/(user)/instant-delivery/select-location",
+                returnTo: "/(user)/send-item/route-details",
                 locationField: "dropoff",
                 pickupLocation,
                 dropoffLocation,

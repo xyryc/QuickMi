@@ -21,7 +21,7 @@ const SelectLocation = () => {
   const handleConfirm = () => {
     router.push({
       pathname: "/(user)/delivery-booking",
-      params: { returnTo: "/(user)/schedule-delivery/select-location" },
+      params: { returnTo: "/(user)/schedule-delivery/route-details" },
     });
   };
 
@@ -55,7 +55,7 @@ const SelectLocation = () => {
           locationPickerPath={() =>
             router.push({
               pathname: "/(user)/location-picker",
-              params: { returnTo: "/(user)/schedule-delivery/select-location" },
+              params: { returnTo: "/(user)/schedule-delivery/route-details" },
             })
           }
         />
@@ -66,7 +66,7 @@ const SelectLocation = () => {
           locationPickerPath={() =>
             router.push({
               pathname: "/(user)/location-picker",
-              params: { returnTo: "/(user)/schedule-delivery/select-location" },
+              params: { returnTo: "/(user)/schedule-delivery/route-details" },
             })
           }
         />

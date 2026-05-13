@@ -101,11 +101,9 @@ const Home = () => {
             paddingBottom: 120,
           }}
         >
-          {/* instant delivery */}
+          {/* send item */}
           <TouchableOpacity
-            onPress={() =>
-              router.push("/(user)/instant-delivery/select-location")
-            }
+            onPress={() => router.push("/(user)/send-item/route-details")}
             className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3 elevation-md"
           >
             <View className="flex-row items-center gap-3">
@@ -122,7 +120,75 @@ const Home = () => {
 
               <View>
                 <Text className="font-sf-pro-medium text-base text-custom-blue-900 mb-1">
-                  Instant Delivery
+                  Send Item
+                </Text>
+                <Text className="font-sf-pro-medium text-xs text-gray-400">
+                  Immediate Pickup, Fast Delivery
+                </Text>
+              </View>
+            </View>
+
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="black"
+            />
+          </TouchableOpacity>
+
+          {/* receive item */}
+          <TouchableOpacity
+            onPress={() => router.push("/(user)/send-item/route-details")}
+            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3 elevation-md"
+          >
+            <View className="flex-row items-center gap-3">
+              <View className="p-3 border border-[#0F73F724] rounded-full">
+                <Image
+                  source={require("@/assets/images/instant_delivery.svg")}
+                  style={{
+                    width: 36,
+                    height: 36,
+                  }}
+                  contentFit="contain"
+                />
+              </View>
+
+              <View>
+                <Text className="font-sf-pro-medium text-base text-custom-blue-900 mb-1">
+                  Receive Item
+                </Text>
+                <Text className="font-sf-pro-medium text-xs text-gray-400">
+                  Immediate Pickup, Fast Delivery
+                </Text>
+              </View>
+            </View>
+
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="black"
+            />
+          </TouchableOpacity>
+
+          {/* receive parcel */}
+          <TouchableOpacity
+            onPress={() => router.push("/(user)/send-item/route-details")}
+            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3 elevation-md"
+          >
+            <View className="flex-row items-center gap-3">
+              <View className="p-3 border border-[#0F73F724] rounded-full">
+                <Image
+                  source={require("@/assets/images/instant_delivery.svg")}
+                  style={{
+                    width: 36,
+                    height: 36,
+                  }}
+                  contentFit="contain"
+                />
+              </View>
+
+              <View>
+                <Text className="font-sf-pro-medium text-base text-custom-blue-900 mb-1">
+                  Receive Parcel
                 </Text>
                 <Text className="font-sf-pro-medium text-xs text-gray-400">
                   Immediate Pickup, Fast Delivery
@@ -140,7 +206,7 @@ const Home = () => {
           {/* schedule delivery */}
           <TouchableOpacity
             onPress={() =>
-              router.push("/(user)/schedule-delivery/select-location")
+              router.push("/(user)/schedule-delivery/route-details")
             }
             className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl elevation-md"
           >
