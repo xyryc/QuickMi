@@ -3,7 +3,7 @@ import React from "react";
 import { Text, View } from "react-native";
 import ButtonSecondary from "./ButtonSecondary";
 
-const WalletCard = ({ handleWithdraw }: any) => {
+const WalletCard = ({ handleWithdraw, handleDeposit }: any) => {
   return (
     <View className="mt-2.5">
       {/* card image */}
@@ -29,7 +29,7 @@ const WalletCard = ({ handleWithdraw }: any) => {
               <ButtonSecondary
                 className="px-8"
                 title="Deposit"
-                onPress={handleWithdraw}
+                onPress={handleDeposit || handleWithdraw}
               />
               <ButtonSecondary
                 title="Withdraw"
