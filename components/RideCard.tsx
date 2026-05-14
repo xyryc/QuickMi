@@ -40,7 +40,7 @@ const RideCard = ({ className, vehicle, isSelected, onPress }) => {
             {vehicle?.name || "Bike"}
           </Text>
           <Text className="text-sm font-sf-pro-medium">
-            {vehicle?.price || "$100"}
+            {vehicle?.price || "₦100"}
           </Text>
         </View>
 

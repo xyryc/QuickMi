@@ -20,7 +20,7 @@ const WalletCard = ({ handleWithdraw }: any) => {
                 Available Balance{" "}
               </Text>
               <Text className="text-white text-5xl font-sf-pro-semibold mt-2">
-                $ 2652
+                ₦2652
               </Text>
             </View>
 
@@ -28,7 +28,7 @@ const WalletCard = ({ handleWithdraw }: any) => {
               {/* buttons */}
               <ButtonSecondary
                 className="px-8"
-                title="Deposits"
+                title="Deposit"
                 onPress={handleWithdraw}
               />
               <ButtonSecondary

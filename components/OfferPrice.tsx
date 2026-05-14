@@ -62,9 +62,9 @@ const OfferPrice: React.FC<OfferPriceProps> = ({
           </TouchableOpacity>
 
           <View className="items-center flex-1">
-            <Text className="font-sf-pro-regular text-base">${price}</Text>
+            <Text className="font-sf-pro-regular text-base">₦{price}</Text>
             <Text className="font-sf-pro-regular text-[10px]">
-              Recommended fare: $150
+              Recommended fare: ₦150
             </Text>
           </View>
 

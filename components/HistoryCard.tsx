@@ -20,7 +20,7 @@ const HistoryCard = ({ onPress }) => {
         </View>
 
         {/* currency */}
-        <Text className="font-sf-pro-medium text-base">$150</Text>
+        <Text className="font-sf-pro-medium text-base">₦150</Text>
       </View>
 
       {/* 2nd row */}

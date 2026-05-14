@@ -255,9 +255,9 @@ const ParcelOngoing = () => {
 
                       <View className="flex-row items-center">
                         <Text className="font-sf-pro-medium text-sm text-red-500 line-through">
-                          $150
+                          ₦150
                         </Text>
-                        <Text className="font-sf-pro-medium text-lg">$140</Text>
+                        <Text className="font-sf-pro-medium text-lg">₦140</Text>
                       </View>
                     </View>
 

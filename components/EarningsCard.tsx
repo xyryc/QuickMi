@@ -12,7 +12,7 @@ interface EarningsCardProps {
 
 const EarningsCard: React.FC<EarningsCardProps> = ({
   className,
-  earnings = "$8.07",
+  earnings = "₦8.07",
   hours = "3",
   acceptanceRate = "60%",
   trips = "03",

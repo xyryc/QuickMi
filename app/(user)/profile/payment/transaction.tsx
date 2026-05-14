@@ -57,7 +57,7 @@ const TransactionHistory = () => {
               </View>
               <View>
                 <Text className="font-sf-pro-medium text-base text-[#0F73F7]">
-                  $570.00
+                  ₦570.00
                 </Text>
               </View>
             </TouchableOpacity>
@@ -83,7 +83,7 @@ const TransactionHistory = () => {
               </View>
               <View>
                 <Text className="font-sf-pro-medium text-base text-[#0F73F7]">
-                  $570.00
+                  ₦570.00
                 </Text>
               </View>
             </TouchableOpacity>
@@ -109,7 +109,7 @@ const TransactionHistory = () => {
               </View>
               <View>
                 <Text className="font-sf-pro-medium text-base text-[#0F73F7]">
-                  $570.00
+                  ₦570.00
                 </Text>
               </View>
             </TouchableOpacity>
@@ -135,7 +135,7 @@ const TransactionHistory = () => {
               </View>
               <View>
                 <Text className="font-sf-pro-medium text-base text-[#0F73F7]">
-                  $570.00
+                  ₦570.00
                 </Text>
               </View>
             </TouchableOpacity>
@@ -161,7 +161,7 @@ const TransactionHistory = () => {
               </View>
               <View>
                 <Text className="font-sf-pro-medium text-base text-[#0F73F7]">
-                  $570.00
+                  ₦570.00
                 </Text>
               </View>
             </TouchableOpacity>
@@ -187,7 +187,7 @@ const TransactionHistory = () => {
               </View>
               <View>
                 <Text className="font-sf-pro-medium text-base text-[#0F73F7]">
-                  $570.00
+                  ₦570.00
                 </Text>
               </View>
             </TouchableOpacity>

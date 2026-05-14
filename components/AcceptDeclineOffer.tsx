@@ -60,7 +60,7 @@ const AcceptDeclineOffer: React.FC<AcceptDeclineOfferProps> = ({
             Suggested Fare
           </Text>
 
-          <Text className="text-lg font-sf-pro-medium">$150</Text>
+          <Text className="text-lg font-sf-pro-medium">₦150</Text>
         </View>
 
         <View className="flex-row items-center justify-between mb-3">
@@ -81,9 +81,9 @@ const AcceptDeclineOffer: React.FC<AcceptDeclineOfferProps> = ({
 
           <View className="flex-row items-center gap-1">
             <Text className="text-lg font-sf-pro-medium text-red-500 line-through">
-              $150
+              ₦150
             </Text>
-            <Text className="text-lg font-sf-pro-medium">$140</Text>
+            <Text className="text-lg font-sf-pro-medium">₦140</Text>
           </View>
         </View>
       </View>

@@ -240,7 +240,7 @@ const Home = () => {
           </TouchableOpacity>
 
           {/* history */}
-          <View className="flex-row justify-between p-2.5 my-4">
+          <View className="flex-row justify-between mb-4 mt-8">
             <Text className="font-sf-pro-medium text-base">History</Text>
 
             <Text className="font-sf-pro-medium text-base text-blue-600">
@@ -250,10 +250,6 @@ const Home = () => {
 
           {/* history cards container */}
           <View>
-            <HistoryCard />
-
-            <HistoryCard />
-
             <HistoryCard />
 
             <HistoryCard />

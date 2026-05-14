@@ -194,20 +194,20 @@ const ParcelCompleted = () => {
 
               <View className="flex-row items-center gap-2">
                 <Text className="text-sm font-sf-pro-medium line-through text-red-500">
-                  $140
+                  ₦140
                 </Text>
-                <Text className="text-sm font-sf-pro-medium">$150</Text>
+                <Text className="text-sm font-sf-pro-medium">₦150</Text>
               </View>
             </View>
 
             <View className="flex-row items-center justify-between mb-1">
               <Text className="text-sm font-sf-pro-regular">Distance</Text>
-              <Text className="text-sm font-sf-pro-medium">$10</Text>
+              <Text className="text-sm font-sf-pro-medium">₦10</Text>
             </View>
 
             <View className="flex-row items-center justify-between mb-1">
               <Text className="text-sm font-sf-pro-regular">Time</Text>
-              <Text className="text-sm font-sf-pro-medium">$0.60</Text>
+              <Text className="text-sm font-sf-pro-medium">₦0.60</Text>
             </View>
 
             {/* dotted line */}
@@ -215,12 +215,12 @@ const ParcelCompleted = () => {
 
             <View className="flex-row items-center justify-between mb-1">
               <Text className="text-sm font-sf-pro-medium">Subtotal</Text>
-              <Text className="text-sm font-sf-pro-medium">$17</Text>
+              <Text className="text-sm font-sf-pro-medium">₦17</Text>
             </View>
 
             <View className="flex-row items-center justify-between mb-1">
               <Text className="text-sm font-sf-pro-regular">Discount</Text>
-              <Text className="text-sm font-sf-pro-medium">-$6</Text>
+              <Text className="text-sm font-sf-pro-medium">-₦6</Text>
             </View>
 
             {/* dotted line */}
@@ -228,7 +228,7 @@ const ParcelCompleted = () => {
 
             <View className="flex-row items-center justify-between mb-1">
               <Text className="text-base font-sf-pro-medium">Net Fare</Text>
-              <Text className="text-sm font-sf-pro-semibold">$11</Text>
+              <Text className="text-sm font-sf-pro-semibold">₦11</Text>
             </View>
           </View>
         </View>

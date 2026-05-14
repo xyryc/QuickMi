@@ -154,7 +154,7 @@ const AgentHome = () => {
           fromLocation: "123 Main St, Downtown, Dhaka 1000",
           toLocation: "456 Park Ave, Gulshan, Dhaka 1212",
           distance: "5.39 KM",
-          suggestedPrice: "$150",
+          suggestedPrice: "₦150",
           pickupTime: "14 May 2023, 2:30 PM",
           estimatedTime: "15 minutes",
         });
@@ -291,7 +291,7 @@ const AgentHome = () => {
       case "offer_price":
         return (
           <OfferPrice
-            suggestedPrice={currentTrip?.suggestedPrice || "$150"}
+            suggestedPrice={currentTrip?.suggestedPrice || "₦150"}
             onNext={handleConfirmPrice}
             onBack={() => setAgentStatus("trip_offer")}
             handleCancelRide={handleCancelOffer}
@@ -384,7 +384,7 @@ const AgentHome = () => {
           {/* earning card */}
           <EarningsCard
             className="absolute inset-x-0"
-            earnings="$8.07"
+            earnings="₦8.07"
             hours="3"
             acceptanceRate="60%"
             trips="03"

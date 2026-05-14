@@ -116,7 +116,7 @@ const WaitForDriver: React.FC<WaitForDriverProps> = ({
             Suggested Fare
           </Text>
 
-          <Text className="text-lg font-sf-pro-medium">$150</Text>
+          <Text className="text-lg font-sf-pro-medium">₦150</Text>
         </View>
 
         <View className="flex-row items-center justify-between mb-3">
@@ -134,9 +134,9 @@ const WaitForDriver: React.FC<WaitForDriverProps> = ({
 
           <View className="flex-row items-center">
             <Text className="text-lg font-sf-pro-medium text-red-500 line-through">
-              $150
+              ₦150
             </Text>
-            <Text className="text-lg font-sf-pro-medium">$140</Text>
+            <Text className="text-lg font-sf-pro-medium">₦140</Text>
           </View>
         </View>
       </View>

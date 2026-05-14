@@ -42,9 +42,9 @@ const TrackingCard = () => {
           </View>
           <View className="flex-row items-center gap-2">
             <Text className="text-red-500 font-sf-pro-medium text-sm line-through">
-              $150
+              ₦150
             </Text>
-            <Text className="font-sf-pro-medium text-lg">$140</Text>
+            <Text className="font-sf-pro-medium text-lg">₦140</Text>
           </View>
         </View>
       </View>

@@ -2,16 +2,17 @@ import ButtonPrimary from "@/components/ButtonPrimary";
 import ButtonSecondary from "@/components/ButtonSecondary";
 import ScreenHeader from "@/components/ScreenHeader";
 import WalletCard from "@/components/WalletCard";
-import { EvilIcons, Feather } from "@expo/vector-icons";
+import { EvilIcons, Feather, Ionicons } from "@expo/vector-icons";
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
+import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -25,6 +26,16 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Wallet = () => {
+  const [copiedField, setCopiedField] = useState<
+    "accountName" | "accountNumber" | "bankName" | null
+  >(null);
+  const paystackDetails = {
+    accountName: "QuickMi User Wallet",
+    accountNumber: "1234567890",
+    bankName: "Wema Bank (Paystack)",
+    note: "Transfer from your banking app to this account. Wallet updates automatically after confirmation.",
+  };
+
   // ✅ Modal refs
   const confirmModalRef = useRef<BottomSheetModal>(null);
   const successModalRef = useRef<BottomSheetModal>(null);
@@ -54,6 +65,21 @@ const Wallet = () => {
     successModalRef.current?.dismiss();
   };
 
+  const handleCopy = async (
+    value: string,
+    field: "accountName" | "accountNumber" | "bankName",
+  ) => {
+    try {
+      await Clipboard.setStringAsync(value);
+      setCopiedField(field);
+      setTimeout(() => {
+        setCopiedField((prev) => (prev === field ? null : prev));
+      }, 1200);
+    } catch (error) {
+      console.error("Error copying text:", error);
+    }
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
@@ -80,6 +106,104 @@ const Wallet = () => {
               >
                 {/* wallet card */}
                 <WalletCard handleWithdraw={handleWithdraw} />
+
+                {/* Paystack transfer details */}
+                <View className="border border-[#E3E6F0] rounded-xl p-4 mt-4">
+                  <Text className="font-sf-pro-medium text-base text-black">
+                    Paystack Bank Transfer
+                  </Text>
+                  <Text className="font-sf-pro-regular text-xs text-gray-500 mt-1">
+                    Use this account to add money from your banking app.
+                  </Text>
+
+                  <View className="mt-4">
+                    <Text className="font-sf-pro-regular text-xs text-gray-500">
+                      Account Name
+                    </Text>
+                    <View className="flex-row items-center justify-between mt-1">
+                      <Text className="font-sf-pro-medium text-sm text-[#031731]">
+                        {paystackDetails.accountName}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleCopy(paystackDetails.accountName, "accountName")
+                        }
+                      >
+                        <Ionicons
+                          name={
+                            copiedField === "accountName"
+                              ? "checkmark"
+                              : "copy-outline"
+                          }
+                          size={16}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <View className="mt-3">
+                    <Text className="font-sf-pro-regular text-xs text-gray-500">
+                      Account Number
+                    </Text>
+                    <View className="flex-row items-center justify-between mt-1">
+                      <Text
+                        className="font-sf-pro-medium text-base text-[#031731]"
+                        selectable
+                      >
+                        {paystackDetails.accountNumber}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleCopy(
+                            paystackDetails.accountNumber,
+                            "accountNumber",
+                          )
+                        }
+                      >
+                        <Ionicons
+                          name={
+                            copiedField === "accountNumber"
+                              ? "checkmark"
+                              : "copy-outline"
+                          }
+                          size={16}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <View className="mt-3">
+                    <Text className="font-sf-pro-regular text-xs text-gray-500">
+                      Bank Name
+                    </Text>
+                    <View className="flex-row items-center justify-between mt-1">
+                      <Text className="font-sf-pro-medium text-sm text-[#031731]">
+                        {paystackDetails.bankName}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleCopy(paystackDetails.bankName, "bankName")
+                        }
+                      >
+                        <Ionicons
+                          name={
+                            copiedField === "bankName"
+                              ? "checkmark"
+                              : "copy-outline"
+                          }
+                          size={16}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <Text className="font-sf-pro-regular text-xs text-gray-500 mt-3">
+                    {paystackDetails.note}
+                  </Text>
+                </View>
 
                 {/* Payment method */}
                 <Text className="font-sf-pro-medium mt-4 text-base text-black">
@@ -128,7 +252,7 @@ const Wallet = () => {
                   </View>
                   <View>
                     <Text className="font-sf-pro-medium text-base text-[#0F73F7]">
-                      $570.00
+                      ₦570.00
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -154,7 +278,7 @@ const Wallet = () => {
                   </View>
                   <View>
                     <Text className="font-sf-pro-medium text-base text-[#0F73F7]">
-                      $570.00
+                      ₦570.00
                     </Text>
                   </View>
                 </TouchableOpacity>

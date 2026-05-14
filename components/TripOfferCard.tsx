@@ -80,7 +80,7 @@ const TripOfferCard: React.FC<TripOfferProps> = ({
         </View>
 
         <View className="flex items-end">
-          <Text className="font-sf-pro-medium text-2xl mb-1">$150</Text>
+          <Text className="font-sf-pro-medium text-2xl mb-1">₦150</Text>
           <View className="flex-row items-center gap-2">
             <Octicons name="clock-fill" size={16} color="#0F73F7" />
             <Text className="text-sm font-sf-pro-medium">
