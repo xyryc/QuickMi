@@ -12,6 +12,7 @@ import {
 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import React, { useMemo, useState } from "react";
 import {
   Alert,
@@ -77,6 +78,7 @@ export default function WalletPaymentOptions() {
   const [accessCode, setAccessCode] = useState(
     process.env.EXPO_PUBLIC_PAYSTACK_TEST_ACCESS_CODE || "",
   );
+  const [authorizationUrl, setAuthorizationUrl] = useState("");
 
   const formattedAmount = useMemo(() => {
     const numericAmount = Number(amount || 0);
@@ -85,11 +87,20 @@ export default function WalletPaymentOptions() {
   }, [amount]);
 
   const handleContinue = () => {
-    const supportedNativeMethods: PaymentMethodId[] = [
-      "card",
-      "bank_transfer",
-      "bank",
-    ];
+    if (selectedMethod === "ussd") {
+      const normalizedAuthorizationUrl = authorizationUrl.trim();
+      if (!normalizedAuthorizationUrl) {
+        Alert.alert(
+          "USSD Checkout URL Required",
+          "Paste the Paystack authorization_url from initialize transaction for USSD.",
+        );
+        return;
+      }
+      WebBrowser.openBrowserAsync(normalizedAuthorizationUrl);
+      return;
+    }
+
+    const supportedNativeMethods: PaymentMethodId[] = ["card", "bank"];
 
     if (!supportedNativeMethods.includes(selectedMethod)) {
       Alert.alert(
@@ -190,7 +201,7 @@ export default function WalletPaymentOptions() {
               })}
             </View>
 
-            {["card", "bank_transfer", "bank"].includes(selectedMethod) && (
+            {["card", "bank"].includes(selectedMethod) && (
               <View className="mt-5 border border-[#E3E6F0] rounded-xl p-4">
                 <Text className="text-xs text-[#6B6B6B] font-sf-pro-regular mb-2">
                   Paystack Access Code (Temporary Testing)
@@ -199,6 +210,23 @@ export default function WalletPaymentOptions() {
                   value={accessCode}
                   onChangeText={setAccessCode}
                   placeholder="Paste access_code from initialize transaction"
+                  placeholderTextColor="#A2A2A2"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  className="font-sf-pro-regular text-sm text-[#031731] border border-[#E3E6F0] rounded-lg px-3 py-3"
+                />
+              </View>
+            )}
+
+            {selectedMethod === "ussd" && (
+              <View className="mt-5 border border-[#E3E6F0] rounded-xl p-4">
+                <Text className="text-xs text-[#6B6B6B] font-sf-pro-regular mb-2">
+                  Paystack authorization_url (USSD Web Fallback)
+                </Text>
+                <TextInput
+                  value={authorizationUrl}
+                  onChangeText={setAuthorizationUrl}
+                  placeholder="Paste authorization_url from initialize transaction"
                   placeholderTextColor="#A2A2A2"
                   autoCapitalize="none"
                   autoCorrect={false}
