@@ -85,7 +85,13 @@ export default function WalletPaymentOptions() {
   }, [amount]);
 
   const handleContinue = () => {
-    if (selectedMethod !== "card") {
+    const supportedNativeMethods: PaymentMethodId[] = [
+      "card",
+      "bank_transfer",
+      "bank",
+    ];
+
+    if (!supportedNativeMethods.includes(selectedMethod)) {
       Alert.alert(
         "Coming Soon",
         `${selectedMethod} is added in UI. We'll wire channel flow next.`,
@@ -108,7 +114,10 @@ export default function WalletPaymentOptions() {
       .then(() => paystackPayWithAccessCodeAndroid(normalizedAccessCode))
       .then((result) => {
         if (result.status === "completed") {
-          Alert.alert("Payment Completed", `Amount ${formattedAmount} paid.`);
+          Alert.alert(
+            "Payment Completed",
+            `${selectedMethod} payment of ${formattedAmount} completed.`,
+          );
           return;
         }
         if (result.status === "cancelled") {
@@ -181,7 +190,7 @@ export default function WalletPaymentOptions() {
               })}
             </View>
 
-            {selectedMethod === "card" && (
+            {["card", "bank_transfer", "bank"].includes(selectedMethod) && (
               <View className="mt-5 border border-[#E3E6F0] rounded-xl p-4">
                 <Text className="text-xs text-[#6B6B6B] font-sf-pro-regular mb-2">
                   Paystack Access Code (Temporary Testing)
