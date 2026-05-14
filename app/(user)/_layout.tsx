@@ -41,6 +41,10 @@ export default function UserLayout() {
         options={{ animation: "slide_from_right" }}
       />
       <Stack.Screen
+        name="profile/wallet/payment-options"
+        options={{ animation: "slide_from_right" }}
+      />
+      <Stack.Screen
         name="profile/home-location"
         options={{ animation: "slide_from_right" }}
       />

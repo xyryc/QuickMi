@@ -13,7 +13,6 @@ import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import React, { useRef, useState } from "react";
 import {
   Alert,
@@ -82,22 +81,11 @@ const Wallet = () => {
       return;
     }
 
-    const paystackPaymentLink = process.env.EXPO_PUBLIC_PAYSTACK_PAYMENT_LINK;
-    if (!paystackPaymentLink) {
-      Alert.alert(
-        "Paystack Not Configured",
-        "Set EXPO_PUBLIC_PAYSTACK_PAYMENT_LINK in your .env file.",
-      );
-      return;
-    }
-
-    const amountInKobo = Math.round(amount * 100);
-    const reference = `quickmi_fund_${Date.now()}`;
-    const separator = paystackPaymentLink.includes("?") ? "&" : "?";
-    const checkoutUrl = `${paystackPaymentLink}${separator}amount=${amountInKobo}&reference=${reference}`;
-
     depositModalRef.current?.dismiss();
-    WebBrowser.openBrowserAsync(checkoutUrl);
+    router.push({
+      pathname: "/(user)/profile/wallet/payment-options",
+      params: { amount: String(amount) },
+    });
   };
 
   const handleCopy = async (
@@ -170,7 +158,7 @@ const Wallet = () => {
                         <Ionicons
                           name={
                             copiedField === "accountName"
-                              ? "checkmark"
+                              ? "checkmark-done-outline"
                               : "copy-outline"
                           }
                           size={16}
@@ -202,7 +190,7 @@ const Wallet = () => {
                         <Ionicons
                           name={
                             copiedField === "accountNumber"
-                              ? "checkmark"
+                              ? "checkmark-done-outline"
                               : "copy-outline"
                           }
                           size={16}
@@ -228,7 +216,7 @@ const Wallet = () => {
                         <Ionicons
                           name={
                             copiedField === "bankName"
-                              ? "checkmark"
+                              ? "checkmark-done-outline"
                               : "copy-outline"
                           }
                           size={16}
