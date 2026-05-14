@@ -59,6 +59,7 @@ module.exports = {
           },
         },
       ],
+      "./plugins/withPaystackAndroidBridge",
     ],
     experiments: {
       typedRoutes: true,

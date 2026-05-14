@@ -1,6 +1,10 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import ScreenHeader from "@/components/ScreenHeader";
 import {
+  initializePaystackAndroid,
+  paystackPayWithAccessCodeAndroid,
+} from "@/utils/paystackAndroid";
+import {
   FontAwesome5,
   Ionicons,
   MaterialCommunityIcons,
@@ -16,6 +20,7 @@ import {
   ScrollView,
   StatusBar,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -69,6 +74,9 @@ const paymentMethods: {
 export default function WalletPaymentOptions() {
   const { amount } = useLocalSearchParams<{ amount?: string }>();
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>("card");
+  const [accessCode, setAccessCode] = useState(
+    process.env.EXPO_PUBLIC_PAYSTACK_TEST_ACCESS_CODE || "",
+  );
 
   const formattedAmount = useMemo(() => {
     const numericAmount = Number(amount || 0);
@@ -77,10 +85,41 @@ export default function WalletPaymentOptions() {
   }, [amount]);
 
   const handleContinue = () => {
-    Alert.alert(
-      "Method Selected",
-      `${selectedMethod} selected for ${formattedAmount}. We can wire this to Paystack next.`,
-    );
+    if (selectedMethod !== "card") {
+      Alert.alert(
+        "Coming Soon",
+        `${selectedMethod} is added in UI. We'll wire channel flow next.`,
+      );
+      return;
+    }
+
+    const publicKey = process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY || "";
+    const normalizedAccessCode = accessCode.trim();
+
+    if (!publicKey || !normalizedAccessCode) {
+      Alert.alert(
+        "Paystack Config Missing",
+        "Set EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY and enter a valid access code.",
+      );
+      return;
+    }
+
+    initializePaystackAndroid(publicKey)
+      .then(() => paystackPayWithAccessCodeAndroid(normalizedAccessCode))
+      .then((result) => {
+        if (result.status === "completed") {
+          Alert.alert("Payment Completed", `Amount ${formattedAmount} paid.`);
+          return;
+        }
+        if (result.status === "cancelled") {
+          Alert.alert("Payment Cancelled", "You cancelled the payment.");
+          return;
+        }
+        Alert.alert("Payment Failed", result.error || "Payment failed.");
+      })
+      .catch((error: Error) => {
+        Alert.alert("Paystack Error", error.message);
+      });
   };
 
   return (
@@ -141,6 +180,23 @@ export default function WalletPaymentOptions() {
                 );
               })}
             </View>
+
+            {selectedMethod === "card" && (
+              <View className="mt-5 border border-[#E3E6F0] rounded-xl p-4">
+                <Text className="text-xs text-[#6B6B6B] font-sf-pro-regular mb-2">
+                  Paystack Access Code (Temporary Testing)
+                </Text>
+                <TextInput
+                  value={accessCode}
+                  onChangeText={setAccessCode}
+                  placeholder="Paste access_code from initialize transaction"
+                  placeholderTextColor="#A2A2A2"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  className="font-sf-pro-regular text-sm text-[#031731] border border-[#E3E6F0] rounded-lg px-3 py-3"
+                />
+              </View>
+            )}
           </ScrollView>
 
           <View className="px-5 pb-6">
