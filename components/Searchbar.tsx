@@ -1,6 +1,7 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
+  Platform,
   TextInput,
   TextInputProps,
   TouchableOpacity,
@@ -38,7 +39,14 @@ export default function SearchBar({
     >
       <Feather name="search" size={iconSize} color={iconColor} />
       <TextInput
-        className={`flex-1 text-base font-sf-regular text-[#A2A2A2] ${inputClassName}`}
+        className={`flex-1 text-base font-sf-regular text-black ${inputClassName}`}
+        style={{
+          height: 22,
+          lineHeight: 18,
+          paddingTop: 0,
+          paddingBottom: 0,
+          ...(Platform.OS === "android" ? { textAlignVertical: "center" } : {}),
+        }}
         placeholder={placeholder}
         placeholderTextColor="#999999"
         value={value}
