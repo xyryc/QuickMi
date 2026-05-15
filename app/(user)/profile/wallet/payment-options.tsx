@@ -106,12 +106,16 @@ export default function WalletPaymentOptions() {
       return;
     }
 
-    if (selectedMethod === "ussd") {
+    if (
+      selectedMethod === "ussd" ||
+      selectedMethod === "bank" ||
+      selectedMethod === "bank_transfer"
+    ) {
       const normalizedAuthorizationUrl = authorizationUrl.trim();
       if (!normalizedAuthorizationUrl) {
         Alert.alert(
           "Checkout URL Required",
-          "Paste the Paystack authorization_url from initialize transaction for USSD.",
+          `Paste the Paystack authorization_url from initialize transaction for ${selectedMethod.toUpperCase()}.`,
         );
         return;
       }
@@ -119,11 +123,7 @@ export default function WalletPaymentOptions() {
       return;
     }
 
-    const supportedNativeMethods: PaymentMethodId[] = [
-      "card",
-      "bank",
-      "bank_transfer",
-    ];
+    const supportedNativeMethods: PaymentMethodId[] = ["card"];
 
     if (!supportedNativeMethods.includes(selectedMethod)) {
       Alert.alert(
@@ -237,7 +237,7 @@ export default function WalletPaymentOptions() {
               })}
             </View>
 
-            {["card", "bank", "bank_transfer"].includes(selectedMethod) && (
+            {selectedMethod === "card" && (
               <View className="mt-5 border border-[#E3E6F0] rounded-xl p-4">
                 <Text className="text-xs text-[#6B6B6B] font-sf-pro-regular mb-2">
                   Paystack Access Code (Temporary Testing)
@@ -254,10 +254,10 @@ export default function WalletPaymentOptions() {
               </View>
             )}
 
-            {selectedMethod === "ussd" && (
+            {["ussd", "bank", "bank_transfer"].includes(selectedMethod) && (
               <View className="mt-5 border border-[#E3E6F0] rounded-xl p-4">
                 <Text className="text-xs text-[#6B6B6B] font-sf-pro-regular mb-2">
-                  Paystack authorization_url (USSD Web Fallback)
+                  Paystack authorization_url ({selectedMethod.toUpperCase()} Web Fallback)
                 </Text>
                 <TextInput
                   value={authorizationUrl}
