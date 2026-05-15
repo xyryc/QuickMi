@@ -1,6 +1,5 @@
 import ButtonSecondary from "@/components/ButtonSecondary";
 import EarningsCard from "@/components/EarningsCard";
-import OfferPrice from "@/components/OfferPrice";
 import TripDetailsCard from "@/components/TripDetailsCard";
 import TripOfferCard from "@/components/TripOfferCard";
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
@@ -19,7 +18,6 @@ type AgentStatus =
   | "online"
   | "finding_trips"
   | "trip_offer"
-  | "offer_price"
   | "trip_accepted";
 
 const AgentHome = () => {
@@ -56,7 +54,7 @@ const AgentHome = () => {
           setLocationError("Permission to access location was denied");
           Alert.alert(
             "Location Permission",
-            "Please enable location permissions to see your current location on the map."
+            "Please enable location permissions to see your current location on the map.",
           );
           return;
         }
@@ -87,7 +85,7 @@ const AgentHome = () => {
               latitudeDelta: 0.001,
               longitudeDelta: 0.001,
             },
-            1000
+            1000,
           );
         }
 
@@ -110,20 +108,20 @@ const AgentHome = () => {
             ) {
               setHeading(location.coords.heading);
             }
-          }
+          },
         );
 
         headingSubscription = await Location.watchHeadingAsync(
           (headingData) => {
             setHeading(headingData.trueHeading);
-          }
+          },
         );
       } catch (error) {
         console.error("Error getting location:", error);
         setLocationError("Failed to get current location");
         Alert.alert(
           "Location Error",
-          "Unable to retrieve your current location. Please try again."
+          "Unable to retrieve your current location. Please try again.",
         );
       }
     })();
@@ -165,7 +163,11 @@ const AgentHome = () => {
 
   // Handle trip acceptance
   const handleAcceptTrip = () => {
-    setAgentStatus("offer_price");
+    setCurrentTrip((prev: any) => ({
+      ...prev,
+      offeredPrice: prev?.suggestedPrice,
+    }));
+    setAgentStatus("trip_accepted");
   };
 
   // Handle trip decline
@@ -181,21 +183,6 @@ const AgentHome = () => {
 
   // Handle trip timeout
   const handleTripTimeout = () => {
-    setCurrentTrip(null);
-    setAgentStatus("finding_trips");
-  };
-
-  // Handle price offer confirmation
-  const handleConfirmPrice = (offeredPrice: string) => {
-    setCurrentTrip({
-      ...currentTrip,
-      offeredPrice,
-    });
-    setAgentStatus("trip_accepted");
-  };
-
-  // Handle cancel from offer price
-  const handleCancelOffer = () => {
     setCurrentTrip(null);
     setAgentStatus("finding_trips");
   };
@@ -232,9 +219,6 @@ const AgentHome = () => {
         return ["20%", "40%"];
 
       case "trip_offer":
-        return ["60%", "80%"];
-
-      case "offer_price":
         return ["60%", "80%"];
 
       case "trip_accepted":
@@ -287,22 +271,6 @@ const AgentHome = () => {
             onTimeout={handleTripTimeout}
           />
         ) : null;
-
-      case "offer_price":
-        return (
-          <OfferPrice
-            suggestedPrice={currentTrip?.suggestedPrice || "₦150"}
-            onNext={handleConfirmPrice}
-            onBack={() => setAgentStatus("trip_offer")}
-            handleCancelRide={handleCancelOffer}
-            onCashPress={() => {}}
-            selectedVehicleData={{
-              type: "Car",
-              name: "Standard Car",
-              capacity: "4 seats",
-            }}
-          />
-        );
 
       case "trip_accepted":
         return currentTrip ? (
@@ -404,7 +372,7 @@ const AgentHome = () => {
             }}
           >
             <SimpleLineIcons
-              className="p-1.5 border border-[#0A66C224] rounded-full bg-white"
+              className="p-1.5 rounded-full bg-white"
               name="bell"
               size={18}
               color="black"
