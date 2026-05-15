@@ -1,9 +1,14 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
+import PaymentResultModal from "@/components/PaymentResultModal";
 import ScreenHeader from "@/components/ScreenHeader";
 import {
   initializePaystackAndroid,
   paystackPayWithAccessCodeAndroid,
 } from "@/utils/paystackAndroid";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
 import {
   FontAwesome5,
   Ionicons,
@@ -13,7 +18,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -25,6 +30,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type PaymentMethodId =
@@ -79,6 +85,11 @@ export default function WalletPaymentOptions() {
     process.env.EXPO_PUBLIC_PAYSTACK_TEST_ACCESS_CODE || "",
   );
   const [authorizationUrl, setAuthorizationUrl] = useState("");
+  const [resultStatus, setResultStatus] = useState<
+    "completed" | "failed" | "cancelled" | null
+  >(null);
+  const [resultMessage, setResultMessage] = useState("");
+  const resultModalRef = useRef<BottomSheetModal>(null);
 
   const formattedAmount = useMemo(() => {
     const numericAmount = Number(amount || 0);
@@ -87,11 +98,19 @@ export default function WalletPaymentOptions() {
   }, [amount]);
 
   const handleContinue = () => {
+    if (selectedMethod === "qr" || selectedMethod === "opay") {
+      Alert.alert(
+        "Coming Soon",
+        `${selectedMethod === "qr" ? "QR" : "Opay"} payment is coming soon.`,
+      );
+      return;
+    }
+
     if (selectedMethod === "ussd") {
       const normalizedAuthorizationUrl = authorizationUrl.trim();
       if (!normalizedAuthorizationUrl) {
         Alert.alert(
-          "USSD Checkout URL Required",
+          "Checkout URL Required",
           "Paste the Paystack authorization_url from initialize transaction for USSD.",
         );
         return;
@@ -100,7 +119,11 @@ export default function WalletPaymentOptions() {
       return;
     }
 
-    const supportedNativeMethods: PaymentMethodId[] = ["card", "bank"];
+    const supportedNativeMethods: PaymentMethodId[] = [
+      "card",
+      "bank",
+      "bank_transfer",
+    ];
 
     if (!supportedNativeMethods.includes(selectedMethod)) {
       Alert.alert(
@@ -125,47 +148,60 @@ export default function WalletPaymentOptions() {
       .then(() => paystackPayWithAccessCodeAndroid(normalizedAccessCode))
       .then((result) => {
         if (result.status === "completed") {
-          Alert.alert(
-            "Payment Completed",
+          setResultStatus("completed");
+          setResultMessage(
             `${selectedMethod} payment of ${formattedAmount} completed.`,
           );
+          resultModalRef.current?.present();
           return;
         }
         if (result.status === "cancelled") {
-          Alert.alert("Payment Cancelled", "You cancelled the payment.");
+          setResultStatus("cancelled");
+          setResultMessage("You cancelled the payment.");
+          resultModalRef.current?.present();
           return;
         }
-        Alert.alert("Payment Failed", result.error || "Payment failed.");
+        setResultStatus("failed");
+        setResultMessage(result.error || "Payment failed.");
+        resultModalRef.current?.present();
       })
       .catch((error: Error) => {
-        Alert.alert("Paystack Error", error.message);
+        setResultStatus("failed");
+        setResultMessage(error.message);
+        resultModalRef.current?.present();
       });
   };
 
+  const closeResultModal = () => {
+    resultModalRef.current?.dismiss();
+  };
+
   return (
-    <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
-      <StatusBar backgroundColor="#D3E6FF" barStyle="dark-content" />
-      <LinearGradient
-        colors={["#D3E6FF", "#FFFFFF"]}
-        locations={[0, 0.4]}
-        style={{ flex: 1 }}
-      >
-        <ScreenHeader title="Payment Options" />
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
-        >
-          <ScrollView
-            className="flex-1 mx-5"
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 120 }}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
+          <StatusBar backgroundColor="#D3E6FF" barStyle="dark-content" />
+          <LinearGradient
+            colors={["#D3E6FF", "#FFFFFF"]}
+            locations={[0, 0.4]}
+            style={{ flex: 1 }}
           >
-            <View className="border border-[#E3E6F0] rounded-xl p-4 mt-2">
-              <Text className="text-xs text-[#6B6B6B] font-sf-pro-regular">
-                Funding Amount
+            <ScreenHeader title="Payment Options" />
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+            >
+              <ScrollView
+                className="flex-1 mx-5"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingBottom: 120 }}
+              >
+            <View className="border border-[#E3E6F0] rounded-xl p-4 mt-2 items-center">
+              <Text className="text-xs text-[#6B6B6B] font-sf-pro-regular text-center">
+                Deposit Amount
               </Text>
-              <Text className="text-2xl text-[#031731] font-sf-pro-semibold mt-1">
+              <Text className="text-2xl text-[#031731] font-sf-pro-semibold mt-1 text-center">
                 {formattedAmount}
               </Text>
             </View>
@@ -201,7 +237,7 @@ export default function WalletPaymentOptions() {
               })}
             </View>
 
-            {["card", "bank"].includes(selectedMethod) && (
+            {["card", "bank", "bank_transfer"].includes(selectedMethod) && (
               <View className="mt-5 border border-[#E3E6F0] rounded-xl p-4">
                 <Text className="text-xs text-[#6B6B6B] font-sf-pro-regular mb-2">
                   Paystack Access Code (Temporary Testing)
@@ -234,13 +270,23 @@ export default function WalletPaymentOptions() {
                 />
               </View>
             )}
-          </ScrollView>
+              </ScrollView>
 
-          <View className="px-5 pb-6">
-            <ButtonPrimary title="Continue" onPress={handleContinue} />
-          </View>
-        </KeyboardAvoidingView>
-      </LinearGradient>
-    </SafeAreaView>
+              <View className="px-5 pb-6">
+                <ButtonPrimary title="Continue" onPress={handleContinue} />
+              </View>
+            </KeyboardAvoidingView>
+          </LinearGradient>
+
+          <PaymentResultModal
+            modalRef={resultModalRef}
+            status={resultStatus}
+            message={resultMessage}
+            onClose={closeResultModal}
+            buttonTitle="Go To Payment Options"
+          />
+        </SafeAreaView>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }

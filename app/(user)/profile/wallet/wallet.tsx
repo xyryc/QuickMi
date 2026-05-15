@@ -2,7 +2,7 @@ import ButtonPrimary from "@/components/ButtonPrimary";
 import ButtonSecondary from "@/components/ButtonSecondary";
 import ScreenHeader from "@/components/ScreenHeader";
 import WalletCard from "@/components/WalletCard";
-import { EvilIcons, Feather, Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
@@ -77,7 +77,7 @@ const Wallet = () => {
   const handleDepositContinue = () => {
     const amount = Number(fundingAmount.replace(/,/g, "").trim());
     if (!amount || amount <= 0) {
-      Alert.alert("Invalid Amount", "Please enter a valid funding amount.");
+      Alert.alert("Invalid Amount", "Please enter a valid deposit amount.");
       return;
     }
 
@@ -333,24 +333,29 @@ const Wallet = () => {
             >
               <View className="px-6">
                 <Text className="text-lg font-sf-pro-semibold text-center mt-2.5 text-[#031731]">
-                  Fund Wallet
+                  Deposit
                 </Text>
                 <Text className="text-center mt-2 text-[#031731] font-sf-pro-regular text-sm">
-                  Enter funding amount
+                  Enter deposit amount
                 </Text>
 
                 <View className="mt-5 border border-[#E3E6F0] rounded-xl px-4 py-1">
                   <Text className="font-sf-pro-regular text-xs text-gray-500 mt-2">
                     Amount
                   </Text>
-                  <BottomSheetTextInput
-                    value={fundingAmount}
-                    onChangeText={setFundingAmount}
-                    keyboardType="number-pad"
-                    placeholder="e.g. 5000"
-                    placeholderTextColor="#A2A2A2"
-                    className="font-sf-pro-medium text-base text-[#031731] py-3"
-                  />
+                  <View className="flex-row items-center">
+                    <Text className="font-sf-pro-medium text-base text-[#031731] mr-2">
+                      ₦
+                    </Text>
+                    <BottomSheetTextInput
+                      value={fundingAmount}
+                      onChangeText={setFundingAmount}
+                      keyboardType="number-pad"
+                      placeholder="e.g. 5000"
+                      placeholderTextColor="#A2A2A2"
+                      className="flex-1 font-sf-pro-medium text-base text-[#031731] py-3"
+                    />
+                  </View>
                 </View>
 
                 <ButtonPrimary
@@ -422,14 +427,6 @@ const Wallet = () => {
               showsVerticalScrollIndicator={false}
             >
               <View className="px-6 py-4 relative">
-                {/* close button  */}
-                <TouchableOpacity
-                  onPress={handleSuccessClose}
-                  className="absolute bg-[#CFE3FD] p-1 rounded-md right-6 top-0"
-                >
-                  <EvilIcons name="close" size={24} color="#0F73F7" />
-                </TouchableOpacity>
-
                 {/* thik icon */}
                 <View className="items-center mb-6 mt-5">
                   <View className="bg-green-100  rounded-full w-20 h-20 items-center justify-center ">
