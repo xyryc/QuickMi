@@ -5,6 +5,7 @@ import TripOfferCard from "@/components/TripOfferCard";
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -18,18 +19,28 @@ type AgentStatus =
   | "online"
   | "finding_trips"
   | "trip_offer"
-  | "trip_accepted";
+  | "trip_accepted"
+  | "enroute_pickup"
+  | "pickup_photo_required"
+  | "enroute_dropoff"
+  | "dropoff_photo_required";
 
 const AgentHome = () => {
   const insets = useSafeAreaInsets();
   const mapRef = useRef<MapView>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const phaseTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Agent status state
   const [agentStatus, setAgentStatus] = useState<AgentStatus>("offline");
 
   // Mock trip data
   const [currentTrip, setCurrentTrip] = useState<any>(null);
+  const [pickupPhotoUri, setPickupPhotoUri] = useState<string | null>(null);
+  const [dropoffPhotoUri, setDropoffPhotoUri] = useState<string | null>(null);
+  const [phaseCountdown, setPhaseCountdown] = useState<number>(5);
+  const [capturingPickupPhoto, setCapturingPickupPhoto] = useState(false);
+  const [capturingDropoffPhoto, setCapturingDropoffPhoto] = useState(false);
 
   // user location
   const [userLocation, setUserLocation] = useState<{
@@ -167,6 +178,9 @@ const AgentHome = () => {
       ...prev,
       offeredPrice: prev?.suggestedPrice,
     }));
+    setPickupPhotoUri(null);
+    setDropoffPhotoUri(null);
+    setPhaseCountdown(5);
     setAgentStatus("trip_accepted");
   };
 
@@ -187,10 +201,110 @@ const AgentHome = () => {
     setAgentStatus("finding_trips");
   };
 
-  // Handle start trip navigation
-  const handleStartTrip = () => {
-    Alert.alert("Success", "Starting navigation to pickup location");
-    // Navigate to ongoing trip screen or start navigation
+  const clearPhaseTimer = () => {
+    if (phaseTimerRef.current) {
+      clearInterval(phaseTimerRef.current);
+      phaseTimerRef.current = null;
+    }
+  };
+
+  const startPhaseCountdown = (
+    initialValue: number,
+    onComplete: () => void,
+  ) => {
+    clearPhaseTimer();
+    setPhaseCountdown(initialValue);
+
+    phaseTimerRef.current = setInterval(() => {
+      setPhaseCountdown((prev) => {
+        if (prev <= 1) {
+          clearPhaseTimer();
+          onComplete();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const handleStartPickup = () => {
+    setAgentStatus("enroute_pickup");
+    startPhaseCountdown(5, () => {
+      setAgentStatus("pickup_photo_required");
+    });
+  };
+
+  const handleStartDelivery = () => {
+    setAgentStatus("enroute_dropoff");
+    startPhaseCountdown(5, () => {
+      setAgentStatus("dropoff_photo_required");
+    });
+  };
+
+  const requestCameraPermission = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert(
+        "Camera Permission Required",
+        "Please enable camera permission to capture delivery photos.",
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const handleCapturePickupPhoto = async () => {
+    try {
+      setCapturingPickupPhoto(true);
+      const hasPermission = await requestCameraPermission();
+      if (!hasPermission) return;
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ["images"],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets?.[0]?.uri) {
+        setPickupPhotoUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Pickup photo capture failed:", error);
+      Alert.alert("Camera Error", "Could not open camera. Please try again.");
+    } finally {
+      setCapturingPickupPhoto(false);
+    }
+  };
+
+  const handleCaptureDropoffPhoto = async () => {
+    try {
+      setCapturingDropoffPhoto(true);
+      const hasPermission = await requestCameraPermission();
+      if (!hasPermission) return;
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ["images"],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets?.[0]?.uri) {
+        setDropoffPhotoUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Dropoff photo capture failed:", error);
+      Alert.alert("Camera Error", "Could not open camera. Please try again.");
+    } finally {
+      setCapturingDropoffPhoto(false);
+    }
+  };
+
+  const handleCompleteDelivery = () => {
+    Alert.alert("Delivery Completed", "Trip completed successfully.");
+    clearPhaseTimer();
+    setPickupPhotoUri(null);
+    setDropoffPhotoUri(null);
+    setCurrentTrip(null);
+    setPhaseCountdown(5);
+    setAgentStatus("offline");
   };
 
   // Handle cancel trip
@@ -201,12 +315,21 @@ const AgentHome = () => {
         text: "Yes",
         style: "destructive",
         onPress: () => {
+          clearPhaseTimer();
+          setPickupPhotoUri(null);
+          setDropoffPhotoUri(null);
           setCurrentTrip(null);
           setAgentStatus("online");
         },
       },
     ]);
   };
+
+  useEffect(() => {
+    return () => {
+      clearPhaseTimer();
+    };
+  }, []);
 
   // Define snap points based on status
   const snapPoints = useMemo(() => {
@@ -222,6 +345,12 @@ const AgentHome = () => {
         return ["60%", "80%"];
 
       case "trip_accepted":
+      case "enroute_pickup":
+      case "enroute_dropoff":
+        return ["40%", "70%"];
+
+      case "pickup_photo_required":
+      case "dropoff_photo_required":
         return ["30%", "80%"];
 
       default:
@@ -274,17 +403,166 @@ const AgentHome = () => {
 
       case "trip_accepted":
         return currentTrip ? (
-          <TripDetailsCard
-            tripId={currentTrip.tripId}
-            estimatedTime={currentTrip.estimatedTime}
-            pickupLocation={currentTrip.fromLocation}
-            dropoffLocation={currentTrip.toLocation}
-            distance={currentTrip.distance}
-            price={currentTrip.offeredPrice || currentTrip.suggestedPrice}
-            onStartTrip={handleStartTrip}
-            onCancelTrip={handleCancelTrip}
-          />
+          <View>
+            <TripDetailsCard
+              estimatedTime={currentTrip.estimatedTime}
+              pickupLocation={currentTrip.fromLocation}
+              dropoffLocation={currentTrip.toLocation}
+              distance={currentTrip.distance}
+              price={currentTrip.offeredPrice || currentTrip.suggestedPrice}
+              agentStatus={agentStatus}
+              pickupPhotoUri={pickupPhotoUri}
+              dropoffPhotoUri={dropoffPhotoUri}
+            />
+            <TouchableOpacity
+              onPress={handleStartPickup}
+              className="mt-4 py-3 rounded-2xl items-center bg-[#0F73F7]"
+            >
+              <Text className="text-white font-sf-pro-semibold">Start Pickup</Text>
+            </TouchableOpacity>
+            <ButtonSecondary
+              title="Cancel Trip"
+              onPress={handleCancelTrip}
+              className="mt-3"
+            />
+          </View>
         ) : null;
+
+      case "enroute_pickup":
+        return (
+          <View className="py-2">
+            {currentTrip ? (
+              <TripDetailsCard
+                estimatedTime={currentTrip.estimatedTime}
+                pickupLocation={currentTrip.fromLocation}
+                dropoffLocation={currentTrip.toLocation}
+                distance={currentTrip.distance}
+                price={currentTrip.offeredPrice || currentTrip.suggestedPrice}
+                agentStatus={agentStatus}
+                pickupPhotoUri={pickupPhotoUri}
+                dropoffPhotoUri={dropoffPhotoUri}
+              />
+            ) : null}
+            <Text className="text-lg font-sf-pro-semibold text-center text-[#031731]">
+              Arriving at Pickup
+            </Text>
+            <Text className="text-center mt-2 text-[#4D4D4D]">
+              Arriving in {phaseCountdown}s
+            </Text>
+            <Text className="text-center mt-4 text-[#6B6B6B] text-sm">
+              {currentTrip?.fromLocation}
+            </Text>
+          </View>
+        );
+
+      case "pickup_photo_required":
+        return (
+          <View className="py-2">
+            {currentTrip ? (
+              <TripDetailsCard
+                estimatedTime={currentTrip.estimatedTime}
+                pickupLocation={currentTrip.fromLocation}
+                dropoffLocation={currentTrip.toLocation}
+                distance={currentTrip.distance}
+                price={currentTrip.offeredPrice || currentTrip.suggestedPrice}
+                agentStatus={agentStatus}
+                pickupPhotoUri={pickupPhotoUri}
+                dropoffPhotoUri={dropoffPhotoUri}
+              />
+            ) : null}
+            <Text className="text-lg font-sf-pro-semibold text-center text-[#031731]">
+              Pickup Arrived
+            </Text>
+            <Text className="text-center mt-2 text-[#4D4D4D]">
+              Capture pickup photo to continue.
+            </Text>
+
+            <ButtonSecondary
+              title={capturingPickupPhoto ? "Opening Camera..." : "Capture Pickup Photo"}
+              onPress={handleCapturePickupPhoto}
+              className="mt-4"
+            />
+
+            <TouchableOpacity
+              disabled={!pickupPhotoUri}
+              onPress={handleStartDelivery}
+              className={`mt-3 py-3 rounded-2xl items-center ${
+                pickupPhotoUri ? "bg-[#0F73F7]" : "bg-[#BBD6FC]"
+              }`}
+            >
+              <Text className="text-white font-sf-pro-semibold">Start Delivery</Text>
+            </TouchableOpacity>
+          </View>
+        );
+
+      case "enroute_dropoff":
+        return (
+          <View className="py-2">
+            {currentTrip ? (
+              <TripDetailsCard
+                estimatedTime={currentTrip.estimatedTime}
+                pickupLocation={currentTrip.fromLocation}
+                dropoffLocation={currentTrip.toLocation}
+                distance={currentTrip.distance}
+                price={currentTrip.offeredPrice || currentTrip.suggestedPrice}
+                agentStatus={agentStatus}
+                pickupPhotoUri={pickupPhotoUri}
+                dropoffPhotoUri={dropoffPhotoUri}
+              />
+            ) : null}
+            <Text className="text-lg font-sf-pro-semibold text-center text-[#031731]">
+              Delivering Parcel
+            </Text>
+            <Text className="text-center mt-2 text-[#4D4D4D]">
+              Arriving in {phaseCountdown}s
+            </Text>
+            <Text className="text-center mt-4 text-[#6B6B6B] text-sm">
+              {currentTrip?.toLocation}
+            </Text>
+          </View>
+        );
+
+      case "dropoff_photo_required":
+        return (
+          <View className="py-2">
+            {currentTrip ? (
+              <TripDetailsCard
+                estimatedTime={currentTrip.estimatedTime}
+                pickupLocation={currentTrip.fromLocation}
+                dropoffLocation={currentTrip.toLocation}
+                distance={currentTrip.distance}
+                price={currentTrip.offeredPrice || currentTrip.suggestedPrice}
+                agentStatus={agentStatus}
+                pickupPhotoUri={pickupPhotoUri}
+                dropoffPhotoUri={dropoffPhotoUri}
+              />
+            ) : null}
+            <Text className="text-lg font-sf-pro-semibold text-center text-[#031731]">
+              Dropoff Arrived
+            </Text>
+            <Text className="text-center mt-2 text-[#4D4D4D]">
+              Capture dropoff photo to complete delivery.
+            </Text>
+
+            <ButtonSecondary
+              title={capturingDropoffPhoto ? "Opening Camera..." : "Capture Dropoff Photo"}
+              onPress={handleCaptureDropoffPhoto}
+              className="mt-4"
+            />
+
+            <TouchableOpacity
+              disabled={!dropoffPhotoUri}
+              onPress={handleCompleteDelivery}
+              className={`mt-3 py-3 rounded-2xl items-center ${
+                dropoffPhotoUri ? "bg-[#0F73F7]" : "bg-[#BBD6FC]"
+              }`}
+            >
+              <Text className="text-white font-sf-pro-semibold">
+                Complete Delivery
+              </Text>
+            </TouchableOpacity>
+          </View>
+        );
 
       default:
         return null;
