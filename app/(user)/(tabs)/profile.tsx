@@ -1,5 +1,4 @@
 import {
-  Entypo,
   Feather,
   Ionicons,
   MaterialCommunityIcons,
@@ -93,44 +92,40 @@ const Profile = () => {
 
                 {/* Buttons */}
                 <View className="flex-row gap-2 mt-4">
-                  <ButtonSecondary
-                    onPress={() => router.push("/(shared)/profile/inbox")}
-                    iconPosition="left"
-                    className="flex-1 !border !border-[#E3E6F0]"
-                    title="Inbox"
-                    icon={
-                      <Ionicons
-                        name="chatbox-ellipses-outline"
-                        size={20}
-                        color="#0F73F7"
-                      />
-                    }
-                  />
-
-                  <ButtonSecondary
-                    onPress={() => router.push("/(user)/profile/wallet/wallet")}
-                    iconPosition="left"
-                    className="flex-1 !border !border-[#E3E6F0]"
-                    title="Wallet"
-                    icon={<Entypo name="wallet" size={20} color="#0F73F7" />}
-                  />
-                </View>
-
-                <ButtonSecondary
-                  onPress={() =>
-                    router.push("/(user)/profile/payment/payments")
-                  }
-                  iconPosition="left"
-                  className="mt-2 !border !border-[#E3E6F0]"
-                  title="Payments & Offers"
-                  icon={
-                    <MaterialCommunityIcons
-                      name="ticket-percent-outline"
-                      size={20}
-                      color="#0F73F7"
+                  <View className="flex-1">
+                    <ButtonSecondary
+                      onPress={() => router.push("/(shared)/profile/inbox")}
+                      iconPosition="left"
+                      className="w-full !border !border-[#E3E6F0]"
+                      title="Inbox"
+                      icon={
+                        <Ionicons
+                          name="chatbox-ellipses-outline"
+                          size={20}
+                          color="#0F73F7"
+                        />
+                      }
                     />
-                  }
-                />
+                  </View>
+
+                  <View className="flex-1">
+                    <ButtonSecondary
+                      onPress={() =>
+                        router.push("/(user)/profile/payment/payments")
+                      }
+                      iconPosition="left"
+                      className="w-full !border !border-[#E3E6F0]"
+                      title="Payments & Offers"
+                      icon={
+                        <MaterialCommunityIcons
+                          name="ticket-percent-outline"
+                          size={20}
+                          color="#0F73F7"
+                        />
+                      }
+                    />
+                  </View>
+                </View>
 
                 <ButtonPrimary
                   onPress={() => router.replace("/(agent)/home")}

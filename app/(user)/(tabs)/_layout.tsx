@@ -1,5 +1,6 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Tabs } from "expo-router";
@@ -61,6 +62,25 @@ export default function UserTabsLayout() {
             <View className="relative">
               <AntDesign
                 name="history"
+                size={24}
+                color={focused ? "#0F73F7" : "#4D4D4D"}
+              />
+              {focused && (
+                <View className="absolute -bottom-6 -left-2 h-0.5 w-12 bg-[#0F73F7]" />
+              )}
+            </View>
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="wallet"
+        options={{
+          title: "Wallet",
+          tabBarIcon: ({ focused }) => (
+            <View className="relative">
+              <Ionicons
+                name="wallet-outline"
                 size={24}
                 color={focused ? "#0F73F7" : "#4D4D4D"}
               />

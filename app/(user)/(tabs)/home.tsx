@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import {
+  Platform,
   ScrollView,
   StatusBar,
   Text,
@@ -26,6 +27,15 @@ const Home = () => {
       pathname: "/(user)/location-picker",
       params: { returnTo: "/(user)/home" },
     });
+  };
+
+  const serviceCardShadowStyle = {
+    shadowColor: "#031731",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+    ...(Platform.OS === "android" ? { backgroundColor: "#FFFFFF" } : {}),
   };
 
   return (
@@ -104,7 +114,8 @@ const Home = () => {
           {/* send item */}
           <TouchableOpacity
             onPress={() => router.push("/(user)/send-item/route-details")}
-            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3 elevation-md"
+            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3"
+            style={serviceCardShadowStyle}
           >
             <View className="flex-row items-center gap-3">
               <View className="p-3 border border-[#0F73F724] rounded-full">
@@ -138,7 +149,8 @@ const Home = () => {
           {/* receive item */}
           <TouchableOpacity
             onPress={() => router.push("/(user)/receive-item/route-details")}
-            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3 elevation-md"
+            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3"
+            style={serviceCardShadowStyle}
           >
             <View className="flex-row items-center gap-3">
               <View className="p-3 border border-[#0F73F724] rounded-full">
@@ -172,7 +184,8 @@ const Home = () => {
           {/* receive parcel */}
           <TouchableOpacity
             onPress={() => router.push("/(user)/receive-parcel/route-details")}
-            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3 elevation-md"
+            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3"
+            style={serviceCardShadowStyle}
           >
             <View className="flex-row items-center gap-3">
               <View className="p-3 border border-[#0F73F724] rounded-full">
@@ -208,7 +221,8 @@ const Home = () => {
             onPress={() =>
               router.push("/(user)/schedule-delivery/route-details")
             }
-            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl elevation-md"
+            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl"
+            style={serviceCardShadowStyle}
           >
             <View className="flex-row items-center gap-3">
               <View className="p-3 border border-[#0F73F724] rounded-full">
