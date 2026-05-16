@@ -36,6 +36,7 @@ const AgentHome = () => {
   const mapRef = useRef<MapView>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const phaseTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoExpandedPhaseRef = useRef<AgentStatus | null>(null);
 
   // Agent status state
   const [agentStatus, setAgentStatus] = useState<AgentStatus>("offline");
@@ -49,6 +50,7 @@ const AgentHome = () => {
   const [capturingDropoffPhoto, setCapturingDropoffPhoto] = useState(false);
   const [pickupDistanceKm, setPickupDistanceKm] = useState<number>(0);
   const [dropoffDistanceKm, setDropoffDistanceKm] = useState<number>(0);
+  const [sheetIndex, setSheetIndex] = useState<number>(0);
 
   // user location
   const [userLocation, setUserLocation] = useState<{
@@ -365,8 +367,8 @@ const AgentHome = () => {
     };
   }, []);
 
-  // Keep a large baseline snap point and let dynamic sizing expand/shrink like delivery-booking
-  const snapPoints = useMemo(() => ["82%"], []);
+  // Two snap points so agent can always reveal more map while keeping actions accessible.
+  const snapPoints = useMemo(() => ["48%", "84%"], []);
 
   const animationConfigs = useBottomSheetSpringConfigs({
     damping: 40,
@@ -376,6 +378,37 @@ const AgentHome = () => {
     restDisplacementThreshold: 0.1,
     restSpeedThreshold: 0.1,
   });
+
+  useEffect(() => {
+    // Entering photo-required phases should open the sheet high once for CTA visibility.
+    // After that, user can drag it down and we do not force re-expansion.
+    const isPhotoPhase =
+      agentStatus === "pickup_photo_required" ||
+      agentStatus === "dropoff_photo_required";
+
+    if (isPhotoPhase && autoExpandedPhaseRef.current !== agentStatus) {
+      autoExpandedPhaseRef.current = agentStatus;
+      setSheetIndex(1);
+      bottomSheetRef.current?.snapToIndex(1);
+    }
+
+    if (!isPhotoPhase) {
+      autoExpandedPhaseRef.current = null;
+    }
+  }, [agentStatus]);
+
+  useEffect(() => {
+    // After delivery completion/reset, keep offline/idle states in compact height.
+    const shouldUseCompactSheet =
+      agentStatus === "offline" ||
+      agentStatus === "online" ||
+      agentStatus === "finding_trips";
+
+    if (shouldUseCompactSheet) {
+      setSheetIndex(0);
+      bottomSheetRef.current?.snapToIndex(0);
+    }
+  }, [agentStatus]);
 
   // Render bottom sheet content based on status
   const renderBottomSheetContent = () => {
@@ -466,9 +499,6 @@ const AgentHome = () => {
                 captureButtonDisabled
               />
             ) : null}
-            <Text className="text-center mt-4 text-[#6B6B6B] text-sm">
-              {currentTrip?.fromLocation}
-            </Text>
           </View>
         );
 
@@ -532,9 +562,6 @@ const AgentHome = () => {
                 />
               </View>
             ) : null}
-            <Text className="text-center mt-4 text-[#6B6B6B] text-sm">
-              {currentTrip?.toLocation}
-            </Text>
           </View>
         );
 
@@ -685,12 +712,17 @@ const AgentHome = () => {
         {/* bottom sheet */}
         <BottomSheet
           ref={bottomSheetRef}
-          index={0}
+          index={sheetIndex}
           snapPoints={snapPoints}
           enableDynamicSizing
           maxDynamicContentSize={windowHeight * 0.85}
           enablePanDownToClose={false}
           animateOnMount
+          onChange={(index) => {
+            if (index >= 0) {
+              setSheetIndex(index);
+            }
+          }}
           animationConfigs={animationConfigs}
           overDragResistanceFactor={3}
           enableOverDrag={false}
