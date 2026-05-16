@@ -1,4 +1,5 @@
 import ActivityCard from "@/components/ActivityCard";
+import TipsSection from "@/components/TipsSection";
 import { Ionicons } from "@expo/vector-icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
@@ -254,6 +255,8 @@ const Home = () => {
 
             <ActivityCard />
           </View>
+
+          <TipsSection />
         </ScrollView>
       </LinearGradient>
     </SafeAreaView>
