@@ -1,4 +1,5 @@
 import HistoryCard from "@/components/HistoryCard";
+import { Ionicons } from "@expo/vector-icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { Image } from "expo-image";
@@ -240,17 +241,15 @@ const Home = () => {
 
           {/* history */}
           <View className="flex-row justify-between mb-4 mt-8">
-            <Text className="font-sf-pro-medium text-base">History</Text>
+            <Text className="font-sf-pro-semibold text-lg">History</Text>
 
-            <Text className="font-sf-pro-medium text-base text-blue-600">
-              View All
-            </Text>
+            <TouchableOpacity>
+              <Ionicons name="arrow-forward" size={20} color="black" />
+            </TouchableOpacity>
           </View>
 
           {/* history cards container */}
           <View>
-            <HistoryCard />
-
             <HistoryCard />
 
             <HistoryCard />
