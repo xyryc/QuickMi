@@ -6,7 +6,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 type VehicleType = "car" | "bike" | "van";
 type TripStatus = "Completed" | "Cancelled" | "In Progress";
 
-interface HistoryCardProps {
+interface ActivityCardProps {
   onPress?: () => void;
   vehicleType?: VehicleType;
   dateTime?: string;
@@ -22,7 +22,7 @@ const vehicleIconMap = {
   van: require("@/assets/images/van.svg"),
 };
 
-const HistoryCard = ({
+const ActivityCard = ({
   onPress,
   vehicleType = "bike",
   dateTime = "14 May 2025, 04:40 PM",
@@ -30,7 +30,7 @@ const HistoryCard = ({
   pickup = "Block B, Banasree, Dhaka",
   dropoff = "Green Road, Dhanmondi, Dhaka",
   status = "Completed",
-}: HistoryCardProps) => {
+}: ActivityCardProps) => {
   const isCompleted = status === "Completed";
 
   return (
@@ -86,18 +86,14 @@ const HistoryCard = ({
       </View>
 
       <View className="mt-3">
-        <View className="flex-row">
-          <View className="items-center mr-2 mt-0.5">
-            <View className="w-2.5 h-2.5 rounded-full bg-[#0F73F7]" />
-            <View className="w-[1px] h-5 bg-[#CFE0F7] my-1" />
-            <MaterialCommunityIcons
-              name="map-marker"
-              size={13}
-              color="#111827"
-            />
-          </View>
-          <View className="flex-1 gap-2">
-            <View>
+        <View className="relative">
+          <View className="absolute left-[5px] top-[16px] h-[24px] w-[1px] bg-[#CFE0F7]" />
+
+          <View className="flex-row items-start">
+            <View className="w-4 items-center pt-1">
+              <View className="w-2.5 h-2.5 rounded-full bg-[#0F73F7]" />
+            </View>
+            <View className="flex-1 ml-2">
               <Text className="text-[11px] font-sf-pro-medium text-[#6D7A8B]">
                 Pickup
               </Text>
@@ -108,7 +104,17 @@ const HistoryCard = ({
                 {pickup}
               </Text>
             </View>
-            <View>
+          </View>
+
+          <View className="flex-row items-start mt-2">
+            <View className="w-4 items-center pt-0.5">
+              <MaterialCommunityIcons
+                name="map-marker"
+                size={13}
+                color="#111827"
+              />
+            </View>
+            <View className="flex-1 ml-2">
               <Text className="text-[11px] font-sf-pro-medium text-[#6D7A8B]">
                 Dropoff
               </Text>
@@ -126,4 +132,4 @@ const HistoryCard = ({
   );
 };
 
-export default HistoryCard;
+export default ActivityCard;

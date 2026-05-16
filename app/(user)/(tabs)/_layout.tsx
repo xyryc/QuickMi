@@ -55,9 +55,9 @@ export default function UserTabsLayout() {
       />
 
       <Tabs.Screen
-        name="history"
+        name="activity"
         options={{
-          title: "History",
+          title: "Activity",
           tabBarIcon: ({ focused }) => (
             <View className="relative">
               <AntDesign

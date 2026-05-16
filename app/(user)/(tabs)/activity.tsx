@@ -1,4 +1,4 @@
-import HistoryCard from "@/components/HistoryCard";
+import ActivityCard from "@/components/ActivityCard";
 import ScreenHeader from "@/components/ScreenHeader";
 import SearchBar from "@/components/Searchbar";
 import TabFilter from "@/components/TabFilter";
@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import { ScrollView, StatusBar, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const History = () => {
+const Activity = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("completed");
@@ -19,6 +19,12 @@ const History = () => {
     { id: "ongoing", label: "Ongoing", icon: "bicycle" },
     { id: "cancelled", label: "Cancelled", icon: "ban-outline" },
   ];
+  const cardStatus =
+    activeTab === "ongoing"
+      ? "In Progress"
+      : activeTab === "cancelled"
+        ? "Cancelled"
+        : "Completed";
 
   const handleNavigation = (parcelId: string) => {
     if (activeTab === "completed") {
@@ -40,7 +46,7 @@ const History = () => {
         style={{ flex: 1 }}
       >
         {/* header */}
-        <ScreenHeader title="Parcel History" />
+        <ScreenHeader title="Activity" />
 
         {/* searchbar */}
         <SearchBar
@@ -59,21 +65,36 @@ const History = () => {
           />
         </View>
 
-        {/* history cards */}
+        {/* activity cards */}
         <ScrollView className="mx-5" showsVerticalScrollIndicator={false}>
-          <HistoryCard onPress={() => handleNavigation(parcelId)} />
+          <ActivityCard
+            status={cardStatus}
+            onPress={() => handleNavigation(parcelId)}
+          />
 
-          <HistoryCard onPress={() => handleNavigation(parcelId)} />
+          <ActivityCard
+            status={cardStatus}
+            onPress={() => handleNavigation(parcelId)}
+          />
 
-          <HistoryCard onPress={() => handleNavigation(parcelId)} />
+          <ActivityCard
+            status={cardStatus}
+            onPress={() => handleNavigation(parcelId)}
+          />
 
-          <HistoryCard onPress={() => handleNavigation(parcelId)} />
+          <ActivityCard
+            status={cardStatus}
+            onPress={() => handleNavigation(parcelId)}
+          />
 
-          <HistoryCard onPress={() => handleNavigation(parcelId)} />
+          <ActivityCard
+            status={cardStatus}
+            onPress={() => handleNavigation(parcelId)}
+          />
         </ScrollView>
       </LinearGradient>
     </SafeAreaView>
   );
 };
 
-export default History;
+export default Activity;

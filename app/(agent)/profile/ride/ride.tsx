@@ -1,4 +1,4 @@
-import HistoryCard from "@/components/HistoryCard";
+import ActivityCard from "@/components/ActivityCard";
 import ScreenHeader from "@/components/ScreenHeader";
 import SearchBar from "@/components/Searchbar";
 import TabFilter from "@/components/TabFilter";
@@ -61,15 +61,15 @@ const Ride = () => {
 
         {/* history cards */}
         <ScrollView className="mx-5" showsVerticalScrollIndicator={false}>
-          <HistoryCard onPress={() => handleNavigation(parcelId)} />
+          <ActivityCard onPress={() => handleNavigation(parcelId)} />
 
-          <HistoryCard onPress={() => handleNavigation(parcelId)} />
+          <ActivityCard onPress={() => handleNavigation(parcelId)} />
 
-          <HistoryCard onPress={() => handleNavigation(parcelId)} />
+          <ActivityCard onPress={() => handleNavigation(parcelId)} />
 
-          <HistoryCard onPress={() => handleNavigation(parcelId)} />
+          <ActivityCard onPress={() => handleNavigation(parcelId)} />
 
-          <HistoryCard onPress={() => handleNavigation(parcelId)} />
+          <ActivityCard onPress={() => handleNavigation(parcelId)} />
         </ScrollView>
       </LinearGradient>
     </SafeAreaView>

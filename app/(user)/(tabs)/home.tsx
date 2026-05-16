@@ -1,4 +1,4 @@
-import HistoryCard from "@/components/HistoryCard";
+import ActivityCard from "@/components/ActivityCard";
 import { Ionicons } from "@expo/vector-icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
@@ -250,9 +250,9 @@ const Home = () => {
 
           {/* history cards container */}
           <View>
-            <HistoryCard />
+            <ActivityCard />
 
-            <HistoryCard />
+            <ActivityCard />
           </View>
         </ScrollView>
       </LinearGradient>
