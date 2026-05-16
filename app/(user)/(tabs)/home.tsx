@@ -111,147 +111,132 @@ const Home = () => {
             paddingBottom: 120,
           }}
         >
-          {/* send item */}
-          <TouchableOpacity
-            onPress={() => router.push("/(user)/send-item/route-details")}
-            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3"
-            style={serviceCardShadowStyle}
-          >
-            <View className="flex-row items-center gap-3">
-              <View className="p-3 border border-[#0F73F724] rounded-full">
-                <Image
-                  source={require("@/assets/images/instant_delivery.svg")}
-                  style={{
-                    width: 36,
-                    height: 36,
-                  }}
-                  contentFit="contain"
-                />
+          {/* service cards */}
+          <View className="flex-row flex-wrap justify-between">
+            {/* send item */}
+            <TouchableOpacity
+              onPress={() => router.push("/(user)/send-item/route-details")}
+              className="w-[48.5%] bg-white rounded-2xl p-4 mb-3"
+              style={serviceCardShadowStyle}
+            >
+              <View className="flex-row items-start justify-between">
+                <View className="w-20 h-20 items-center justify-center">
+                  <Image
+                    source={require("@/assets/images/send_item.png")}
+                    style={{ width: 76, height: 76 }}
+                    contentFit="contain"
+                  />
+                </View>
+                <View className="w-7 h-7 rounded-full bg-[#F5F8FF] items-center justify-center">
+                  <MaterialIcons
+                    name="keyboard-arrow-right"
+                    size={18}
+                    color="#031731"
+                  />
+                </View>
               </View>
+              <Text className="mt-5 font-sf-pro-medium text-[15px] text-custom-blue-900">
+                Send Item
+              </Text>
+              <Text className="mt-1 font-sf-pro-medium text-[11px] text-gray-500">
+                Fast same-day drop
+              </Text>
+            </TouchableOpacity>
 
-              <View>
-                <Text className="font-sf-pro-medium text-base text-custom-blue-900 mb-1">
-                  Send Item
-                </Text>
-                <Text className="font-sf-pro-medium text-xs text-gray-400">
-                  Immediate Pickup, Fast Delivery
-                </Text>
+            {/* receive item */}
+            <TouchableOpacity
+              onPress={() => router.push("/(user)/receive-item/route-details")}
+              className="w-[48.5%] bg-white rounded-2xl p-4 mb-3"
+              style={serviceCardShadowStyle}
+            >
+              <View className="flex-row items-start justify-between">
+                <View className="w-20 h-20 items-center justify-center">
+                  <Image
+                    source={require("@/assets/images/receive_item.png")}
+                    style={{ width: 76, height: 76 }}
+                    contentFit="contain"
+                  />
+                </View>
+                <View className="w-7 h-7 rounded-full bg-[#F5F8FF] items-center justify-center">
+                  <MaterialIcons
+                    name="keyboard-arrow-right"
+                    size={18}
+                    color="#031731"
+                  />
+                </View>
               </View>
-            </View>
+              <Text className="mt-5 font-sf-pro-medium text-[15px] text-custom-blue-900">
+                Receive Item
+              </Text>
+              <Text className="mt-1 font-sf-pro-medium text-[11px] text-gray-500">
+                Pickup from seller
+              </Text>
+            </TouchableOpacity>
 
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={24}
-              color="black"
-            />
-          </TouchableOpacity>
-
-          {/* receive item */}
-          <TouchableOpacity
-            onPress={() => router.push("/(user)/receive-item/route-details")}
-            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3"
-            style={serviceCardShadowStyle}
-          >
-            <View className="flex-row items-center gap-3">
-              <View className="p-3 border border-[#0F73F724] rounded-full">
-                <Image
-                  source={require("@/assets/images/instant_delivery.svg")}
-                  style={{
-                    width: 36,
-                    height: 36,
-                  }}
-                  contentFit="contain"
-                />
+            {/* receive parcel */}
+            <TouchableOpacity
+              onPress={() =>
+                router.push("/(user)/receive-parcel/route-details")
+              }
+              className="w-[48.5%] bg-white rounded-2xl p-4 mb-3"
+              style={serviceCardShadowStyle}
+            >
+              <View className="flex-row items-start justify-between">
+                <View className="w-20 h-20 items-center justify-center">
+                  <Image
+                    source={require("@/assets/images/receive_parcel.png")}
+                    style={{ width: 76, height: 76 }}
+                    contentFit="contain"
+                  />
+                </View>
+                <View className="w-7 h-7 rounded-full bg-[#F5F8FF] items-center justify-center">
+                  <MaterialIcons
+                    name="keyboard-arrow-right"
+                    size={18}
+                    color="#031731"
+                  />
+                </View>
               </View>
+              <Text className="mt-5 font-sf-pro-medium text-[15px] text-custom-blue-900">
+                Receive Parcel
+              </Text>
+              <Text className="mt-1 font-sf-pro-medium text-[11px] text-gray-500">
+                Collect package quick
+              </Text>
+            </TouchableOpacity>
 
-              <View>
-                <Text className="font-sf-pro-medium text-base text-custom-blue-900 mb-1">
-                  Receive Item
-                </Text>
-                <Text className="font-sf-pro-medium text-xs text-gray-400">
-                  Immediate Pickup, Fast Delivery
-                </Text>
+            {/* schedule delivery */}
+            <TouchableOpacity
+              onPress={() =>
+                router.push("/(user)/schedule-delivery/route-details")
+              }
+              className="w-[48.5%] bg-white rounded-2xl p-4 mb-3"
+              style={serviceCardShadowStyle}
+            >
+              <View className="flex-row items-start justify-between">
+                <View className="w-20 h-20 items-center justify-center">
+                  <Image
+                    source={require("@/assets/images/schedule_delivery.png")}
+                    style={{ width: 76, height: 76 }}
+                    contentFit="contain"
+                  />
+                </View>
+                <View className="w-7 h-7 rounded-full bg-[#F5F8FF] items-center justify-center">
+                  <MaterialIcons
+                    name="keyboard-arrow-right"
+                    size={18}
+                    color="#031731"
+                  />
+                </View>
               </View>
-            </View>
-
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={24}
-              color="black"
-            />
-          </TouchableOpacity>
-
-          {/* receive parcel */}
-          <TouchableOpacity
-            onPress={() => router.push("/(user)/receive-parcel/route-details")}
-            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl mb-3"
-            style={serviceCardShadowStyle}
-          >
-            <View className="flex-row items-center gap-3">
-              <View className="p-3 border border-[#0F73F724] rounded-full">
-                <Image
-                  source={require("@/assets/images/instant_delivery.svg")}
-                  style={{
-                    width: 36,
-                    height: 36,
-                  }}
-                  contentFit="contain"
-                />
-              </View>
-
-              <View>
-                <Text className="font-sf-pro-medium text-base text-custom-blue-900 mb-1">
-                  Receive Parcel
-                </Text>
-                <Text className="font-sf-pro-medium text-xs text-gray-400">
-                  Immediate Pickup, Fast Delivery
-                </Text>
-              </View>
-            </View>
-
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={24}
-              color="black"
-            />
-          </TouchableOpacity>
-
-          {/* schedule delivery */}
-          <TouchableOpacity
-            onPress={() =>
-              router.push("/(user)/schedule-delivery/route-details")
-            }
-            className="py-3 px-4 bg-white flex-row items-center justify-between gap-3 rounded-xl"
-            style={serviceCardShadowStyle}
-          >
-            <View className="flex-row items-center gap-3">
-              <View className="p-3 border border-[#0F73F724] rounded-full">
-                <Image
-                  source={require("@/assets/images/schedule_delivery.svg")}
-                  style={{
-                    width: 36,
-                    height: 36,
-                  }}
-                  contentFit="contain"
-                />
-              </View>
-
-              <View>
-                <Text className="font-sf-pro-medium text-base text-custom-blue-900 mb-1">
-                  Schedule Delivery
-                </Text>
-                <Text className="font-sf-pro-medium text-xs text-gray-400">
-                  Plan Ahead, Get On-Time Delivery
-                </Text>
-              </View>
-            </View>
-
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={24}
-              color="black"
-            />
-          </TouchableOpacity>
+              <Text className="mt-5 font-sf-pro-medium text-[15px] text-custom-blue-900">
+                Schedule
+              </Text>
+              <Text className="mt-1 font-sf-pro-medium text-[11px] text-gray-500">
+                Pick time, deliver later
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           {/* history */}
           <View className="flex-row justify-between mb-4 mt-8">
