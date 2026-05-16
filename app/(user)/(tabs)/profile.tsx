@@ -11,13 +11,16 @@ import {
 } from "@gorhom/bottom-sheet";
 
 import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   ScrollView,
   StatusBar,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -35,6 +38,9 @@ import { useUserRole } from "@/utils/useUserRole";
 const Profile = () => {
   const { role, loading } = useUserRole();
   const insets = useSafeAreaInsets();
+  const [profilePhotoUri, setProfilePhotoUri] = useState(
+    "https://randomuser.me/api/portraits/men/10.jpg",
+  );
 
   // Logout Confirmation Modal
   const logoutConfirmRef = useRef<BottomSheetModal>(null);
@@ -44,6 +50,118 @@ const Profile = () => {
   const handleLogoutPress = useCallback(() => {
     logoutConfirmRef.current?.present();
   }, []);
+
+  const handleChangePhoto = useCallback(async () => {
+    try {
+      const permission =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          "Permission Required",
+          "Allow photo access to update profile picture.",
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.9,
+      });
+
+      if (!result.canceled && result.assets?.[0]?.uri) {
+        setProfilePhotoUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      Alert.alert("Photo Error", "Could not update profile photo.");
+    }
+  }, []);
+
+  const quickActions = [
+    {
+      id: "inbox",
+      title: "Inbox",
+      subtitle: "Messages and updates",
+      icon: (
+        <Ionicons name="chatbox-ellipses-outline" size={18} color="#0F73F7" />
+      ),
+      onPress: () => router.push("/(shared)/profile/inbox"),
+    },
+    {
+      id: "payments",
+      title: "Payments & Offers",
+      subtitle: "Cards, promos, vouchers",
+      icon: (
+        <MaterialCommunityIcons
+          name="ticket-percent-outline"
+          size={18}
+          color="#0F73F7"
+        />
+      ),
+      onPress: () => router.push("/(user)/profile/payment/payments"),
+    },
+  ];
+
+  const accountItems = [
+    {
+      id: "personal",
+      label: "Personal Information",
+      icon: (
+        <MaterialCommunityIcons
+          name="account-edit-outline"
+          size={18}
+          color="#4D4D4D"
+        />
+      ),
+      onPress: () => router.push("/profile/personal-info"),
+    },
+  ];
+
+  const savedPlaceItems = [
+    {
+      id: "home",
+      label: "Home location",
+      sub: "Enter home location",
+      icon: <Feather name="home" size={18} color="#4D4D4D" />,
+      onPress: () => router.push("/(user)/profile/home-location"),
+    },
+    {
+      id: "work",
+      label: "Work location",
+      sub: "Enter work location",
+      icon: <Feather name="briefcase" size={18} color="#4D4D4D" />,
+      onPress: () => router.push("/profile/work-location"),
+    },
+    {
+      id: "add-place",
+      label: "Add place",
+      sub: "Save frequent destination",
+      icon: <SimpleLineIcons name="location-pin" size={18} color="#4D4D4D" />,
+      onPress: () => router.push("/profile/add-place"),
+    },
+  ];
+
+  const settingsItems = [
+    {
+      id: "permission",
+      label: "Permission",
+      icon: (
+        <MaterialCommunityIcons
+          name="shield-check-outline"
+          size={18}
+          color="#4D4D4D"
+        />
+      ),
+      onPress: () => router.push("/profile/permission"),
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: <Ionicons name="settings-outline" size={18} color="#4D4D4D" />,
+      onPress: () => router.push("/(shared)/settings/settings"),
+    },
+  ];
 
   if (loading || !role) {
     return <ActivityIndicator size="small" color="#0F73F7" />;
@@ -67,174 +185,156 @@ const Profile = () => {
               }}
               showsVerticalScrollIndicator={false}
             >
-              {/* Personal info */}
-              <View className="mt-8 bg-white rounded-xl p-3.5 border-spacing-0.5 border-[#E3E6F0] shadow-md">
-                <View className="flex items-center relative">
+              {/* Hero */}
+              <View className="mt-7 bg-white rounded-3xl p-4 border border-[#E6EBF5]">
+                <View className="self-center">
                   <Image
                     source={{
-                      uri: "https://randomuser.me/api/portraits/men/10.jpg",
+                      uri: profilePhotoUri,
                     }}
-                    style={{ height: 100, width: 100, borderRadius: 100 }}
+                    style={{ height: 74, width: 74, borderRadius: 999 }}
                     contentFit="cover"
                   />
-                  <Ionicons
-                    className="absolute left-52 bottom-3 bg-[#0F73F7] p-1 border border-white rounded-full"
-                    name="camera-outline"
-                    size={16}
-                    color="white"
-                  />
                 </View>
 
-                {/* Profile name */}
-                <Text className="text-center mt-3.5 font-sf-pro-medium text-xl text-black">
+                <Text className="mt-3 text-center font-sf-pro-semibold text-[22px] text-[#031731]">
                   Darlene Robertson
                 </Text>
+                <Text className="mt-1 text-center font-sf-pro-medium text-[13px] text-[#6D7A8B]">
+                  +234 801 234 5678
+                </Text>
+              </View>
 
-                {/* Buttons */}
-                <View className="flex-row gap-2 mt-4">
-                  <View className="flex-1">
-                    <ButtonSecondary
-                      onPress={() => router.push("/(shared)/profile/inbox")}
-                      iconPosition="left"
-                      className="w-full !border !border-[#E3E6F0]"
-                      title="Inbox"
-                      icon={
-                        <Ionicons
-                          name="chatbox-ellipses-outline"
-                          size={20}
-                          color="#0F73F7"
-                        />
-                      }
-                    />
-                  </View>
+              {/* Quick actions */}
+              <View className="mt-3.5 flex-row gap-2">
+                {quickActions.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={item.onPress}
+                    className="flex-1 bg-white rounded-2xl p-3.5 border border-[#E6EBF5]"
+                  >
+                    <View className="w-8 h-8 rounded-full bg-[#EEF5FF] items-center justify-center">
+                      {item.icon}
+                    </View>
+                    <Text className="mt-2.5 text-[#031731] text-sm font-sf-pro-semibold">
+                      {item.title}
+                    </Text>
+                    <Text className="mt-1 text-[#6D7A8B] text-[11px] font-sf-pro-medium">
+                      {item.subtitle}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
 
-                  <View className="flex-1">
-                    <ButtonSecondary
-                      onPress={() =>
-                        router.push("/(user)/profile/payment/payments")
-                      }
-                      iconPosition="left"
-                      className="w-full !border !border-[#E3E6F0]"
-                      title="Payments & Offers"
-                      icon={
-                        <MaterialCommunityIcons
-                          name="ticket-percent-outline"
-                          size={20}
-                          color="#0F73F7"
-                        />
-                      }
+              <ButtonPrimary
+                onPress={() => router.replace("/(agent)/home")}
+                title="Switch to Agent Mode"
+                className="mt-3.5"
+                icon={<Ionicons name="car-outline" size={20} color="white" />}
+                iconPosition="left"
+              />
+
+              {/* Section card helper */}
+              <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
+                <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
+                  Account
+                </Text>
+                {accountItems.map((item, index) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={item.onPress}
+                    className="px-4 py-3.5 flex-row items-center"
+                  >
+                    <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
+                      {item.icon}
+                    </View>
+                    <Text className="ml-3 flex-1 text-sm text-[#334155] font-sf-pro-medium">
+                      {item.label}
+                    </Text>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={16}
+                      color="#94A3B8"
                     />
-                  </View>
+                    {index !== accountItems.length - 1 ? (
+                      <View style={styles.rowDivider} />
+                    ) : null}
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
+                <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
+                  Saved Places
+                </Text>
+                {savedPlaceItems.map((item, index) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={item.onPress}
+                    className="px-4 py-3.5 flex-row items-center"
+                  >
+                    <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
+                      {item.icon}
+                    </View>
+                    <View className="ml-3 flex-1">
+                      <Text className="text-sm text-[#334155] font-sf-pro-medium">
+                        {item.label}
+                      </Text>
+                      <Text className="mt-0.5 text-xs text-[#94A3B8] font-sf-pro-medium">
+                        {item.sub}
+                      </Text>
+                    </View>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={16}
+                      color="#94A3B8"
+                    />
+                    {index !== savedPlaceItems.length - 1 ? (
+                      <View style={styles.rowDivider} />
+                    ) : null}
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
+                <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
+                  Preferences
+                </Text>
+                {settingsItems.map((item, index) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={item.onPress}
+                    className="px-4 py-3.5 flex-row items-center"
+                  >
+                    <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
+                      {item.icon}
+                    </View>
+                    <Text className="ml-3 flex-1 text-sm text-[#334155] font-sf-pro-medium">
+                      {item.label}
+                    </Text>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={16}
+                      color="#94A3B8"
+                    />
+                    {index !== settingsItems.length - 1 ? (
+                      <View style={styles.rowDivider} />
+                    ) : null}
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <TouchableOpacity
+                className="mt-3.5 mb-5 bg-white rounded-2xl border border-[#FAD7D7] px-4 py-4 flex-row items-center"
+                onPress={handleLogoutPress}
+              >
+                <View className="w-8 h-8 rounded-full bg-[#FFF1F1] items-center justify-center">
+                  <Ionicons name="exit-outline" size={16} color="#DC2626" />
                 </View>
-
-                <ButtonPrimary
-                  onPress={() => router.replace("/(agent)/home")}
-                  title="Switch to Agent mode"
-                  className="mt-4"
-                  icon={<Ionicons name="car-outline" size={22} color="white" />}
-                  iconPosition="left"
-                />
-
-                {/* Account Information */}
-                <Text className="mt-4 text-base font-sf-pro-medium">
-                  Account Information
+                <Text className="ml-3 text-sm text-[#DC2626] font-sf-pro-semibold">
+                  Log Out
                 </Text>
-                <TouchableOpacity
-                  onPress={() => router.push("/profile/personal-info")}
-                  className="flex-row items-center gap-2 mt-5"
-                >
-                  <MaterialCommunityIcons
-                    name="account-edit-outline"
-                    size={20}
-                    color="#4D4D4D"
-                  />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Personal Information
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Saved places */}
-              <View className="mt-3.5 bg-white rounded-xl p-3.5 border-0.5 border-[#E3E6F0] shadow-md">
-                <Text className="text-base font-sf-pro-medium mb-4">
-                  Saved place
-                </Text>
-                <TouchableOpacity
-                  onPress={() => router.push("/(user)/profile/home-location")}
-                  className="flex-row items-center gap-2"
-                >
-                  <Feather name="home" size={18} color="#4D4D4D" />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Enter home location
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => router.push("/profile/work-location")}
-                  className="flex-row items-center gap-2 my-5"
-                >
-                  <Feather name="briefcase" size={18} color="#4D4D4D" />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Enter Work location
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => router.push("/profile/add-place")}
-                  className="flex-row items-center gap-2"
-                >
-                  <SimpleLineIcons
-                    name="location-pin"
-                    size={18}
-                    color="#4D4D4D"
-                  />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Add a place
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Settings */}
-              <View className="mt-3.5 bg-white rounded-xl p-3.5 border-spacing-0.5 border-[#E3E6F0] shadow-md">
-                <Text className="text-base font-sf-pro-medium mb-4">
-                  Settings
-                </Text>
-
-                <TouchableOpacity
-                  onPress={() => router.push("/profile/permission")}
-                  className="flex-row items-center gap-2 mb-5"
-                >
-                  <MaterialCommunityIcons
-                    name="shield-check-outline"
-                    size={18}
-                    color="#4D4D4D"
-                  />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Permission
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => router.push("/(shared)/settings/settings")}
-                  className="flex-row items-center gap-2"
-                >
-                  <Ionicons name="settings-outline" size={18} color="#4D4D4D" />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Settings
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Logout */}
-              <View className="mt-3.5 mb-5 bg-[#ffffff] rounded-xl p-3.5 border-spacing-0.5 border-[#E3E6F0] shadow-md">
-                <TouchableOpacity
-                  className="flex-row items-center gap-2"
-                  onPress={handleLogoutPress}
-                >
-                  <Ionicons name="exit-outline" size={18} color="#4D4D4D" />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Log Out
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </ScrollView>
           </LinearGradient>
         </SafeAreaView>
@@ -279,3 +379,14 @@ const Profile = () => {
 };
 
 export default Profile;
+
+const styles = StyleSheet.create({
+  rowDivider: {
+    position: "absolute",
+    left: 48,
+    right: 16,
+    bottom: 0,
+    height: 1,
+    backgroundColor: "#EEF2F7",
+  },
+});
