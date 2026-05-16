@@ -1,15 +1,20 @@
 import ButtonSecondary from "@/components/ButtonSecondary";
+import DropoffCard from "@/components/DropoffCard";
 import EarningsCard from "@/components/EarningsCard";
+import PickupCard from "@/components/PickupCard";
 import TripDetailsCard from "@/components/TripDetailsCard";
 import TripOfferCard from "@/components/TripOfferCard";
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetView,
+  useBottomSheetSpringConfigs,
+} from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -27,6 +32,7 @@ type AgentStatus =
 
 const AgentHome = () => {
   const insets = useSafeAreaInsets();
+  const windowHeight = Dimensions.get("window").height;
   const mapRef = useRef<MapView>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const phaseTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -41,6 +47,8 @@ const AgentHome = () => {
   const [phaseCountdown, setPhaseCountdown] = useState<number>(5);
   const [capturingPickupPhoto, setCapturingPickupPhoto] = useState(false);
   const [capturingDropoffPhoto, setCapturingDropoffPhoto] = useState(false);
+  const [pickupDistanceKm, setPickupDistanceKm] = useState<number>(0);
+  const [dropoffDistanceKm, setDropoffDistanceKm] = useState<number>(0);
 
   // user location
   const [userLocation, setUserLocation] = useState<{
@@ -187,7 +195,8 @@ const AgentHome = () => {
   // Handle trip decline
   const handleDeclineTrip = () => {
     setCurrentTrip(null);
-    setAgentStatus("finding_trips");
+    setPhaseCountdown(5);
+    setAgentStatus("offline");
 
     // Search again after 2 seconds
     // setTimeout(() => {
@@ -198,7 +207,8 @@ const AgentHome = () => {
   // Handle trip timeout
   const handleTripTimeout = () => {
     setCurrentTrip(null);
-    setAgentStatus("finding_trips");
+    setPhaseCountdown(5);
+    setAgentStatus("offline");
   };
 
   const clearPhaseTimer = () => {
@@ -210,10 +220,12 @@ const AgentHome = () => {
 
   const startPhaseCountdown = (
     initialValue: number,
+    onTick: (remainingSeconds: number) => void,
     onComplete: () => void,
   ) => {
     clearPhaseTimer();
     setPhaseCountdown(initialValue);
+    onTick(initialValue);
 
     phaseTimerRef.current = setInterval(() => {
       setPhaseCountdown((prev) => {
@@ -222,23 +234,42 @@ const AgentHome = () => {
           onComplete();
           return 0;
         }
+        onTick(prev - 1);
         return prev - 1;
       });
     }, 1000);
   };
 
   const handleStartPickup = () => {
+    setPickupDistanceKm(4.8);
     setAgentStatus("enroute_pickup");
-    startPhaseCountdown(5, () => {
-      setAgentStatus("pickup_photo_required");
-    });
+    startPhaseCountdown(
+      5,
+      (remainingSeconds) => {
+        const nextDistance = (remainingSeconds / 5) * 4.8;
+        setPickupDistanceKm(Math.max(0.2, Number(nextDistance.toFixed(1))));
+      },
+      () => {
+        setPickupDistanceKm(0.2);
+        setAgentStatus("pickup_photo_required");
+      },
+    );
   };
 
-  const handleStartDelivery = () => {
+  const handleConfirmPickup = () => {
+    setDropoffDistanceKm(6.5);
     setAgentStatus("enroute_dropoff");
-    startPhaseCountdown(5, () => {
-      setAgentStatus("dropoff_photo_required");
-    });
+    startPhaseCountdown(
+      5,
+      (remainingSeconds) => {
+        const nextDistance = (remainingSeconds / 5) * 6.5;
+        setDropoffDistanceKm(Math.max(0.3, Number(nextDistance.toFixed(1))));
+      },
+      () => {
+        setDropoffDistanceKm(0.3);
+        setAgentStatus("dropoff_photo_required");
+      },
+    );
   };
 
   const requestCameraPermission = async () => {
@@ -304,6 +335,8 @@ const AgentHome = () => {
     setDropoffPhotoUri(null);
     setCurrentTrip(null);
     setPhaseCountdown(5);
+    setPickupDistanceKm(0);
+    setDropoffDistanceKm(0);
     setAgentStatus("offline");
   };
 
@@ -319,7 +352,8 @@ const AgentHome = () => {
           setPickupPhotoUri(null);
           setDropoffPhotoUri(null);
           setCurrentTrip(null);
-          setAgentStatus("online");
+          setPhaseCountdown(5);
+          setAgentStatus("offline");
         },
       },
     ]);
@@ -331,32 +365,17 @@ const AgentHome = () => {
     };
   }, []);
 
-  // Define snap points based on status
-  const snapPoints = useMemo(() => {
-    switch (agentStatus) {
-      case "offline":
+  // Keep a large baseline snap point and let dynamic sizing expand/shrink like delivery-booking
+  const snapPoints = useMemo(() => ["82%"], []);
 
-      case "online":
-
-      case "finding_trips":
-        return ["20%", "40%"];
-
-      case "trip_offer":
-        return ["60%", "80%"];
-
-      case "trip_accepted":
-      case "enroute_pickup":
-      case "enroute_dropoff":
-        return ["40%", "70%"];
-
-      case "pickup_photo_required":
-      case "dropoff_photo_required":
-        return ["30%", "80%"];
-
-      default:
-        return ["40%", "60%"];
-    }
-  }, [agentStatus]);
+  const animationConfigs = useBottomSheetSpringConfigs({
+    damping: 40,
+    stiffness: 420,
+    mass: 0.8,
+    overshootClamping: false,
+    restDisplacementThreshold: 0.1,
+    restSpeedThreshold: 0.1,
+  });
 
   // Render bottom sheet content based on status
   const renderBottomSheetContent = () => {
@@ -431,24 +450,22 @@ const AgentHome = () => {
       case "enroute_pickup":
         return (
           <View className="py-2">
-            {currentTrip ? (
-              <TripDetailsCard
-                estimatedTime={currentTrip.estimatedTime}
-                pickupLocation={currentTrip.fromLocation}
-                dropoffLocation={currentTrip.toLocation}
-                distance={currentTrip.distance}
-                price={currentTrip.offeredPrice || currentTrip.suggestedPrice}
-                agentStatus={agentStatus}
-                pickupPhotoUri={pickupPhotoUri}
-                dropoffPhotoUri={dropoffPhotoUri}
-              />
-            ) : null}
             <Text className="text-lg font-sf-pro-semibold text-center text-[#031731]">
               Arriving at Pickup
             </Text>
             <Text className="text-center mt-2 text-[#4D4D4D]">
-              Arriving in {phaseCountdown}s
+              {phaseCountdown}s • {pickupDistanceKm.toFixed(1)} km away
             </Text>
+
+            {currentTrip ? (
+              <PickupCard
+                address={currentTrip.fromLocation}
+                status="in_progress"
+                photoUri={pickupPhotoUri}
+                showCaptureButton
+                captureButtonDisabled
+              />
+            ) : null}
             <Text className="text-center mt-4 text-[#6B6B6B] text-sm">
               {currentTrip?.fromLocation}
             </Text>
@@ -458,39 +475,33 @@ const AgentHome = () => {
       case "pickup_photo_required":
         return (
           <View className="py-2">
-            {currentTrip ? (
-              <TripDetailsCard
-                estimatedTime={currentTrip.estimatedTime}
-                pickupLocation={currentTrip.fromLocation}
-                dropoffLocation={currentTrip.toLocation}
-                distance={currentTrip.distance}
-                price={currentTrip.offeredPrice || currentTrip.suggestedPrice}
-                agentStatus={agentStatus}
-                pickupPhotoUri={pickupPhotoUri}
-                dropoffPhotoUri={dropoffPhotoUri}
-              />
-            ) : null}
             <Text className="text-lg font-sf-pro-semibold text-center text-[#031731]">
               Pickup Arrived
             </Text>
             <Text className="text-center mt-2 text-[#4D4D4D]">
-              Capture pickup photo to continue.
+              0s • 0.2 km away
             </Text>
 
-            <ButtonSecondary
-              title={capturingPickupPhoto ? "Opening Camera..." : "Capture Pickup Photo"}
-              onPress={handleCapturePickupPhoto}
-              className="mt-4"
-            />
+            {currentTrip ? (
+              <PickupCard
+                address={currentTrip.fromLocation}
+                status="in_progress"
+                photoUri={pickupPhotoUri}
+                showCaptureButton
+                captureButtonDisabled={false}
+                captureButtonLoading={capturingPickupPhoto}
+                onCapturePhoto={handleCapturePickupPhoto}
+              />
+            ) : null}
 
             <TouchableOpacity
               disabled={!pickupPhotoUri}
-              onPress={handleStartDelivery}
+              onPress={handleConfirmPickup}
               className={`mt-3 py-3 rounded-2xl items-center ${
                 pickupPhotoUri ? "bg-[#0F73F7]" : "bg-[#BBD6FC]"
               }`}
             >
-              <Text className="text-white font-sf-pro-semibold">Start Delivery</Text>
+              <Text className="text-white font-sf-pro-semibold">Confirm Pickup</Text>
             </TouchableOpacity>
           </View>
         );
@@ -498,24 +509,29 @@ const AgentHome = () => {
       case "enroute_dropoff":
         return (
           <View className="py-2">
-            {currentTrip ? (
-              <TripDetailsCard
-                estimatedTime={currentTrip.estimatedTime}
-                pickupLocation={currentTrip.fromLocation}
-                dropoffLocation={currentTrip.toLocation}
-                distance={currentTrip.distance}
-                price={currentTrip.offeredPrice || currentTrip.suggestedPrice}
-                agentStatus={agentStatus}
-                pickupPhotoUri={pickupPhotoUri}
-                dropoffPhotoUri={dropoffPhotoUri}
-              />
-            ) : null}
             <Text className="text-lg font-sf-pro-semibold text-center text-[#031731]">
               Delivering Parcel
             </Text>
             <Text className="text-center mt-2 text-[#4D4D4D]">
-              Arriving in {phaseCountdown}s
+              {phaseCountdown}s • {dropoffDistanceKm.toFixed(1)} km away
             </Text>
+
+            {currentTrip ? (
+              <View>
+                <PickupCard
+                  address={currentTrip.fromLocation}
+                  status="completed"
+                  photoUri={pickupPhotoUri}
+                />
+                <DropoffCard
+                  address={currentTrip.toLocation}
+                  status="in_progress"
+                  photoUri={dropoffPhotoUri}
+                  showCaptureButton
+                  captureButtonDisabled
+                />
+              </View>
+            ) : null}
             <Text className="text-center mt-4 text-[#6B6B6B] text-sm">
               {currentTrip?.toLocation}
             </Text>
@@ -525,30 +541,34 @@ const AgentHome = () => {
       case "dropoff_photo_required":
         return (
           <View className="py-2">
-            {currentTrip ? (
-              <TripDetailsCard
-                estimatedTime={currentTrip.estimatedTime}
-                pickupLocation={currentTrip.fromLocation}
-                dropoffLocation={currentTrip.toLocation}
-                distance={currentTrip.distance}
-                price={currentTrip.offeredPrice || currentTrip.suggestedPrice}
-                agentStatus={agentStatus}
-                pickupPhotoUri={pickupPhotoUri}
-                dropoffPhotoUri={dropoffPhotoUri}
-              />
-            ) : null}
             <Text className="text-lg font-sf-pro-semibold text-center text-[#031731]">
               Dropoff Arrived
             </Text>
             <Text className="text-center mt-2 text-[#4D4D4D]">
-              Capture dropoff photo to complete delivery.
+              0s • 0.3 km away
             </Text>
 
-            <ButtonSecondary
-              title={capturingDropoffPhoto ? "Opening Camera..." : "Capture Dropoff Photo"}
-              onPress={handleCaptureDropoffPhoto}
-              className="mt-4"
-            />
+            {currentTrip ? (
+              <View>
+                <PickupCard
+                  address={currentTrip.fromLocation}
+                  status="completed"
+                  photoUri={pickupPhotoUri}
+                />
+                <DropoffCard
+                  address={currentTrip.toLocation}
+                  status="in_progress"
+                  photoUri={dropoffPhotoUri}
+                  showCaptureButton
+                  captureButtonDisabled={false}
+                  captureButtonLoading={capturingDropoffPhoto}
+                  onCapturePhoto={handleCaptureDropoffPhoto}
+                />
+              </View>
+            ) : null}
+            <Text className="text-center mt-2 text-[#4D4D4D]">
+              Capture dropoff photo to complete delivery.
+            </Text>
 
             <TouchableOpacity
               disabled={!dropoffPhotoUri}
@@ -667,9 +687,19 @@ const AgentHome = () => {
           ref={bottomSheetRef}
           index={0}
           snapPoints={snapPoints}
+          enableDynamicSizing
+          maxDynamicContentSize={windowHeight * 0.85}
           enablePanDownToClose={false}
+          animateOnMount
+          animationConfigs={animationConfigs}
+          overDragResistanceFactor={3}
+          enableOverDrag={false}
           backgroundStyle={{ backgroundColor: "white" }}
-          handleIndicatorStyle={{ backgroundColor: "#D1D5DB" }}
+          handleIndicatorStyle={{
+            width: 44,
+            height: 5,
+            backgroundColor: "#C7D2E5",
+          }}
         >
           <BottomSheetView
             className="flex-1 px-5"

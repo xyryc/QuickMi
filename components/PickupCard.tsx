@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 type StepStatus = "pending" | "in_progress" | "completed";
 
@@ -9,6 +9,12 @@ interface PickupCardProps {
   address: string;
   status: StepStatus;
   photoUri?: string | null;
+  etaText?: string;
+  distanceText?: string;
+  showCaptureButton?: boolean;
+  captureButtonDisabled?: boolean;
+  captureButtonLoading?: boolean;
+  onCapturePhoto?: () => void;
 }
 
 const statusConfig: Record<
@@ -40,7 +46,17 @@ const statusConfig: Record<
   },
 };
 
-const PickupCard: React.FC<PickupCardProps> = ({ address, status, photoUri }) => {
+const PickupCard: React.FC<PickupCardProps> = ({
+  address,
+  status,
+  photoUri,
+  etaText,
+  distanceText,
+  showCaptureButton,
+  captureButtonDisabled,
+  captureButtonLoading,
+  onCapturePhoto,
+}) => {
   const statusUI = statusConfig[status];
 
   return (
@@ -69,6 +85,12 @@ const PickupCard: React.FC<PickupCardProps> = ({ address, status, photoUri }) =>
         {address}
       </Text>
 
+      {(etaText || distanceText) && (
+        <Text className="mt-2 text-[#6B6B6B] font-sf-pro-regular text-xs">
+          {[etaText, distanceText].filter(Boolean).join(" • ")}
+        </Text>
+      )}
+
       {photoUri ? (
         <View className="mt-3 relative">
           <Image
@@ -84,9 +106,28 @@ const PickupCard: React.FC<PickupCardProps> = ({ address, status, photoUri }) =>
           </View>
         </View>
       ) : null}
+
+      {showCaptureButton ? (
+        <TouchableOpacity
+          disabled={captureButtonDisabled || captureButtonLoading}
+          onPress={onCapturePhoto}
+          className={`mt-4 py-3 rounded-2xl items-center ${
+            captureButtonDisabled || captureButtonLoading
+              ? "bg-[#BBD6FC]"
+              : "bg-[#0F73F7]"
+          }`}
+        >
+          <Text className="text-white font-sf-pro-semibold">
+            {captureButtonLoading
+              ? "Opening Camera..."
+              : captureButtonDisabled
+                ? "Capture Pickup Photo"
+                : "Capture Pickup Photo"}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 };
 
 export default PickupCard;
-
