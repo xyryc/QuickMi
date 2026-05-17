@@ -7,12 +7,14 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetScrollView,
+  BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -25,17 +27,39 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Wallet = () => {
+  const [fundingAmount, setFundingAmount] = useState("");
   // ✅ Modal refs
   const confirmModalRef = useRef<BottomSheetModal>(null);
   const successModalRef = useRef<BottomSheetModal>(null);
+  const depositModalRef = useRef<BottomSheetModal>(null);
 
   // ✅ Snap points
   const confirmSnapPoints = ["35%"];
   const successSnapPoints = ["55%"];
+  const depositSnapPoints = ["42%", "68%"];
 
   // ✅ Handle Withdraw - opens confirm modal
   const handleWithdraw = () => {
     confirmModalRef.current?.present();
+  };
+
+  // ✅ Deposit -> open payment options flow
+  const handleDeposit = () => {
+    depositModalRef.current?.present();
+  };
+
+  const handleDepositContinue = () => {
+    const amount = Number(fundingAmount.replace(/,/g, "").trim());
+    if (!amount || amount <= 0) {
+      Alert.alert("Invalid Amount", "Please enter a valid deposit amount.");
+      return;
+    }
+
+    depositModalRef.current?.dismiss();
+    router.push({
+      pathname: "/(user)/profile/wallet/payment-options",
+      params: { amount: String(amount) },
+    });
   };
 
   // ✅ Confirm "No" - close confirm modal
@@ -79,7 +103,10 @@ const Wallet = () => {
                 contentContainerStyle={{ paddingBottom: 120 }}
               >
                 {/* wallet card */}
-                <WalletCard handleWithdraw={handleWithdraw} />
+                <WalletCard
+                  handleWithdraw={handleWithdraw}
+                  handleDeposit={handleDeposit}
+                />
 
                 {/* Payment method */}
                 <Text className="font-sf-pro-medium mt-4 text-base text-black">
@@ -161,6 +188,61 @@ const Wallet = () => {
               </ScrollView>
             </KeyboardAvoidingView>
           </LinearGradient>
+
+          {/*  CONFIRM Deposit MODAL */}
+          <BottomSheetModal
+            ref={depositModalRef}
+            index={0}
+            snapPoints={depositSnapPoints}
+            enablePanDownToClose={true}
+            keyboardBehavior="extend"
+            keyboardBlurBehavior="restore"
+            android_keyboardInputMode="adjustResize"
+            backdropComponent={({ style }) => (
+              <View
+                style={[style, { backgroundColor: "rgba(0, 0, 0, 0.5)" }]}
+              />
+            )}
+          >
+            <BottomSheetScrollView
+              contentContainerStyle={{ paddingBottom: 40 }}
+              showsVerticalScrollIndicator={false}
+            >
+              <View className="px-6">
+                <Text className="text-lg font-sf-pro-semibold text-center mt-2.5 text-[#031731]">
+                  Deposit
+                </Text>
+                <Text className="text-center mt-2 text-[#031731] font-sf-pro-regular text-sm">
+                  Enter deposit amount
+                </Text>
+
+                <View className="mt-5 border border-[#E3E6F0] rounded-xl px-4 py-1">
+                  <Text className="font-sf-pro-regular text-xs text-gray-500 mt-2">
+                    Amount
+                  </Text>
+                  <View className="flex-row items-center">
+                    <Text className="font-sf-pro-medium text-base text-[#031731] mr-2">
+                      ₦
+                    </Text>
+                    <BottomSheetTextInput
+                      value={fundingAmount}
+                      onChangeText={setFundingAmount}
+                      keyboardType="number-pad"
+                      placeholder="e.g. 5000"
+                      placeholderTextColor="#A2A2A2"
+                      className="flex-1 font-sf-pro-medium text-base text-[#031731] py-3"
+                    />
+                  </View>
+                </View>
+
+                <ButtonPrimary
+                  title="Continue"
+                  className="mt-5"
+                  onPress={handleDepositContinue}
+                />
+              </View>
+            </BottomSheetScrollView>
+          </BottomSheetModal>
 
           {/*  CONFIRM withdeow MODAL */}
           <BottomSheetModal

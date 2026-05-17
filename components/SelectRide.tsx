@@ -40,7 +40,7 @@ const SelectRide = ({ vehicles, selectedVehicle, onVehicleSelect, onNext }) => {
         </TouchableOpacity>
 
         <ButtonPrimary
-          title="Choose Car"
+          title="Confirm"
           onPress={onNext}
           disabled={!selectedVehicle}
         />
