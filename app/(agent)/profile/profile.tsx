@@ -2,17 +2,12 @@ import ButtonPrimary from "@/components/ButtonPrimary";
 import ButtonSecondary from "@/components/ButtonSecondary";
 import {
   AntDesign,
-  Entypo,
   Feather,
   Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -20,6 +15,7 @@ import React, { useCallback, useMemo, useRef } from "react";
 import {
   ScrollView,
   StatusBar,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -32,19 +28,13 @@ import {
 
 const Profile = () => {
   const insets = useSafeAreaInsets();
-  // Logout Confirmation Modal
   const logoutConfirmRef = useRef<BottomSheetModal>(null);
-  // Logout Success Modal
-
   const confirmSnapPoints = useMemo(() => ["40%"], []);
 
-  // Open logout confirmation
   const handleLogoutPress = useCallback(() => {
-    console.log("Opening logout confirmation modal...");
     logoutConfirmRef.current?.present();
   }, []);
 
-  // Confirm logout
   const handleConfirmLogout = useCallback(() => {
     logoutConfirmRef.current?.dismiss();
     setTimeout(() => {
@@ -52,221 +42,235 @@ const Profile = () => {
     }, 300);
   }, []);
 
-  // Cancel logout
   const handleCancelLogout = useCallback(() => {
     logoutConfirmRef.current?.dismiss();
   }, []);
 
+  const quickActions = [
+    {
+      id: "inbox",
+      title: "Inbox",
+      subtitle: "Messages and updates",
+      icon: (
+        <Ionicons name="chatbox-ellipses-outline" size={18} color="#0F73F7" />
+      ),
+      onPress: () => router.push("/(shared)/profile/inbox"),
+    },
+    {
+      id: "wallet",
+      title: "Wallet",
+      subtitle: "Balance and payouts",
+      icon: <Ionicons name="wallet-outline" size={18} color="#0F73F7" />,
+      onPress: () => router.push("/(agent)/profile/wallet/wallet"),
+    },
+  ];
+
+  const accountItems = [
+    {
+      id: "personal",
+      label: "Personal Information",
+      icon: (
+        <MaterialCommunityIcons
+          name="account-edit-outline"
+          size={18}
+          color="#4D4D4D"
+        />
+      ),
+      onPress: () => router.push("/(agent)/profile/personal-info"),
+    },
+    {
+      id: "rides",
+      label: "My Ride",
+      icon: <Ionicons name="car-outline" size={18} color="#4D4D4D" />,
+      onPress: () => router.push("/(agent)/profile/ride/ride"),
+    },
+    {
+      id: "notifications",
+      label: "Notifications",
+      icon: (
+        <Ionicons name="notifications-outline" size={18} color="#4D4D4D" />
+      ),
+      onPress: () => router.push("/(shared)/notification"),
+    },
+  ];
+
+  const settingsItems = [
+    {
+      id: "permission",
+      label: "Permission",
+      icon: (
+        <MaterialCommunityIcons
+          name="shield-check-outline"
+          size={18}
+          color="#4D4D4D"
+        />
+      ),
+      onPress: () => router.push("/(shared)/profile/permission"),
+    },
+    {
+      id: "support",
+      label: "Support Requests",
+      icon: <MaterialIcons name="support-agent" size={18} color="#4D4D4D" />,
+      onPress: () => router.push("/(shared)/settings/support-requests"),
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: <Ionicons name="settings-outline" size={18} color="#4D4D4D" />,
+      onPress: () => router.push("/(shared)/settings/settings"),
+    },
+  ];
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <SafeAreaView className="flex-1" edges={["left", "right", "bottom"]}>
-          <StatusBar backgroundColor="#D3E6FF" barStyle="dark-content" />
+      <SafeAreaView className="flex-1" edges={["left", "right", "bottom"]}>
+        <StatusBar backgroundColor="#D3E6FF" barStyle="dark-content" />
 
-          <LinearGradient
-            colors={["#D3E6FF", "#FFFFFF"]}
-            locations={[0.3, 1]}
-            style={{ flex: 1, paddingTop: insets.top }}
+        <LinearGradient
+          colors={["#D3E6FF", "#FFFFFF"]}
+          locations={[0.3, 1]}
+          style={{ flex: 1, paddingTop: insets.top }}
+        >
+          <ScrollView
+            className="mx-5"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 120 }}
           >
-            {/* history cards */}
-            <ScrollView className="mx-5" showsVerticalScrollIndicator={false}>
-              {/* account */}
-              <View className="rounded-xl pt-4 border-spacing-0.5 border-[#E3E6F0] flex-row justify-between">
-                <Text className="font-sf-pro-medium text-3xl">Account</Text>
+            <View className="mt-3 flex-row justify-between items-center">
+              <Text className="font-sf-pro-semibold text-[30px] text-[#031731]">
+                Account
+              </Text>
+              <TouchableOpacity onPress={() => router.back()}>
+                <AntDesign
+                  name="close"
+                  size={16}
+                  color="black"
+                  className="bg-white p-2 rounded-full"
+                />
+              </TouchableOpacity>
+            </View>
 
-                <TouchableOpacity onPress={() => router.back()}>
-                  <AntDesign
-                    name="close"
-                    size={16}
-                    color="black"
-                    className="bg-white p-2 rounded-full"
-                  />
-                </TouchableOpacity>
+            <View className="mt-4 bg-white rounded-3xl p-4 border border-[#E6EBF5]">
+              <View className="self-center">
+                <Image
+                  source={{
+                    uri: "https://randomuser.me/api/portraits/men/10.jpg",
+                  }}
+                  style={{ height: 74, width: 74, borderRadius: 999 }}
+                  contentFit="cover"
+                />
               </View>
 
-              {/* Personal info */}
-              <View className="mt-4 bg-white rounded-xl p-3.5 border-spacing-0.5 border-[#E3E6F0]">
-                {/* profile image */}
-                <View className="flex-row gap-3 items-center px-3 py-2 bg-white shadow-2xl android:elevation-4 border-[0.5px] border-[#E3E6F0] elevation-lg rounded-lg">
-                  <Image
-                    source={{
-                      uri: "https://randomuser.me/api/portraits/men/10.jpg",
-                    }}
-                    style={{
-                      height: 55,
-                      width: 55,
-                      borderRadius: 100,
-                    }}
-                    contentFit="cover"
-                  />
+              <Text className="mt-3 text-center font-sf-pro-semibold text-[22px] text-[#031731]">
+                John Doe
+              </Text>
 
-                  {/* details */}
-                  <View>
-                    <Text className="font-sf-pro-medium text-sm text-[#031731]">
-                      John Doe
-                    </Text>
-                    <View className="flex-row items-center gap-2">
-                      <AntDesign name="star" size={14} color="#FFD700" />
-                      <Text className="font-sf-pro-medium text-xs text-[#1F1D1D]">
-                        3.35
-                      </Text>
-                      <Text>|</Text>
-                      <Text className="font-sf-pro-regular text-xs text-[#4D4D4D]">
-                        150 Delivery
-                      </Text>
-                    </View>
-                    <TouchableOpacity
-                      onPress={() =>
-                        router.push("/(agent)/profile/personal-info")
-                      }
-                    >
-                      <Text className="font-sf-pro-regular text-xs text-[#0F73F7]">
-                        Go to profile
-                      </Text>
-                    </TouchableOpacity>
+              <View className="mt-1 flex-row justify-center items-center">
+                <AntDesign name="star" size={14} color="#FFD700" />
+                <Text className="ml-1 font-sf-pro-medium text-xs text-[#1F1D1D]">
+                  3.35
+                </Text>
+                <Text className="mx-2 text-[#94A3B8]">|</Text>
+                <Text className="font-sf-pro-regular text-xs text-[#4D4D4D]">
+                  150 Deliveries
+                </Text>
+              </View>
+            </View>
+
+            <View className="mt-3.5 flex-row gap-2">
+              {quickActions.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={item.onPress}
+                  className="flex-1 bg-white rounded-2xl p-3.5 border border-[#E6EBF5]"
+                >
+                  <View className="w-8 h-8 rounded-full bg-[#EEF5FF] items-center justify-center">
+                    {item.icon}
                   </View>
-                </View>
-
-                {/* profile name */}
-                {/*  <Text className="font-sf-pro-medium text-base text-custom-blue-900 mb-1"> */}
-
-                {/* secondary inbox button */}
-                <View className="flex-row gap-2 mt-4">
-                  <ButtonSecondary
-                    onPress={() => router.push("/(shared)/profile/inbox")}
-                    iconPosition="left"
-                    className="flex-1 !border !border-[#E3E6F0]"
-                    title="Inbox"
-                    icon={
-                      <Ionicons
-                        name="chatbox-ellipses"
-                        size={20}
-                        color="#0F73F7"
-                      />
-                    }
-                  />
-
-                  {/* secondary Wallet button */}
-                  <ButtonSecondary
-                    onPress={() =>
-                      router.push("/(agent)/profile/wallet/wallet")
-                    }
-                    iconPosition="left"
-                    className="flex-1 !border !border-[#E3E6F0]"
-                    title="Wallet"
-                    icon={<Entypo name="wallet" size={20} color="#0F73F7" />}
-                  />
-                </View>
-              </View>
-
-              {/* Setting */}
-
-              <View className="mt-3.5 bg-white rounded-xl p-3.5 border-spacing-0.5 border-[#E3E6F0] shadow-md">
-                <TouchableOpacity
-                  onPress={() => router.push("/(shared)/profile/permission")}
-                  className="flex-row items-center gap-2 py-3"
-                >
-                  <MaterialCommunityIcons
-                    name="shield-check-outline"
-                    size={20}
-                    color="#4D4D4D"
-                  />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Permission
+                  <Text className="mt-2.5 text-[#031731] text-sm font-sf-pro-semibold">
+                    {item.title}
+                  </Text>
+                  <Text className="mt-1 text-[#6D7A8B] text-[11px] font-sf-pro-medium">
+                    {item.subtitle}
                   </Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => router.push("/(agent)/profile/ride/ride")}
-                  className="flex-row items-center gap-2 py-3"
-                >
-                  <Ionicons name="car-outline" size={20} color="#4D4D4D" />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    My Ride
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => router.push("/(agent)/profile/wallet/wallet")}
-                  className="flex-row items-center gap-2 py-3"
-                >
-                  <Ionicons name="wallet-outline" size={20} color="#4D4D4D" />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Wallet
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => router.push("/(shared)/notification")}
-                  className="flex-row items-center gap-2 py-3"
-                >
-                  <Ionicons
-                    name="notifications-outline"
-                    size={20}
-                    color="#4D4D4D"
-                  />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Notifications
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push("/(shared)/settings/support-requests")
-                  }
-                  className="flex-row items-center gap-2 py-3"
-                >
-                  <MaterialIcons
-                    name="support-agent"
-                    size={20}
-                    color="#4D4D4D"
-                  />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Support Requests
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => router.push("/(shared)/settings/settings")}
-                  className="flex-row items-center gap-2 py-3"
-                >
-                  <Ionicons name="settings-outline" size={20} color="#4D4D4D" />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Settings
-                  </Text>
-                </TouchableOpacity>
-
-                <View className="border-b border-[#A2A2A2] my-3" />
-
-                <TouchableOpacity
-                  onPress={handleLogoutPress}
-                  className="flex-row items-center gap-2 pt-3"
-                >
-                  <Ionicons name="exit-outline" size={20} color="#4D4D4D" />
-                  <Text className="font-sf-pro-medium text-sm text-[#4D4D4D]">
-                    Log Out
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </ScrollView>
+              ))}
+            </View>
 
             <ButtonPrimary
               onPress={() => router.replace("/(user)/home")}
-              title=" Switch to User mode"
-              className="mx-5"
+              title="Switch to User Mode"
+              className="mt-3.5"
               icon={<Feather name="user" size={18} color="white" />}
               iconPosition="left"
             />
-          </LinearGradient>
 
-          {/* CONFIRM LOGOUT MODAL */}
+            <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
+              <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
+                Account
+              </Text>
+              {accountItems.map((item, index) => (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={item.onPress}
+                  className="px-4 py-3.5 flex-row items-center"
+                >
+                  <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
+                    {item.icon}
+                  </View>
+                  <Text className="ml-3 flex-1 text-sm text-[#334155] font-sf-pro-medium">
+                    {item.label}
+                  </Text>
+                  <Ionicons name="chevron-forward" size={16} color="#94A3B8" />
+                  {index !== accountItems.length - 1 ? (
+                    <View style={styles.rowDivider} />
+                  ) : null}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
+              <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
+                Preferences
+              </Text>
+              {settingsItems.map((item, index) => (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={item.onPress}
+                  className="px-4 py-3.5 flex-row items-center"
+                >
+                  <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
+                    {item.icon}
+                  </View>
+                  <Text className="ml-3 flex-1 text-sm text-[#334155] font-sf-pro-medium">
+                    {item.label}
+                  </Text>
+                  <Ionicons name="chevron-forward" size={16} color="#94A3B8" />
+                  {index !== settingsItems.length - 1 ? (
+                    <View style={styles.rowDivider} />
+                  ) : null}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              className="mt-3.5 mb-5 bg-white rounded-2xl border border-[#FAD7D7] px-4 py-4 flex-row items-center"
+              onPress={handleLogoutPress}
+            >
+              <View className="w-8 h-8 rounded-full bg-[#FFF1F1] items-center justify-center">
+                <Ionicons name="exit-outline" size={16} color="#DC2626" />
+              </View>
+              <Text className="ml-3 text-sm text-[#DC2626] font-sf-pro-semibold">
+                Log Out
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+
           <BottomSheetModal
             ref={logoutConfirmRef}
             index={0}
             snapPoints={confirmSnapPoints}
-            enablePanDownToClose={true}
-            enableHandlePanningGesture={false}
-            enableContentPanningGesture={false}
+            enablePanDownToClose
             backdropComponent={({ style }) => (
               <View
                 style={[style, { backgroundColor: "rgba(0, 0, 0, 0.5)" }]}
@@ -275,38 +279,44 @@ const Profile = () => {
           >
             <BottomSheetView
               className="mx-5"
-              style={{
-                paddingBottom: insets.bottom + 20,
-              }}
+              style={{ paddingBottom: insets.bottom + 24 }}
             >
               <Text className="text-lg font-sf-pro-semibold text-center text-[#031731]">
                 Log Out
               </Text>
-
               <Text className="text-center mt-4 text-[#031731] font-sf-pro-regular text-sm">
-                Are you sure you want to sure Logout?
+                Are you sure you want to logout?
               </Text>
 
-              {/* Buttons */}
               <View className="flex-row mt-5 gap-3">
                 <ButtonSecondary
-                  title={"No"}
-                  className={"flex-1"}
+                  title="No"
+                  className="flex-1"
                   onPress={handleCancelLogout}
                 />
-
                 <ButtonPrimary
-                  title={"Yes"}
-                  className={"flex-1"}
+                  title="Yes"
+                  className="flex-1"
                   onPress={handleConfirmLogout}
                 />
               </View>
             </BottomSheetView>
           </BottomSheetModal>
-        </SafeAreaView>
-      </BottomSheetModalProvider>
+        </LinearGradient>
+      </SafeAreaView>
     </GestureHandlerRootView>
   );
 };
 
 export default Profile;
+
+const styles = StyleSheet.create({
+  rowDivider: {
+    position: "absolute",
+    left: 48,
+    right: 16,
+    bottom: 0,
+    height: 1,
+    backgroundColor: "#EEF2F7",
+  },
+});

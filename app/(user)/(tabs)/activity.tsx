@@ -30,7 +30,7 @@ const Activity = () => {
     if (activeTab === "completed") {
       router.push(`/history/completed/${parcelId}`);
     } else if (activeTab === "ongoing") {
-      router.push(`/history/ongoing/${parcelId}`);
+      router.push("/(user)/send-item/delivery-booking");
     } else if (activeTab === "cancelled") {
       router.push(`/history/cancelled/${parcelId}`);
     }
@@ -46,7 +46,7 @@ const Activity = () => {
         style={{ flex: 1 }}
       >
         {/* header */}
-        <ScreenHeader title="Activity" />
+        <ScreenHeader title="Activity" showBackButton={false} />
 
         {/* searchbar */}
         <SearchBar

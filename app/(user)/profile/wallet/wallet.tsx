@@ -112,7 +112,7 @@ const Wallet = () => {
             locations={[0, 0.4]}
             style={{ flex: 1 }}
           >
-            <ScreenHeader title="Wallet" />
+            <ScreenHeader title="Wallet" showBackButton={false} />
 
             <KeyboardAvoidingView
               style={{ flex: 1 }}
@@ -129,6 +129,7 @@ const Wallet = () => {
                 <WalletCard
                   handleWithdraw={handleWithdraw}
                   handleDeposit={handleDeposit}
+                  showWithdraw={false}
                 />
 
                 {/* Paystack transfer details */}
