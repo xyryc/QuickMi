@@ -214,11 +214,7 @@ const SelectVehicle = () => {
     address: "",
   });
   const handleBack = () => {
-    if (returnTo) {
-      router.replace(returnTo);
-    } else {
-      router.back();
-    }
+    router.back();
   };
 
   // step 1

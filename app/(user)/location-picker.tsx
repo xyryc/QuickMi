@@ -1,4 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import { setInstantDeliveryLocations } from "@/utils/storage";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
@@ -25,20 +26,15 @@ const LocationPicker = () => {
     label: string;
   } | null>(null);
 
-  const { returnTo, locationField, pickupLocation, dropoffLocation } =
+  const { locationField, pickupLocation, dropoffLocation } =
     useLocalSearchParams<{
-    returnTo?: string;
-    locationField?: "pickup" | "dropoff";
-    pickupLocation?: string;
-    dropoffLocation?: string;
+      locationField?: "pickup" | "dropoff";
+      pickupLocation?: string;
+      dropoffLocation?: string;
     }>();
 
   const handleBack = () => {
-    if (returnTo) {
-      router.replace(returnTo);
-    } else {
-      router.back();
-    }
+    router.back();
   };
 
   const handleLocateMe = async () => {
@@ -133,28 +129,12 @@ const LocationPicker = () => {
   const handleUseLocation = () => {
     if (!selectedLocation) return;
 
-    if (returnTo) {
-      const nextPickupLocation =
-        locationField === "pickup"
-          ? selectedLocation.label
-          : pickupLocation || "";
-      const nextDropoffLocation =
-        locationField === "dropoff"
-          ? selectedLocation.label
-          : dropoffLocation || "";
+    const nextPickupLocation =
+      locationField === "pickup" ? selectedLocation.label : pickupLocation || "";
+    const nextDropoffLocation =
+      locationField === "dropoff" ? selectedLocation.label : dropoffLocation || "";
 
-      router.replace({
-        pathname: returnTo as any,
-        params: {
-          selectedLocationLabel: selectedLocation.label,
-          selectedLocationField: locationField,
-          pickupLocation: nextPickupLocation,
-          dropoffLocation: nextDropoffLocation,
-        },
-      });
-      return;
-    }
-
+    void setInstantDeliveryLocations(nextPickupLocation, nextDropoffLocation);
     router.back();
   };
 
