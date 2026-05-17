@@ -5,7 +5,6 @@ import WalletCard from "@/components/WalletCard";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import {
   BottomSheetModal,
-  BottomSheetModalProvider,
   BottomSheetScrollView,
   BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
@@ -105,8 +104,7 @@ const Wallet = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
+      <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
           <StatusBar backgroundColor="#D3E6FF" barStyle="dark-content" />
 
           <LinearGradient
@@ -457,7 +455,6 @@ const Wallet = () => {
             </BottomSheetScrollView>
           </BottomSheetModal>
         </SafeAreaView>
-      </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
 };

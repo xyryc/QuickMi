@@ -4,11 +4,7 @@ import {
   MaterialCommunityIcons,
   SimpleLineIcons,
 } from "@expo/vector-icons";
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
@@ -169,211 +165,200 @@ const Profile = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
-          <StatusBar backgroundColor="#D3E6FF" barStyle="dark-content" />
+      <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
+        <StatusBar backgroundColor="#D3E6FF" barStyle="dark-content" />
 
-          <LinearGradient
-            colors={["#D3E6FF", "#FFFFFF"]}
-            locations={[0.3, 1]}
-            style={{ flex: 1 }}
-          >
-            <ScrollView
-              className="mx-5"
-              contentContainerStyle={{
-                paddingBottom: 120,
-              }}
-              showsVerticalScrollIndicator={false}
-            >
-              {/* Hero */}
-              <View className="mt-7 bg-white rounded-3xl p-4 border border-[#E6EBF5]">
-                <View className="self-center">
-                  <Image
-                    source={{
-                      uri: profilePhotoUri,
-                    }}
-                    style={{ height: 74, width: 74, borderRadius: 999 }}
-                    contentFit="cover"
-                  />
-                </View>
-
-                <Text className="mt-3 text-center font-sf-pro-semibold text-[22px] text-[#031731]">
-                  Darlene Robertson
-                </Text>
-                <Text className="mt-1 text-center font-sf-pro-medium text-[13px] text-[#6D7A8B]">
-                  +234 801 234 5678
-                </Text>
-              </View>
-
-              {/* Quick actions */}
-              <View className="mt-3.5 flex-row gap-2">
-                {quickActions.map((item) => (
-                  <TouchableOpacity
-                    key={item.id}
-                    onPress={item.onPress}
-                    className="flex-1 bg-white rounded-2xl p-3.5 border border-[#E6EBF5]"
-                  >
-                    <View className="w-8 h-8 rounded-full bg-[#EEF5FF] items-center justify-center">
-                      {item.icon}
-                    </View>
-                    <Text className="mt-2.5 text-[#031731] text-sm font-sf-pro-semibold">
-                      {item.title}
-                    </Text>
-                    <Text className="mt-1 text-[#6D7A8B] text-[11px] font-sf-pro-medium">
-                      {item.subtitle}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <ButtonPrimary
-                onPress={() => router.replace("/(agent)/home")}
-                title="Switch to Agent Mode"
-                className="mt-3.5"
-                icon={<Ionicons name="car-outline" size={20} color="white" />}
-                iconPosition="left"
-              />
-
-              {/* Section card helper */}
-              <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
-                <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
-                  Account
-                </Text>
-                {accountItems.map((item, index) => (
-                  <TouchableOpacity
-                    key={item.id}
-                    onPress={item.onPress}
-                    className="px-4 py-3.5 flex-row items-center"
-                  >
-                    <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
-                      {item.icon}
-                    </View>
-                    <Text className="ml-3 flex-1 text-sm text-[#334155] font-sf-pro-medium">
-                      {item.label}
-                    </Text>
-                    <Ionicons
-                      name="chevron-forward"
-                      size={16}
-                      color="#94A3B8"
-                    />
-                    {index !== accountItems.length - 1 ? (
-                      <View style={styles.rowDivider} />
-                    ) : null}
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
-                <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
-                  Saved Places
-                </Text>
-                {savedPlaceItems.map((item, index) => (
-                  <TouchableOpacity
-                    key={item.id}
-                    onPress={item.onPress}
-                    className="px-4 py-3.5 flex-row items-center"
-                  >
-                    <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
-                      {item.icon}
-                    </View>
-                    <View className="ml-3 flex-1">
-                      <Text className="text-sm text-[#334155] font-sf-pro-medium">
-                        {item.label}
-                      </Text>
-                      <Text className="mt-0.5 text-xs text-[#94A3B8] font-sf-pro-medium">
-                        {item.sub}
-                      </Text>
-                    </View>
-                    <Ionicons
-                      name="chevron-forward"
-                      size={16}
-                      color="#94A3B8"
-                    />
-                    {index !== savedPlaceItems.length - 1 ? (
-                      <View style={styles.rowDivider} />
-                    ) : null}
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
-                <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
-                  Preferences
-                </Text>
-                {settingsItems.map((item, index) => (
-                  <TouchableOpacity
-                    key={item.id}
-                    onPress={item.onPress}
-                    className="px-4 py-3.5 flex-row items-center"
-                  >
-                    <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
-                      {item.icon}
-                    </View>
-                    <Text className="ml-3 flex-1 text-sm text-[#334155] font-sf-pro-medium">
-                      {item.label}
-                    </Text>
-                    <Ionicons
-                      name="chevron-forward"
-                      size={16}
-                      color="#94A3B8"
-                    />
-                    {index !== settingsItems.length - 1 ? (
-                      <View style={styles.rowDivider} />
-                    ) : null}
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <TouchableOpacity
-                className="mt-3.5 mb-5 bg-white rounded-2xl border border-[#FAD7D7] px-4 py-4 flex-row items-center"
-                onPress={handleLogoutPress}
-              >
-                <View className="w-8 h-8 rounded-full bg-[#FFF1F1] items-center justify-center">
-                  <Ionicons name="exit-outline" size={16} color="#DC2626" />
-                </View>
-                <Text className="ml-3 text-sm text-[#DC2626] font-sf-pro-semibold">
-                  Log Out
-                </Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </LinearGradient>
-        </SafeAreaView>
-
-        <BottomSheetModal
-          ref={logoutConfirmRef}
-          snapPoints={snapPoints}
-          index={0}
-          enablePanDownToClose
-          backgroundStyle={{ backgroundColor: "white" }}
-          handleIndicatorStyle={{ backgroundColor: "#D1D5DB" }}
+        <LinearGradient
+          colors={["#D3E6FF", "#FFFFFF"]}
+          locations={[0.3, 1]}
+          style={{ flex: 1 }}
         >
-          <BottomSheetView
-            className="px-5"
-            style={{ paddingBottom: insets.bottom + 120 }}
+          <ScrollView
+            className="mx-5"
+            contentContainerStyle={{
+              paddingBottom: 120,
+            }}
+            showsVerticalScrollIndicator={false}
           >
-            <Text className="text-lg font-sf-pro-semibold text-center mt-4">
-              Are you sure you want to logout?
-            </Text>
+            {/* Hero */}
+            <View className="mt-7 bg-white rounded-3xl p-4 border border-[#E6EBF5]">
+              <View className="self-center">
+                <Image
+                  source={{
+                    uri: profilePhotoUri,
+                  }}
+                  style={{ height: 74, width: 74, borderRadius: 999 }}
+                  contentFit="cover"
+                />
+              </View>
 
-            <View className="flex-row gap-3 mt-6">
-              <ButtonSecondary
-                title="No"
-                className="flex-1"
-                onPress={() => logoutConfirmRef.current?.dismiss()}
-              />
-
-              <ButtonPrimary
-                title="Yes"
-                className="flex-1"
-                onPress={() => {
-                  logoutConfirmRef.current?.dismiss();
-                  router.replace("/(auth)/signup");
-                }}
-              />
+              <Text className="mt-3 text-center font-sf-pro-semibold text-[22px] text-[#031731]">
+                Darlene Robertson
+              </Text>
+              <Text className="mt-1 text-center font-sf-pro-medium text-[13px] text-[#6D7A8B]">
+                +234 801 234 5678
+              </Text>
             </View>
-          </BottomSheetView>
-        </BottomSheetModal>
-      </BottomSheetModalProvider>
+
+            {/* Quick actions */}
+            <View className="mt-3.5 flex-row gap-2">
+              {quickActions.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={item.onPress}
+                  className="flex-1 bg-white rounded-2xl p-3.5 border border-[#E6EBF5]"
+                >
+                  <View className="w-8 h-8 rounded-full bg-[#EEF5FF] items-center justify-center">
+                    {item.icon}
+                  </View>
+                  <Text className="mt-2.5 text-[#031731] text-sm font-sf-pro-semibold">
+                    {item.title}
+                  </Text>
+                  <Text className="mt-1 text-[#6D7A8B] text-[11px] font-sf-pro-medium">
+                    {item.subtitle}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <ButtonPrimary
+              onPress={() => router.replace("/(agent)/home")}
+              title="Switch to Agent Mode"
+              className="mt-3.5"
+              icon={<Ionicons name="car-outline" size={20} color="white" />}
+              iconPosition="left"
+            />
+
+            {/* Section card helper */}
+            <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
+              <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
+                Account
+              </Text>
+              {accountItems.map((item, index) => (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={item.onPress}
+                  className="px-4 py-3.5 flex-row items-center"
+                >
+                  <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
+                    {item.icon}
+                  </View>
+                  <Text className="ml-3 flex-1 text-sm text-[#334155] font-sf-pro-medium">
+                    {item.label}
+                  </Text>
+                  <Ionicons name="chevron-forward" size={16} color="#94A3B8" />
+                  {index !== accountItems.length - 1 ? (
+                    <View style={styles.rowDivider} />
+                  ) : null}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
+              <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
+                Saved Places
+              </Text>
+              {savedPlaceItems.map((item, index) => (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={item.onPress}
+                  className="px-4 py-3.5 flex-row items-center"
+                >
+                  <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
+                    {item.icon}
+                  </View>
+                  <View className="ml-3 flex-1">
+                    <Text className="text-sm text-[#334155] font-sf-pro-medium">
+                      {item.label}
+                    </Text>
+                    <Text className="mt-0.5 text-xs text-[#94A3B8] font-sf-pro-medium">
+                      {item.sub}
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={16} color="#94A3B8" />
+                  {index !== savedPlaceItems.length - 1 ? (
+                    <View style={styles.rowDivider} />
+                  ) : null}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View className="mt-3.5 bg-white rounded-2xl border border-[#E6EBF5]">
+              <Text className="px-4 pt-4 pb-2 text-[#031731] text-base font-sf-pro-semibold">
+                Preferences
+              </Text>
+              {settingsItems.map((item, index) => (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={item.onPress}
+                  className="px-4 py-3.5 flex-row items-center"
+                >
+                  <View className="w-8 h-8 rounded-full bg-[#F5F7FB] items-center justify-center">
+                    {item.icon}
+                  </View>
+                  <Text className="ml-3 flex-1 text-sm text-[#334155] font-sf-pro-medium">
+                    {item.label}
+                  </Text>
+                  <Ionicons name="chevron-forward" size={16} color="#94A3B8" />
+                  {index !== settingsItems.length - 1 ? (
+                    <View style={styles.rowDivider} />
+                  ) : null}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              className="mt-3.5 mb-5 bg-white rounded-2xl border border-[#FAD7D7] px-4 py-4 flex-row items-center"
+              onPress={handleLogoutPress}
+            >
+              <View className="w-8 h-8 rounded-full bg-[#FFF1F1] items-center justify-center">
+                <Ionicons name="exit-outline" size={16} color="#DC2626" />
+              </View>
+              <Text className="ml-3 text-sm text-[#DC2626] font-sf-pro-semibold">
+                Log Out
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </LinearGradient>
+      </SafeAreaView>
+
+      <BottomSheetModal
+        ref={logoutConfirmRef}
+        snapPoints={snapPoints}
+        index={0}
+        enablePanDownToClose
+        backgroundStyle={{ backgroundColor: "white" }}
+        handleIndicatorStyle={{ backgroundColor: "#D1D5DB" }}
+        backdropComponent={({ style }) => (
+          <View style={[style, { backgroundColor: "rgba(0, 0, 0, 0.5)" }]} />
+        )}
+      >
+        <BottomSheetView
+          className="px-5"
+          style={{ paddingBottom: insets.bottom + 24 }}
+        >
+          <Text className="text-lg font-sf-pro-semibold text-center mt-4">
+            Are you sure you want to logout?
+          </Text>
+
+          <View className="flex-row gap-3 mt-6">
+            <ButtonSecondary
+              title="No"
+              className="flex-1"
+              onPress={() => logoutConfirmRef.current?.dismiss()}
+            />
+
+            <ButtonPrimary
+              title="Yes"
+              className="flex-1"
+              onPress={() => {
+                logoutConfirmRef.current?.dismiss();
+                router.replace("/(auth)/signup");
+              }}
+            />
+          </View>
+        </BottomSheetView>
+      </BottomSheetModal>
     </GestureHandlerRootView>
   );
 };
