@@ -22,11 +22,11 @@ const Ride = () => {
 
   const handleNavigation = (parcelId: string) => {
     if (activeTab === "completed") {
-      router.push(`/history/completed/${parcelId}`);
+      router.push(`/(agent)/profile/ride/completed/${parcelId}`);
     } else if (activeTab === "ongoing") {
-      router.push(`/history/ongoing/${parcelId}`);
+      router.push(`/(agent)/profile/ride/ongoing/${parcelId}`);
     } else if (activeTab === "cancelled") {
-      router.push(`/history/cancelled/${parcelId}`);
+      router.push(`/(agent)/profile/ride/cancelled/${parcelId}`);
     }
   };
 

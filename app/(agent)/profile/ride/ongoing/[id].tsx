@@ -87,7 +87,10 @@ const ParcelOngoing = () => {
 
           {/* Back Button */}
           <TouchableOpacity
-            onPress={() => router.replace("/(user)/history")}
+            onPress={() => {
+              router.replace("/(agent)/home");
+              console.log("back");
+            }}
             className="absolute top-4 left-4 bg-white rounded-full p-3 shadow-lg border border-[#0F73F7E5]"
             style={{
               marginTop: insets.top,
