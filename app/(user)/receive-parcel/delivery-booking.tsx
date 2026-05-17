@@ -1,7 +1,6 @@
 import ArrivingDetails from "@/components/ArrivingDetails";
 import DriverDetails from "@/components/DriverDetails";
 import ParcelDetails from "@/components/ParcelDetails";
-import PaymentMethodSelection from "@/components/PaymentMethodSelection";
 import SelectRide from "@/components/SelectRide";
 import WaitForDriver from "@/components/WaitForDriver";
 import { getInstantDeliveryLocations } from "@/utils/storage";
@@ -234,12 +233,12 @@ const SelectVehicle = () => {
   // step 2
   // Called when user clicks "Confirm Parcel Details" button
   const handleParcelDetailsNext = () => {
-    setCurrentStep("payment-method-selection");
+    setCurrentStep("wait-driver");
   };
 
   // Called when user clicks "Skip" button
   const handleParcelDetailsSkip = () => {
-    setCurrentStep("payment-method-selection");
+    setCurrentStep("wait-driver");
   };
 
   // Called when user clicks back arrow
@@ -248,17 +247,6 @@ const SelectVehicle = () => {
   };
 
   // step 3
-  // Payment Method handlers
-  const handlePaymentMethodNext = (method: string) => {
-    void method;
-    setCurrentStep("wait-driver");
-  };
-
-  const handlePaymentMethodBack = () => {
-    setCurrentStep("parcel-details");
-  };
-
-  // step 4
   // Called automatically when driver accepts (simulated after 5 seconds)
   const handleDriverAccepted = () => {
     setCurrentStep("arriving-details");
@@ -266,7 +254,7 @@ const SelectVehicle = () => {
 
   // Called when user clicks "Cancel Request" button
   const handleCancelSearch = () => {
-    setCurrentStep("payment-method-selection");
+    setCurrentStep("parcel-details");
   };
 
   // step 6
@@ -483,15 +471,7 @@ const SelectVehicle = () => {
               />
             )}
 
-            {/* Step 3: Payment Method */}
-            {currentStep === "payment-method-selection" && (
-              <PaymentMethodSelection
-                onNext={handlePaymentMethodNext}
-                onBack={handlePaymentMethodBack}
-              />
-            )}
-
-            {/* Step 4: Wait for Driver */}
+            {/* Step 3: Wait for Driver */}
             {currentStep === "wait-driver" && (
               <WaitForDriver
                 onDriverAccepted={handleDriverAccepted}
@@ -500,7 +480,7 @@ const SelectVehicle = () => {
               />
             )}
 
-            {/* Step 5: Arriving Details */}
+            {/* Step 4: Arriving Details */}
             {currentStep === "arriving-details" && (
               <ArrivingDetails
                 driverDetails={driverOffer}
@@ -511,7 +491,7 @@ const SelectVehicle = () => {
               />
             )}
 
-            {/* Step 6: Driver Details */}
+            {/* Step 5: Driver Details */}
             {currentStep === "driver-details" && (
               <DriverDetails
                 driverDetails={driverOffer}
