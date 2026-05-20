@@ -1,10 +1,8 @@
 import ScreenHeader from "@/components/ScreenHeader";
-import TabFilterSecondary from "@/components/TabFilterSecondary";
-import { useUserRole } from "@/utils/useUserRole";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -17,14 +15,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Inbox = () => {
-  const { role } = useUserRole();
-  const [activeTab, setActiveTab] = useState("chat");
   const router = useRouter();
-
-  const tabs = [
-    { id: "chat", label: "Chat", icon: "mail" },
-    { id: "support", label: "Support", icon: "person-circle-sharp" },
-  ];
 
   const handleNavigation = () => {
     router.push(`/(shared)/chat/chat`);
@@ -52,16 +43,6 @@ const Inbox = () => {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 120 }}
           >
-            <View className="flex-row gap-4 mt-2.5">
-              {/* <ButtonPrimary title="Chat" className="flex-1" />
-              <ButtonPrimary title="Support" className="flex-1" /> */}
-              <TabFilterSecondary
-                tabs={tabs}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-              />
-            </View>
-
             {/* chat list */}
             <TouchableOpacity
               onPress={handleNavigation}

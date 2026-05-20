@@ -85,17 +85,11 @@ const Profile = () => {
       onPress: () => router.push("/(shared)/profile/inbox"),
     },
     {
-      id: "payments",
-      title: "Payments & Offers",
-      subtitle: "Cards, promos, vouchers",
-      icon: (
-        <MaterialCommunityIcons
-          name="ticket-percent-outline"
-          size={18}
-          color="#0F73F7"
-        />
-      ),
-      onPress: () => router.push("/(user)/profile/payment/payments"),
+      id: "support",
+      title: "Support",
+      subtitle: "Help and support",
+      icon: <Ionicons name="person-circle-sharp" size={18} color="#0F73F7" />,
+      onPress: () => router.push("/(shared)/profile/inbox"),
     },
   ];
 
@@ -139,6 +133,18 @@ const Profile = () => {
   ];
 
   const settingsItems = [
+    {
+      id: "payments",
+      label: "Promos & Offers",
+      icon: (
+        <MaterialCommunityIcons
+          name="ticket-percent-outline"
+          size={18}
+          color="#4D4D4D"
+        />
+      ),
+      onPress: () => router.push("/(user)/profile/payment/payments"),
+    },
     {
       id: "permission",
       label: "Permission",
