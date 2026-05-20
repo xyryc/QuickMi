@@ -1,5 +1,8 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { setInstantDeliveryLocations } from "@/utils/storage";
+import {
+  setHomeLocationLabel,
+  setInstantDeliveryLocations,
+} from "@/utils/storage";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
@@ -128,6 +131,12 @@ const LocationPicker = () => {
 
   const handleUseLocation = () => {
     if (!selectedLocation) return;
+
+    if (!locationField) {
+      void setHomeLocationLabel(selectedLocation.label);
+      router.back();
+      return;
+    }
 
     const nextPickupLocation =
       locationField === "pickup" ? selectedLocation.label : pickupLocation || "";

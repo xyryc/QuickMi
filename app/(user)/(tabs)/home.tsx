@@ -1,12 +1,13 @@
 import ActivityCard from "@/components/ActivityCard";
 import TipsSection from "@/components/TipsSection";
+import { getHomeLocationLabel } from "@/utils/storage";
 import { Ionicons } from "@expo/vector-icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -19,17 +20,29 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const Home = () => {
   const router = useRouter();
-  const { selectedLocationLabel } = useLocalSearchParams<{
-    selectedLocationLabel?: string;
-  }>();
-  const locationLabel = selectedLocationLabel || "Set location";
+  const [locationLabel, setLocationLabel] = useState("Set location");
 
   const handleOpenLocationPicker = () => {
-    router.push({
-      pathname: "/(user)/location-picker",
-      params: { returnTo: "/(user)/home" },
-    });
+    router.push("/(user)/location-picker");
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      let isMounted = true;
+
+      const loadHomeLocation = async () => {
+        const savedLabel = await getHomeLocationLabel();
+        if (!isMounted) return;
+        setLocationLabel(savedLabel || "Set location");
+      };
+
+      void loadHomeLocation();
+
+      return () => {
+        isMounted = false;
+      };
+    }, []),
+  );
 
   const serviceCardShadowStyle = {
     shadowColor: "#031731",

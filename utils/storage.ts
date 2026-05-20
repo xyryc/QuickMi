@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
   AUTH_COMPLETED: "authCompleted",
   INSTANT_PICKUP_LOCATION: "instantPickupLocation",
   INSTANT_DROPOFF_LOCATION: "instantDropoffLocation",
+  HOME_LOCATION_LABEL: "homeLocationLabel",
 };
 
 export const setHasSelectedRole = async (role: "user" | "agent") => {
@@ -102,5 +103,22 @@ export const getInstantDeliveryLocations = async (): Promise<{
   } catch (error) {
     console.error("Error getting instant delivery locations:", error);
     return { pickupLocation: "", dropoffLocation: "" };
+  }
+};
+
+export const setHomeLocationLabel = async (label: string) => {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEYS.HOME_LOCATION_LABEL, label);
+  } catch (error) {
+    console.error("Error saving home location label:", error);
+  }
+};
+
+export const getHomeLocationLabel = async (): Promise<string> => {
+  try {
+    return (await AsyncStorage.getItem(STORAGE_KEYS.HOME_LOCATION_LABEL)) || "";
+  } catch (error) {
+    console.error("Error getting home location label:", error);
+    return "";
   }
 };
