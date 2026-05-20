@@ -14,6 +14,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
+  Keyboard,
+  Platform,
   TouchableOpacity,
   useWindowDimensions,
   View,
@@ -147,7 +149,7 @@ const SelectVehicle = () => {
   // Create a ref for the bottom sheet
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const snapPoints = useMemo(() => ["82%"], []);
+  const snapPoints = useMemo(() => ["82%", "96%"], []);
   const animatedSheetPosition = useSharedValue(windowHeight * 0.5);
   const animationConfigs = useBottomSheetSpringConfigs({
     damping: 40,
@@ -233,11 +235,15 @@ const SelectVehicle = () => {
   // step 2
   // Called when user clicks "Confirm Parcel Details" button
   const handleParcelDetailsNext = () => {
+    Keyboard.dismiss();
+    bottomSheetRef.current?.snapToIndex(0);
     setCurrentStep("wait-driver");
   };
 
   // Called when user clicks "Skip" button
   const handleParcelDetailsSkip = () => {
+    Keyboard.dismiss();
+    bottomSheetRef.current?.snapToIndex(0);
     setCurrentStep("wait-driver");
   };
 
@@ -335,6 +341,30 @@ const SelectVehicle = () => {
       );
     }
   };
+
+  useEffect(() => {
+    const showEvent =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+
+    const showSubscription = Keyboard.addListener(showEvent, () => {
+      if (currentStep === "parcel-details") {
+        bottomSheetRef.current?.snapToIndex(1);
+      }
+    });
+
+    const hideSubscription = Keyboard.addListener(hideEvent, () => {
+      if (currentStep === "parcel-details") {
+        bottomSheetRef.current?.snapToIndex(0);
+      }
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, [currentStep]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

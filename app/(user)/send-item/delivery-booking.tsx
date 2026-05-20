@@ -14,6 +14,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
+  Keyboard,
+  Platform,
   TouchableOpacity,
   useWindowDimensions,
   View,
@@ -147,7 +149,7 @@ const SelectVehicle = () => {
   // Create a ref for the bottom sheet
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const snapPoints = useMemo(() => ["82%"], []);
+  const snapPoints = useMemo(() => ["82%", "96%"], []);
   const animatedSheetPosition = useSharedValue(windowHeight * 0.5);
   const animationConfigs = useBottomSheetSpringConfigs({
     damping: 40,
@@ -232,11 +234,15 @@ const SelectVehicle = () => {
   // step 2
   // Called when user clicks "Confirm Receiver" button
   const handleReceiverDetailsNext = () => {
+    Keyboard.dismiss();
+    bottomSheetRef.current?.snapToIndex(0);
     setCurrentStep("wait-driver");
   };
 
   // Called when user clicks "Skip" button
   const handleReceiverDetailsSkip = () => {
+    Keyboard.dismiss();
+    bottomSheetRef.current?.snapToIndex(0);
     setCurrentStep("wait-driver");
   };
 
@@ -329,6 +335,30 @@ const SelectVehicle = () => {
       );
     }
   };
+
+  useEffect(() => {
+    const keyboardShowEvent =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const keyboardHideEvent =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+
+    const onKeyboardShow = Keyboard.addListener(keyboardShowEvent, () => {
+      if (currentStep === "receiver-details") {
+        bottomSheetRef.current?.snapToIndex(1);
+      }
+    });
+
+    const onKeyboardHide = Keyboard.addListener(keyboardHideEvent, () => {
+      if (currentStep === "receiver-details") {
+        bottomSheetRef.current?.snapToIndex(0);
+      }
+    });
+
+    return () => {
+      onKeyboardShow.remove();
+      onKeyboardHide.remove();
+    };
+  }, [currentStep]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

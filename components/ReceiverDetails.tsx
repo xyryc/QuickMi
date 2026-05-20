@@ -1,14 +1,8 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import { MaterialIcons } from "@expo/vector-icons";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import React from "react";
-import {
-  Dimensions,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface ReceiverDetailsProps {
   receiverDetails: {
@@ -33,9 +27,6 @@ const ReceiverDetails: React.FC<ReceiverDetailsProps> = ({
   onSkip,
   onBack,
 }) => {
-  const insets = useSafeAreaInsets();
-  const windowHeight = Dimensions.get("window").height;
-
   return (
     <View className="flex-1">
       <View className="flex-row items-center justify-between mb-4">
@@ -48,7 +39,7 @@ const ReceiverDetails: React.FC<ReceiverDetailsProps> = ({
 
       <View className="flex-1">
         {/* Receiver phone number */}
-        <TextInput
+        <BottomSheetTextInput
           className="border border-gray-300 placeholder:text-black/40 rounded-lg p-4 font-sf-pro-regular text-base mb-3"
           placeholder="Enter receiver's name"
           value={receiverDetails.name}
@@ -58,7 +49,7 @@ const ReceiverDetails: React.FC<ReceiverDetailsProps> = ({
         />
 
         {/* Receiver name */}
-        <TextInput
+        <BottomSheetTextInput
           className="border border-gray-300 placeholder:text-black/40 rounded-lg p-4 font-sf-pro-regular text-base mb-3"
           placeholder="Enter phone number"
           value={receiverDetails.phone}
@@ -69,7 +60,7 @@ const ReceiverDetails: React.FC<ReceiverDetailsProps> = ({
         />
 
         {/* Additional note */}
-        <TextInput
+        <BottomSheetTextInput
           className="border border-gray-300 placeholder:text-black/40 rounded-lg p-4 font-sf-pro-regular text-base mb-3"
           placeholder="Additional Direction (Optional)"
           value={receiverDetails.address}

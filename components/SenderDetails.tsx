@@ -1,7 +1,8 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import { MaterialIcons } from "@expo/vector-icons";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import React from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface SenderDetailsProps {
   senderDetails: {
@@ -40,7 +41,7 @@ const SenderDetails: React.FC<SenderDetailsProps> = ({
 
       <View className="flex-1">
         {/* Sender name */}
-        <TextInput
+        <BottomSheetTextInput
           className="border border-gray-300 placeholder:text-black/40 rounded-lg p-4 font-sf-pro-regular text-base mb-3"
           placeholder="Enter sender's name"
           value={senderDetails.name}
@@ -50,7 +51,7 @@ const SenderDetails: React.FC<SenderDetailsProps> = ({
         />
 
         {/* Sender phone */}
-        <TextInput
+        <BottomSheetTextInput
           className="border border-gray-300 placeholder:text-black/40 rounded-lg p-4 font-sf-pro-regular text-base mb-3"
           placeholder="Enter phone number"
           value={senderDetails.phone}
@@ -61,7 +62,7 @@ const SenderDetails: React.FC<SenderDetailsProps> = ({
         />
 
         {/* Additional note */}
-        <TextInput
+        <BottomSheetTextInput
           className="border border-gray-300 placeholder:text-black/40 rounded-lg p-4 font-sf-pro-regular text-base mb-3"
           placeholder="Additional Direction (Optional)"
           value={senderDetails.address}

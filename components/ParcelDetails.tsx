@@ -1,7 +1,8 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import { MaterialIcons } from "@expo/vector-icons";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import React from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface ParcelDetailsProps {
   parcelDetails: {
@@ -40,7 +41,7 @@ const ParcelDetails: React.FC<ParcelDetailsProps> = ({
 
       <View className="flex-1">
         {/* Parcel name */}
-        <TextInput
+        <BottomSheetTextInput
           className="border border-gray-300 placeholder:text-black/40 rounded-lg p-4 font-sf-pro-regular text-base mb-3"
           placeholder="Enter parcel name"
           value={parcelDetails.parcelName}
@@ -50,7 +51,7 @@ const ParcelDetails: React.FC<ParcelDetailsProps> = ({
         />
 
         {/* Parcel number */}
-        <TextInput
+        <BottomSheetTextInput
           className="border border-gray-300 placeholder:text-black/40 rounded-lg p-4 font-sf-pro-regular text-base mb-3"
           placeholder="Enter parcel number"
           value={parcelDetails.parcelNumber}
@@ -60,7 +61,7 @@ const ParcelDetails: React.FC<ParcelDetailsProps> = ({
         />
 
         {/* Contact phone */}
-        <TextInput
+        <BottomSheetTextInput
           className="border border-gray-300 placeholder:text-black/40 rounded-lg p-4 font-sf-pro-regular text-base mb-3"
           placeholder="Enter phone number"
           value={parcelDetails.phone}
@@ -71,7 +72,7 @@ const ParcelDetails: React.FC<ParcelDetailsProps> = ({
         />
 
         {/* Additional note */}
-        <TextInput
+        <BottomSheetTextInput
           className="border border-gray-300 placeholder:text-black/40 rounded-lg p-4 font-sf-pro-regular text-base mb-3"
           placeholder="Short note/details (Optional)"
           value={parcelDetails.shortNote}
