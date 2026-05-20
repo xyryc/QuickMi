@@ -183,13 +183,15 @@ const Profile = () => {
             {/* Hero */}
             <View className="mt-7 bg-white rounded-3xl p-4 border border-[#E6EBF5]">
               <View className="self-center">
-                <Image
-                  source={{
-                    uri: profilePhotoUri,
-                  }}
-                  style={{ height: 74, width: 74, borderRadius: 999 }}
-                  contentFit="cover"
-                />
+                <TouchableOpacity onPress={handleChangePhoto}>
+                  <Image
+                    source={{
+                      uri: profilePhotoUri,
+                    }}
+                    style={{ height: 74, width: 74, borderRadius: 999 }}
+                    contentFit="cover"
+                  />
+                </TouchableOpacity>
               </View>
 
               <Text className="mt-3 text-center font-sf-pro-semibold text-[22px] text-[#031731]">
