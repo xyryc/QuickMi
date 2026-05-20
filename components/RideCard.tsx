@@ -36,10 +36,10 @@ const RideCard = ({ className, vehicle, isSelected, onPress }) => {
 
       <View className="flex-1">
         <View className="flex-row justify-between mb-1">
-          <Text className="text-lg font-sf-pro-semibold">
+          <Text className="text-sm font-sf-pro-semibold">
             {vehicle?.name || "Bike"}
           </Text>
-          <Text className="text-base font-sf-pro-semibold">
+          <Text className="text-sm font-sf-pro-medium">
             {vehicle?.price || "₦100"}
           </Text>
         </View>

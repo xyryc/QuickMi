@@ -1,17 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // NOTE: Update this to include the paths to all files that contain Nativewind classes.
-  content: [ "./components/**/*.{js,jsx,ts,tsx}",  "./app/**/*.{js,jsx,ts,tsx}"],
+  content: ["./components/**/*.{js,jsx,ts,tsx}", "./app/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
       fontFamily: {
-        "sf-pro-regular" : ['SF-Pro-Regular'],
-        "sf-pro-medium" : ['SF-Pro-Medium'],
-        "sf-pro-semibold": ['SF-Pro-Semibold']
+        "sf-pro-regular": ["SF-Pro-Regular"],
+        "sf-pro-medium": ["SF-Pro-Medium"],
+        "sf-pro-semibold": ["SF-Pro-Semibold"],
+        "sf-pro-bold": ["SF-Pro-Text-Bold"],
       },
 
-       colors: {
+      colors: {
         "custom-base": "#0F73F7",
         "custom-secondary": "#FDFDFD",
         "custom-gray": "#A2A2A2",
@@ -23,7 +24,7 @@ module.exports = {
         "custom-gray-dark": "#4D4D4D",
 
         // status
-        "custom-light-yellow":"#FFF7D6",
+        "custom-light-yellow": "#FFF7D6",
         "custom-orange": "#F3934F",
         "custom-light-orange": "#FCE8D9",
         "custom-custom-red": "#F34F4F",
@@ -42,8 +43,8 @@ module.exports = {
         "custom-blue-700": "#094594",
         "custom-blue-800": "#062E63",
         "custom-blue-900": "#031731",
-       }
+      },
     },
   },
   plugins: [],
-}
+};
