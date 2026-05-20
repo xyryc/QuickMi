@@ -17,10 +17,19 @@ const SelectLocation = () => {
   const [tempTime, setTempTime] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedService, setSelectedService] = useState<
+    "send-item" | "receive-item" | "receive-parcel"
+  >("send-item");
 
   const handleConfirm = () => {
+    const bookingPathByService = {
+      "send-item": "/(user)/send-item/delivery-booking",
+      "receive-item": "/(user)/receive-item/delivery-booking",
+      "receive-parcel": "/(user)/receive-parcel/delivery-booking",
+    } as const;
+
     router.push({
-      pathname: "/(user)/send-item/delivery-booking",
+      pathname: bookingPathByService[selectedService],
       params: { returnTo: "/(user)/schedule-delivery/route-details" },
     });
   };
@@ -70,6 +79,65 @@ const SelectLocation = () => {
             })
           }
         />
+
+        {/* delivery type block */}
+        <Text className="font-sf-pro-medium text-base mb-3 mt-4">
+          Delivery Type
+        </Text>
+        <View className="flex-row flex-wrap gap-2.5 mb-4">
+          <TouchableOpacity
+            onPress={() => setSelectedService("send-item")}
+            className={`px-3.5 py-2 rounded-xl border ${
+              selectedService === "send-item"
+                ? "bg-[#0F73F7] border-[#0F73F7]"
+                : "bg-[#9FC7FC40] border-transparent"
+            }`}
+          >
+            <Text
+              className={`text-xs font-sf-pro-medium ${
+                selectedService === "send-item" ? "text-white" : "text-black"
+              }`}
+            >
+              Send Item
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setSelectedService("receive-item")}
+            className={`px-3.5 py-2 rounded-xl border ${
+              selectedService === "receive-item"
+                ? "bg-[#0F73F7] border-[#0F73F7]"
+                : "bg-[#9FC7FC40] border-transparent"
+            }`}
+          >
+            <Text
+              className={`text-xs font-sf-pro-medium ${
+                selectedService === "receive-item" ? "text-white" : "text-black"
+              }`}
+            >
+              Receive Item
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setSelectedService("receive-parcel")}
+            className={`px-3.5 py-2 rounded-xl border ${
+              selectedService === "receive-parcel"
+                ? "bg-[#0F73F7] border-[#0F73F7]"
+                : "bg-[#9FC7FC40] border-transparent"
+            }`}
+          >
+            <Text
+              className={`text-xs font-sf-pro-medium ${
+                selectedService === "receive-parcel"
+                  ? "text-white"
+                  : "text-black"
+              }`}
+            >
+              Receive Parcel
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {/* schedule time */}
         <Text className="font-sf-pro-medium text-base my-3.5">
