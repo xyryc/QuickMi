@@ -1,10 +1,9 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import ScreenHeader from "@/components/ScreenHeader";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StatusBar,
   Text,
@@ -14,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const UpdateName = () => {
+  const router = useRouter();
   return (
     <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
       <StatusBar backgroundColor="#D3E6FF" barStyle="dark-content" />
@@ -25,17 +25,13 @@ const UpdateName = () => {
       >
         <ScreenHeader title="Update your name" />
 
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        <ScrollView
+          className="flex-1 mx-5"
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ flexGrow: 1 }}
         >
-          {/* scrollable content */}
-          <ScrollView
-            className="flex-1 mx-5"
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 120 }}
-          >
+          <View>
             <Text className="mt-5 text-sm">
               Please enter your name as it appears on your ID or {"\n"}passport.
             </Text>
@@ -47,13 +43,14 @@ const UpdateName = () => {
 
             <Text className="mt-5 text-sm font-sf-pro-medium">Last Name</Text>
             <TextInput className="mt-2 p-4 border border-[#E3E6F0] rounded-xl bg-white" />
-          </ScrollView>
-
-          {/* bottom button */}
-          <View className="px-5 pb-32">
-            <ButtonPrimary title="Save" />
           </View>
-        </KeyboardAvoidingView>
+
+          <View style={{ flex: 1 }} />
+
+          <View className="pb-8 pt-3">
+            <ButtonPrimary title="Save" onPress={() => router.back()} />
+          </View>
+        </ScrollView>
       </LinearGradient>
     </SafeAreaView>
   );
