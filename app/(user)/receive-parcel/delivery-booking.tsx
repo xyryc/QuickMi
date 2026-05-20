@@ -149,7 +149,7 @@ const SelectVehicle = () => {
   // Create a ref for the bottom sheet
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const snapPoints = useMemo(() => ["82%", "96%"], []);
+  const snapPoints = useMemo(() => ["82%", "90%"], []);
   const animatedSheetPosition = useSharedValue(windowHeight * 0.5);
   const animationConfigs = useBottomSheetSpringConfigs({
     damping: 40,
@@ -249,6 +249,8 @@ const SelectVehicle = () => {
 
   // Called when user clicks back arrow
   const handleParcelDetailsBack = () => {
+    Keyboard.dismiss();
+    bottomSheetRef.current?.snapToIndex(0);
     setCurrentStep("select-ride");
   };
 
@@ -350,7 +352,7 @@ const SelectVehicle = () => {
 
     const showSubscription = Keyboard.addListener(showEvent, () => {
       if (currentStep === "parcel-details") {
-        bottomSheetRef.current?.snapToIndex(1);
+        bottomSheetRef.current?.expand();
       }
     });
 

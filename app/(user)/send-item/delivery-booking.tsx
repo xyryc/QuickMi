@@ -248,6 +248,8 @@ const SelectVehicle = () => {
 
   // Called when user clicks back arrow
   const handleReceiverDetailsBack = () => {
+    Keyboard.dismiss();
+    bottomSheetRef.current?.snapToIndex(0);
     setCurrentStep("select-ride");
   };
 
