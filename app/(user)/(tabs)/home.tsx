@@ -63,9 +63,12 @@ const Home = () => {
         style={{ flex: 1 }}
       >
         {/* home header */}
-        <View className="flex-row justify-between items-center py-3 px-5 bg-white rounded-b-[30px]">
+        {/* <View className="flex-row justify-between items-center py-3 px-5 bg-white rounded-b-[30px]"> */}
+        <View className="flex-row justify-between items-center py-3 px-5">
           <View className="flex-row items-center gap-2 flex-1 min-w-0">
-            <TouchableOpacity onPress={() => router.push('/(user)/(tabs)/profile')}>
+            <TouchableOpacity
+              onPress={() => router.push("/(user)/(tabs)/profile")}
+            >
               <Image
                 source="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXpdpAD2WforjNOXjrovpTAGSJKeFFn3AhKCYndxUUGoepbo36bvFeDhYYiv2EXdlauQtHqMjsrKvn103gY57FgYUN1xNrSnTW1h9bt_TqPQ&s=10"
                 style={{
@@ -257,9 +260,11 @@ const Home = () => {
 
           {/* history */}
           <View className="flex-row justify-between mb-4 mt-8">
-            <Text className="font-sf-pro-semibold text-lg">History</Text>
+            <Text className="font-sf-pro-semibold text-lg">Activity</Text>
 
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push("/(user)/(tabs)/activity")}
+            >
               <Ionicons name="arrow-forward" size={20} color="black" />
             </TouchableOpacity>
           </View>

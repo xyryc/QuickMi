@@ -1,13 +1,7 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
-import ButtonSecondary from "@/components/ButtonSecondary";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
-import {
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 interface ParcelDetailsProps {
   parcelDetails: {
@@ -93,7 +87,6 @@ const ParcelDetails: React.FC<ParcelDetailsProps> = ({
       {/* Action Buttons */}
       <View className="pt-4">
         <ButtonPrimary title="Confirm Parcel Details" onPress={onNext} />
-        <ButtonSecondary title="Skip" onPress={onSkip} className="mt-3" />
       </View>
     </View>
   );

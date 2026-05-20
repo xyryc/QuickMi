@@ -36,22 +36,17 @@ const RideCard = ({ className, vehicle, isSelected, onPress }) => {
 
       <View className="flex-1">
         <View className="flex-row justify-between mb-1">
-          <Text className="text-sm font-sf-pro-medium">
+          <Text className="text-lg font-sf-pro-semibold">
             {vehicle?.name || "Bike"}
           </Text>
-          <Text className="text-sm font-sf-pro-medium">
+          <Text className="text-base font-sf-pro-semibold">
             {vehicle?.price || "₦100"}
           </Text>
         </View>
 
-        <View className="flex-row justify-between mb-1">
-          <Text className="text-xs font-sf-pro-regular">
-            {vehicle?.time || "10 min away"}
-          </Text>
-          <Text className="text-[9px] font-sf-pro-medium text-green-700">
-            Offer your fare
-          </Text>
-        </View>
+        <Text className="text-xs font-sf-pro-regular mb-1">
+          {vehicle?.time || "10 min away"}
+        </Text>
 
         <Text className="text-xs font-sf-pro-regular" numberOfLines={2}>
           {vehicle?.description || "Affordable delivery for your daily commute"}

@@ -11,12 +11,11 @@ const SelectRide = ({ vehicles, selectedVehicle, onVehicleSelect, onNext }) => {
 
   return (
     <View className="flex-1">
-      <Text className="text-xl font-sf-pro-medium text-center mb-4">
-        Rider Details
-      </Text>
+      {/* <Text className="text-xl font-sf-pro-medium text-center mb-4">
+        Choose a 
+      </Text> */}
 
       {/* Scrollable Ride List */}
-
       <View>
         {vehicles.map((vehicle) => (
           <RideCard
@@ -29,10 +28,10 @@ const SelectRide = ({ vehicles, selectedVehicle, onVehicleSelect, onNext }) => {
         ))}
       </View>
 
-      <View className="border-t border-gray-200 " />
+      <View className="border-t border-gray-200" />
 
       {/* choose car, promo section */}
-      <View className="pt-4">
+      <View>
         <TouchableOpacity className="flex-row justify-between items-center px-2 py-3 mb-2.5">
           <Text className="font-sf-pro-regular text-base">Add Promo</Text>
 

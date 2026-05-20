@@ -1,13 +1,7 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
-import ButtonSecondary from "@/components/ButtonSecondary";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
-import {
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 interface SenderDetailsProps {
   senderDetails: {
@@ -38,7 +32,9 @@ const SenderDetails: React.FC<SenderDetailsProps> = ({
         <TouchableOpacity onPress={onBack} className="p-2">
           <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="text-xl font-sf-pro-medium">Sender&apos;s Details</Text>
+        <Text className="text-xl font-sf-pro-medium">
+          Sender&apos;s Details
+        </Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -85,7 +81,6 @@ const SenderDetails: React.FC<SenderDetailsProps> = ({
       {/* Action Buttons */}
       <View className="pt-4">
         <ButtonPrimary title="Confirm Sender" onPress={onNext} />
-        <ButtonSecondary title="Skip" onPress={onSkip} className="mt-3" />
       </View>
     </View>
   );

@@ -167,7 +167,7 @@ const SelectVehicle = () => {
     {
       id: "bike-1",
       type: "bike" as const,
-      name: "Bike",
+      name: "Bike Dispatch",
       price: "₦100",
       time: "10 min away",
       description: "Affordable delivery for quick trips",
@@ -175,7 +175,7 @@ const SelectVehicle = () => {
     {
       id: "car-1",
       type: "car" as const,
-      name: "Car",
+      name: "Car Dispatch",
       price: "₦200",
       time: "5 min away",
       description: "Comfortable delivery for medium packages",
@@ -183,7 +183,7 @@ const SelectVehicle = () => {
     {
       id: "van-1",
       type: "van" as const,
-      name: "Van",
+      name: "Van Dispatch",
       price: "₦300",
       time: "15 min away",
       description: "Spacious delivery for large items",
