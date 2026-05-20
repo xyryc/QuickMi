@@ -38,7 +38,7 @@ const PersonalInfo = () => {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => router.push(`/(${role})/profile/update-name`)}
+              onPress={() => router.push(`/(shared)/profile/update-name`)}
             >
               <Text className="font-sf-pro-regular text-sm text-[#0F73F7]">
                 Edit
@@ -56,7 +56,7 @@ const PersonalInfo = () => {
             </View>
             <TouchableOpacity
               onPress={() =>
-                router.push(`/(${role})/profile/update-phone-number`)
+                router.push(`/(shared)/profile/update-phone-number`)
               }
             >
               <Text className="font-sf-pro-regular text-sm text-[#0F73F7]">
@@ -74,7 +74,7 @@ const PersonalInfo = () => {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => router.push(`/(${role})/profile/update-email`)}
+              onPress={() => router.push(`/(shared)/profile/update-email`)}
             >
               <Text className="font-sf-pro-regular text-sm text-[#0F73F7]">
                 Edit

@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const UpdatePhoneNumber = () => {
+const UpdateEmail = () => {
   return (
     <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
       <StatusBar backgroundColor="#D3E6FF" barStyle="dark-content" />
@@ -59,4 +59,4 @@ const UpdatePhoneNumber = () => {
   );
 };
 
-export default UpdatePhoneNumber;
+export default UpdateEmail;
