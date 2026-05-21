@@ -10,7 +10,7 @@ export const STORAGE_KEYS = {
   HOME_LOCATION_LABEL: "homeLocationLabel",
 };
 
-export const setHasSelectedRole = async (role: "user" | "agent") => {
+export const setHasSelectedRole = async (role: "USER" | "RIDER") => {
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.HAS_SELECTED_ROLE, "true");
     await AsyncStorage.setItem(STORAGE_KEYS.USER_ROLE, role);
@@ -28,10 +28,10 @@ export const getHasSelectedRole = async (): Promise<string | null> => {
   }
 };
 
-export const getUserRole = async (): Promise<"user" | "agent" | null> => {
+export const getUserRole = async (): Promise<"USER" | "RIDER" | null> => {
   try {
     const role = await AsyncStorage.getItem(STORAGE_KEYS.USER_ROLE);
-    return role as "user" | "agent" | null;
+    return role as "USER" | "RIDER" | null;
   } catch (error) {
     console.error("Error getting user role:", error);
     return null;
@@ -74,7 +74,7 @@ export const getAuthCompleted = async () => {
 
 export const setInstantDeliveryLocations = async (
   pickupLocation: string,
-  dropoffLocation: string
+  dropoffLocation: string,
 ) => {
   try {
     await AsyncStorage.multiSet([

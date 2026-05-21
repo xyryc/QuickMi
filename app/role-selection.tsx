@@ -12,7 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const RoleSelection = () => {
   const router = useRouter();
 
-  const handleRoleSelect = async (role: "user" | "agent") => {
+  const handleRoleSelect = async (role: "USER" | "RIDER") => {
     await setHasSelectedRole(role);
 
     router.replace("/(onboarding)/step1");
@@ -54,7 +54,7 @@ const RoleSelection = () => {
           </View>
 
           <ButtonSecondary
-            onPress={() => handleRoleSelect("user")}
+            onPress={() => handleRoleSelect("USER")}
             title="User"
             className="w-full mb-2"
             icon={
@@ -68,7 +68,7 @@ const RoleSelection = () => {
           />
 
           <ButtonPrimary
-            onPress={() => handleRoleSelect("agent")}
+            onPress={() => handleRoleSelect("RIDER")}
             title="Agent"
             className="w-full"
             icon={

@@ -1,8 +1,10 @@
+import { useSendOtpMutation, useVerifyOtpMutation } from "@/store/api/authApi";
 import { getUserRole, setAuthCompleted } from "@/utils/storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   ScrollView,
   StatusBar,
   Text,
@@ -29,6 +31,9 @@ const VerifyCode = () => {
     setValue,
   });
 
+  const [verifyOtp, { isLoading: isVerifying }] = useVerifyOtpMutation();
+  const [sendOtp, { isLoading: isResending }] = useSendOtpMutation();
+
   useEffect(() => {
     if (value.length === CELL_COUNT) {
       handleVerifySuccess();
@@ -36,16 +41,41 @@ const VerifyCode = () => {
   }, [value]);
 
   const handleVerifySuccess = async () => {
-    await setAuthCompleted();
+    if (!phoneNumber || value.length !== CELL_COUNT || isVerifying) return;
 
-    // Get user's selected role
-    const role = await getUserRole();
+    try {
+      const res = await verifyOtp({
+        phone: phoneNumber,
+        code: value,
+      }).unwrap();
 
-    // Navigate based on role
-    if (role === "agent") {
-      router.replace("/(agent-verification)");
-    } else {
-      router.replace("/(user)/home");
+      // store token
+      const { accessToken, refreshToken } = res.data;
+      console.log("tokens", accessToken, refreshToken);
+
+      await setAuthCompleted();
+
+      const role = await getUserRole();
+      // Navigate based on role
+      if (role === "RIDER") {
+        router.replace("/(agent-verification)");
+      } else {
+        router.replace("/(user)/(tabs)/home");
+      }
+    } catch (error) {
+      Alert.alert("Verification failed", error?.data?.message);
+      setValue("");
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (!phoneNumber || isResending) return;
+
+    try {
+      await sendOtp({ phone: phoneNumber }).unwrap();
+      Alert.alert("Success", "OTP sent successfully");
+    } catch (err: any) {
+      Alert.alert("Resend Failed", err?.data?.message || "Please try again");
     }
   };
 
@@ -109,8 +139,8 @@ const VerifyCode = () => {
             <Text className="font-sf-pro-regular text-custom-dark-gray text-center">
               Didn’t receive any code?
             </Text>
-            <TouchableOpacity>
-              <Text className="p-2 font-sf-pro-regular text-custom-dark-gray text-base">
+            <TouchableOpacity onPress={handleResendCode} disabled={isResending}>
+              <Text className="p-2 font-sf-pro-regular text-blue-600 text-base">
                 Resend
               </Text>
             </TouchableOpacity>

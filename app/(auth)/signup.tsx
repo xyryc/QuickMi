@@ -1,5 +1,6 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
-import { useSignupMutation } from "@/store/api/authApi";
+import { useSendOtpMutation, useSignupMutation } from "@/store/api/authApi";
+import { getUserRole } from "@/utils/storage";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -19,6 +20,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const SignUp = () => {
   const [signup, { isLoading }] = useSignupMutation();
+  const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpMutation();
 
   const router = useRouter();
   const [name, setName] = useState("");
@@ -71,16 +73,19 @@ const SignUp = () => {
     // @ts-ignore
     const fullPhoneNumber = `${selectedCountry.idd.root}${cleanPhone}`;
 
-    console.log("User entered", fullPhoneNumber, name);
+    // Get user's selected role
+    const role = await getUserRole();
 
     try {
-      const res = await signup({
+      await signup({
         fullName: name.trim(),
-        role: "USER",
+        role,
         phone: fullPhoneNumber.trim(),
       }).unwrap();
 
-      // Alert.alert("Success", res.message);
+      await sendOtp({
+        phone: fullPhoneNumber.trim(),
+      });
 
       router.push({
         pathname: "/(auth)/verify-code",
@@ -88,7 +93,7 @@ const SignUp = () => {
       });
     } catch (error: any) {
       Alert.alert("Signup failed", error?.data?.message);
-      // console.log("signup error", error?.data?.message);
+      console.log("signup error", error?.data?.message);
     }
   };
 
