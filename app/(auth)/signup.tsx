@@ -1,10 +1,12 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
+import { useSignupMutation } from "@/store/api/authApi";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import React, { useState } from "react";
 import {
+  Alert,
   ScrollView,
   StatusBar,
   Text,
@@ -16,6 +18,8 @@ import PhoneInput from "react-native-international-phone-number";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const SignUp = () => {
+  const [signup, { isLoading }] = useSignupMutation();
+
   const router = useRouter();
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -56,22 +60,36 @@ const SignUp = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSignup = async () => {
     const isPhoneValid = validatePhoneNumber(phoneNumber, selectedCountry);
 
-    // if (!isPhoneValid) {
-    //   return;
-    // }
+    if (!isPhoneValid) {
+      return;
+    }
 
     const cleanPhone = phoneNumber.replace(/\s/g, "");
     // @ts-ignore
     const fullPhoneNumber = `${selectedCountry.idd.root}${cleanPhone}`;
 
-    // console.log("User entered", fullPhoneNumber);
-    router.push({
-      pathname: "/(auth)/verify-code",
-      params: { phoneNumber: fullPhoneNumber },
-    });
+    console.log("User entered", fullPhoneNumber, name);
+
+    try {
+      const res = await signup({
+        fullName: name.trim(),
+        role: "USER",
+        phone: fullPhoneNumber.trim(),
+      }).unwrap();
+
+      // Alert.alert("Success", res.message);
+
+      router.push({
+        pathname: "/(auth)/verify-code",
+        params: { phoneNumber: fullPhoneNumber },
+      });
+    } catch (error: any) {
+      Alert.alert("Signup failed", error?.data?.message);
+      // console.log("signup error", error?.data?.message);
+    }
   };
 
   return (
@@ -160,7 +178,7 @@ const SignUp = () => {
             />
           </View>
 
-          <ButtonPrimary onPress={handleSubmit} title="Continue" />
+          <ButtonPrimary onPress={handleSignup} title="Continue" />
 
           <View className="my-4 flex-row items-center gap-2">
             <View className="w-[46%] h-[1px] bg-gray-200" />
