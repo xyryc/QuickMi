@@ -183,7 +183,11 @@ const SignUp = () => {
             />
           </View>
 
-          <ButtonPrimary onPress={handleSignup} title="Continue" />
+          <ButtonPrimary
+            onPress={handleSignup}
+            loading={isLoading || isSendingOtp}
+            title="Continue"
+          />
 
           <View className="my-4 flex-row items-center gap-2">
             <View className="w-[46%] h-[1px] bg-gray-200" />

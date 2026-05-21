@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Animated, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Animated,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface ButtonPrimaryProps {
   className?: string;
@@ -8,6 +14,7 @@ interface ButtonPrimaryProps {
   title: string;
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
+  loading?: boolean;
   disabled?: boolean;
   timer?: number;
   onTimerEnd?: () => void;
@@ -20,7 +27,8 @@ const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
   title,
   icon,
   iconPosition,
-  disabled,
+  loading = false,
+  disabled = false,
   timer,
   onTimerEnd,
 }) => {
@@ -66,7 +74,7 @@ const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      disabled={disabled || (timer && timeRemaining <= 0)}
+      disabled={disabled || (timer && timeRemaining <= 0) || loading}
       className={`${timeRemaining <= 0 ? "bg-[#0F73F7]" : "bg-[#6FABFA]"}
       ${className} relative overflow-hidden items-center justify-center gap-2 py-3 rounded-2xl`}
     >
@@ -88,9 +96,18 @@ const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
       <View
         className={`${iconPosition === "left" ? "flex-row-reverse" : "flex-row"} items-center gap-2 z-10`}
       >
-        <Text className={`${textClassName} font-sf-pro-semibold text-white`}>
-          {title}
-        </Text>
+        {loading ? (
+          <View className="flex-row items-center gap-2">
+            <ActivityIndicator size="small" color="#fff" />
+            <Text className="font-sf-pro-semibold text-white">
+              Please wait...
+            </Text>
+          </View>
+        ) : (
+          <Text className={`${textClassName} font-sf-pro-semibold text-white`}>
+            {title}
+          </Text>
+        )}
 
         {timer && timer > 0 && (
           <Text className="font-sf-pro-semibold text-white">
