@@ -1,5 +1,5 @@
 import { useSendOtpMutation, useVerifyOtpMutation } from "@/store/api/authApi";
-import { getUserRole, setAuthCompleted } from "@/utils/storage";
+import { getUserRole, setAuthCompleted, setAuthTokens } from "@/utils/storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -51,8 +51,7 @@ const VerifyCode = () => {
 
       // store token
       const { accessToken, refreshToken } = res.data;
-      console.log("tokens", accessToken, refreshToken);
-
+      await setAuthTokens(accessToken, refreshToken);
       await setAuthCompleted();
 
       const role = await getUserRole();

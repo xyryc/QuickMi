@@ -1,5 +1,30 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const ACCESS_TOKEN_KEY = "access_token";
+const REFRESH_TOKEN_KEY = "refresh_token";
+
+export const setAuthTokens = async (
+  accessToken: string,
+  refreshToken: string,
+) => {
+  await AsyncStorage.multiSet([
+    [ACCESS_TOKEN_KEY, accessToken],
+    [REFRESH_TOKEN_KEY, refreshToken],
+  ]);
+};
+
+export const getAccessToken = async () => {
+  return AsyncStorage.getItem(ACCESS_TOKEN_KEY);
+};
+
+export const getRefreshToken = async () => {
+  return AsyncStorage.getItem(REFRESH_TOKEN_KEY);
+};
+
+export const clearAuthTokens = async () => {
+  await AsyncStorage.multiRemove([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY]);
+};
+
 export const STORAGE_KEYS = {
   HAS_SELECTED_ROLE: "hasSelectedRole",
   USER_ROLE: "userRole",
@@ -55,9 +80,12 @@ export const getHasCompletedOnboarding = async (): Promise<string | null> => {
   }
 };
 
-export const setAuthCompleted = async () => {
+export const setAuthCompleted = async (completed: boolean = true) => {
   try {
-    await AsyncStorage.setItem(STORAGE_KEYS.AUTH_COMPLETED, "true");
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.AUTH_COMPLETED,
+      completed ? "true" : "false",
+    );
   } catch (error) {
     console.error("Error saving auth status:", error);
   }

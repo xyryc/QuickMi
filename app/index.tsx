@@ -1,4 +1,5 @@
 import {
+  getAccessToken,
   getAuthCompleted,
   getHasCompletedOnboarding,
   getHasSelectedRole,
@@ -12,7 +13,7 @@ export default function Index() {
   const [hasSelectedRole, setHasSelectedRole] = useState(false);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState<"user" | "agent" | null>(null);
+  const [userRole, setUserRole] = useState<"USER" | "RIDER" | null>(null);
 
   useEffect(() => {
     checkStatus();
@@ -22,12 +23,19 @@ export default function Index() {
     const role = await getHasSelectedRole();
     const onboarding = await getHasCompletedOnboarding();
     const auth = await getAuthCompleted();
+    const accessToken = await getAccessToken();
     const selectedRole = await getUserRole();
 
     setHasSelectedRole(!!role);
     setHasCompletedOnboarding(!!onboarding);
-    setIsAuthenticated(!!auth);
-    setUserRole(selectedRole);
+    setIsAuthenticated(auth === "true" && !!accessToken);
+    setUserRole(
+      selectedRole === "RIDER"
+        ? "RIDER"
+        : selectedRole === "USER"
+          ? "USER"
+          : null,
+    );
     setIsLoading(false);
   };
 
@@ -51,7 +59,7 @@ export default function Index() {
   }
 
   // Step 4: Navigate based on role
-  if (userRole === "agent") {
+  if (userRole === "RIDER") {
     return <Redirect href="/(agent-verification)" />;
   }
 

@@ -29,6 +29,7 @@ import {
 
 import ButtonPrimary from "@/components/ButtonPrimary";
 import ButtonSecondary from "@/components/ButtonSecondary";
+import { clearAuthTokens, setAuthCompleted } from "@/utils/storage";
 import { useUserRole } from "@/utils/useUserRole";
 
 const Profile = () => {
@@ -168,6 +169,17 @@ const Profile = () => {
   if (loading || !role) {
     return <ActivityIndicator size="small" color="#0F73F7" />;
   }
+
+  const handleLogout = async () => {
+    try {
+      await clearAuthTokens();
+      await setAuthCompleted(false);
+
+      router.replace("/(auth)/signup");
+    } catch (e) {
+      Alert.alert("Logout failed", "Please try again.");
+    }
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -361,7 +373,7 @@ const Profile = () => {
               className="flex-1"
               onPress={() => {
                 logoutConfirmRef.current?.dismiss();
-                router.replace("/(auth)/signup");
+                handleLogout();
               }}
             />
           </View>
