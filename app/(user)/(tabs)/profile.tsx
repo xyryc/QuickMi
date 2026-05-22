@@ -29,21 +29,24 @@ import {
 
 import ButtonPrimary from "@/components/ButtonPrimary";
 import ButtonSecondary from "@/components/ButtonSecondary";
+import { useGetMeQuery } from "@/store/api/authApi";
 import { clearAuthTokens, setAuthCompleted } from "@/utils/storage";
 import { useUserRole } from "@/utils/useUserRole";
 
 const Profile = () => {
+  const { data, isLoading, isFetching, error, refetch } = useGetMeQuery();
+
   const { role, loading } = useUserRole();
   const insets = useSafeAreaInsets();
   const [profilePhotoUri, setProfilePhotoUri] = useState(
     "https://randomuser.me/api/portraits/men/10.jpg",
   );
 
-  // Logout Confirmation Modal
+  // logout Confirmation Modal
   const logoutConfirmRef = useRef<BottomSheetModal>(null);
   const snapPoints = useMemo(() => ["50%"], []);
 
-  // Open logout confirmation
+  // open logout confirmation
   const handleLogoutPress = useCallback(() => {
     logoutConfirmRef.current?.present();
   }, []);
@@ -203,20 +206,26 @@ const Profile = () => {
               <View className="self-center">
                 <TouchableOpacity onPress={handleChangePhoto}>
                   <Image
-                    source={{
-                      uri: profilePhotoUri,
+                    source={
+                      data?.data?.profileImag
+                        ? { uri: data.data.profileImag }
+                        : require("@/assets/images/user.webp")
+                    }
+                    style={{
+                      height: 74,
+                      width: 74,
+                      borderRadius: 999,
                     }}
-                    style={{ height: 74, width: 74, borderRadius: 999 }}
                     contentFit="cover"
                   />
                 </TouchableOpacity>
               </View>
 
-              <Text className="mt-3 text-center font-sf-pro-semibold text-[22px] text-[#031731]">
-                Darlene Robertson
+              <Text className="mt-3 text-center font-sf-pro-semibold text-2xl text-[#031731]">
+                {data?.data?.fullName}
               </Text>
-              <Text className="mt-1 text-center font-sf-pro-medium text-[13px] text-[#6D7A8B]">
-                +234 801 234 5678
+              <Text className="mt-1 text-center font-sf-pro-medium text-sm text-[#6D7A8B]">
+                {data?.data?.phone}
               </Text>
             </View>
 

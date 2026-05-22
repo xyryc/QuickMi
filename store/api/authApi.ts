@@ -1,10 +1,17 @@
+import { getAccessToken } from "@/utils/storage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.EXPO_PUBLIC_API_BASE_URL,
+    prepareHeaders: async (headers) => {
+      const token = await getAccessToken();
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+      return headers;
+    },
   }),
+
   endpoints: (builder) => ({
     signup: builder.mutation({
       query: (body) => ({
@@ -29,8 +36,19 @@ export const authApi = createApi({
         body,
       }),
     }),
+
+    getMe: builder.query({
+      query: () => ({
+        url: "/users/me",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useSignupMutation, useSendOtpMutation, useVerifyOtpMutation } =
-  authApi;
+export const {
+  useGetMeQuery,
+  useSignupMutation,
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+} = authApi;
