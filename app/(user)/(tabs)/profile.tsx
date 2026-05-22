@@ -31,6 +31,7 @@ import ButtonSecondary from "@/components/ButtonSecondary";
 import {
   authApi,
   useGetMeQuery,
+  useSwitchRoleMutation,
   useUploadProfileImageMutation,
 } from "@/store/api/authApi";
 import {
@@ -38,6 +39,8 @@ import {
   getAccessToken,
   getRefreshToken,
   setAuthCompleted,
+  setAuthTokens,
+  setUserRole,
 } from "@/utils/storage";
 import { useUserRole } from "@/utils/useUserRole";
 import { useDispatch } from "react-redux";
@@ -46,6 +49,7 @@ const Profile = () => {
   const { data, isLoading, isFetching, error, refetch } = useGetMeQuery();
   const [uploadProfileImage, { isLoading: isUploading }] =
     useUploadProfileImageMutation();
+  const [switchRole, { isLoading: isSwitching }] = useSwitchRoleMutation();
   const dispatch = useDispatch();
 
   const { role, loading } = useUserRole();
@@ -207,6 +211,22 @@ const Profile = () => {
     }
   };
 
+  const handleSwitchToAgent = async () => {
+    if (!data?.data?.id) return;
+
+    const res = await switchRole({
+      id: data?.data?.id,
+      role: "RIDER",
+    }).unwrap();
+
+    await setAuthTokens(res.data.accessToken, res.data.refreshToken);
+    await setUserRole("RIDER");
+
+    dispatch(authApi.util.resetApiState());
+
+    router.replace("/(agent)/home");
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView className="flex-1" edges={["top", "left", "right"]}>
@@ -224,7 +244,7 @@ const Profile = () => {
             }}
             showsVerticalScrollIndicator={false}
           >
-            {/* Hero */}
+            {/* header */}
             <View className="mt-7 bg-white rounded-3xl p-4 border border-[#E6EBF5]">
               <View className="self-center">
                 <TouchableOpacity onPress={handleChangePhoto}>
@@ -274,8 +294,9 @@ const Profile = () => {
             </View>
 
             <ButtonPrimary
-              onPress={() => router.replace("/(agent)/home")}
-              title="Switch to Agent Mode"
+              onPress={handleSwitchToAgent}
+              disabled={isSwitching}
+              title={isSwitching ? "Switching Mode..." : "Switch to Agent Mode"}
               className="mt-3.5"
               icon={<Ionicons name="car-outline" size={20} color="white" />}
               iconPosition="left"

@@ -3,9 +3,15 @@ import ButtonSecondary from "@/components/ButtonSecondary";
 import {
   authApi,
   useGetMeQuery,
+  useSwitchRoleMutation,
   useUploadProfileImageMutation,
 } from "@/store/api/authApi";
-import { clearAuthTokens, setAuthCompleted } from "@/utils/storage";
+import {
+  clearAuthTokens,
+  setAuthCompleted,
+  setAuthTokens,
+  setUserRole,
+} from "@/utils/storage";
 import {
   AntDesign,
   Feather,
@@ -39,6 +45,7 @@ const Profile = () => {
   const { data, isLoading, isFetching, error, refetch } = useGetMeQuery();
   const [uploadProfileImage, { isLoading: isUploading }] =
     useUploadProfileImageMutation();
+  const [switchRole, { isLoading: isSwitching }] = useSwitchRoleMutation();
   const dispatch = useDispatch();
 
   const insets = useSafeAreaInsets();
@@ -174,6 +181,18 @@ const Profile = () => {
     }
   }, []);
 
+  const handleSwitchToUser = async () => {
+    if (!data?.data?.id) return;
+
+    const res = await switchRole({ id: data?.data?.id, role: "USER" }).unwrap();
+
+    await setAuthTokens(res.data.accessToken, res.data.refreshToken);
+    await setUserRole("USER");
+
+    dispatch(authApi.util.resetApiState());
+    router.replace("/(user)/(tabs)/home");
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView className="flex-1" edges={["left", "right", "bottom"]}>
@@ -255,8 +274,9 @@ const Profile = () => {
             </View>
 
             <ButtonPrimary
-              onPress={() => router.replace("/(user)/(tabs)/home")}
-              title="Switch to User Mode"
+              onPress={handleSwitchToUser}
+              disabled={isSwitching}
+              title={isSwitching ? "Switching Mode..." : "Switch to User Mode"}
               className="mt-3.5"
               icon={<Feather name="user" size={18} color="white" />}
               iconPosition="left"

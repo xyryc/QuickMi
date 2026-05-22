@@ -63,6 +63,15 @@ export const authApi = createApi({
       invalidatesTags: ["Me"],
     }),
 
+    switchRole: builder.mutation({
+      query: ({ id, role }) => ({
+        url: `/users/${id}/role`,
+        method: "PATCH",
+        body: { role },
+      }),
+      invalidatesTags: ["Me"],
+    }),
+
     uploadNationalId: builder.mutation<any, FormData>({
       query: (formData) => ({
         url: "/national-id",
@@ -74,6 +83,7 @@ export const authApi = createApi({
 });
 
 export const {
+  useSwitchRoleMutation,
   useUploadNationalIdMutation,
   useUpdateProfileMutation,
   useUploadProfileImageMutation,

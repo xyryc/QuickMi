@@ -63,6 +63,10 @@ export const getUserRole = async (): Promise<"USER" | "RIDER" | null> => {
   }
 };
 
+export const setUserRole = async (role: "USER" | "RIDER") => {
+  await AsyncStorage.setItem(STORAGE_KEYS.USER_ROLE, role);
+};
+
 export const setHasCompletedOnboarding = async () => {
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.HAS_COMPLETED_ONBOARDING, "true");
