@@ -51,6 +51,7 @@ const VerifyCode = () => {
 
       // store token
       const { accessToken, refreshToken } = res.data;
+      console.log("verifycode", accessToken, refreshToken);
       await setAuthTokens(accessToken, refreshToken);
       await setAuthCompleted();
 

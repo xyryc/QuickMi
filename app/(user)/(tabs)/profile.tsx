@@ -29,16 +29,24 @@ import {
 import ButtonPrimary from "@/components/ButtonPrimary";
 import ButtonSecondary from "@/components/ButtonSecondary";
 import {
+  authApi,
   useGetMeQuery,
   useUploadProfileImageMutation,
 } from "@/store/api/authApi";
-import { clearAuthTokens, setAuthCompleted } from "@/utils/storage";
+import {
+  clearAuthTokens,
+  getAccessToken,
+  getRefreshToken,
+  setAuthCompleted,
+} from "@/utils/storage";
 import { useUserRole } from "@/utils/useUserRole";
+import { useDispatch } from "react-redux";
 
 const Profile = () => {
   const { data, isLoading, isFetching, error, refetch } = useGetMeQuery();
   const [uploadProfileImage, { isLoading: isUploading }] =
     useUploadProfileImageMutation();
+  const dispatch = useDispatch();
 
   const { role, loading } = useUserRole();
   const insets = useSafeAreaInsets();
@@ -187,6 +195,11 @@ const Profile = () => {
     try {
       await clearAuthTokens();
       await setAuthCompleted(false);
+      dispatch(authApi.util.resetApiState());
+
+      const accessToken = getAccessToken();
+      const refreshToken = getRefreshToken();
+      console.log("after logout", accessToken, refreshToken);
 
       router.replace("/(auth)/signup");
     } catch (e) {

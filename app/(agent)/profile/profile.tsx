@@ -1,6 +1,7 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import ButtonSecondary from "@/components/ButtonSecondary";
 import {
+  authApi,
   useGetMeQuery,
   useUploadProfileImageMutation,
 } from "@/store/api/authApi";
@@ -32,11 +33,13 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { useDispatch } from "react-redux";
 
 const Profile = () => {
   const { data, isLoading, isFetching, error, refetch } = useGetMeQuery();
   const [uploadProfileImage, { isLoading: isUploading }] =
     useUploadProfileImageMutation();
+  const dispatch = useDispatch();
 
   const insets = useSafeAreaInsets();
   const logoutConfirmRef = useRef<BottomSheetModal>(null);
@@ -50,6 +53,7 @@ const Profile = () => {
     try {
       await clearAuthTokens();
       await setAuthCompleted(false);
+      dispatch(authApi.util.resetApiState());
 
       router.replace("/(auth)/signup");
     } catch (e) {

@@ -1,6 +1,6 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import { useSendOtpMutation, useSignupMutation } from "@/store/api/authApi";
-import { getUserRole } from "@/utils/storage";
+import { getAccessToken, getRefreshToken, getUserRole } from "@/utils/storage";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -27,6 +27,10 @@ const SignUp = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [phoneError, setPhoneError] = useState("");
+
+  const accessToken = getAccessToken();
+  const refreshToken = getRefreshToken();
+  console.log("after logout", accessToken, refreshToken);
 
   const validatePhoneNumber = (phone: string, country: any) => {
     if (!phone || phone.length === 0) {
@@ -92,12 +96,20 @@ const SignUp = () => {
         params: { phoneNumber: fullPhoneNumber },
       });
     } catch (error: any) {
-      Alert.alert(error?.data?.message, error?.data?.messages[0]);
       console.log(
         "signup error",
         error?.data?.message,
         error?.data?.messages[0],
       );
+
+      if (error?.data?.messages[0] === "phone already exists") {
+        router.push({
+          pathname: "/(auth)/verify-code",
+          params: { phoneNumber: fullPhoneNumber },
+        });
+      } else {
+        Alert.alert(error?.data?.message, error?.data?.messages[0]);
+      }
     }
   };
 
