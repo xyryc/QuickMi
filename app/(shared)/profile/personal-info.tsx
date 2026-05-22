@@ -1,5 +1,5 @@
 import ScreenHeader from "@/components/ScreenHeader";
-import { useUserRole } from "@/utils/useUserRole";
+import { useGetMeQuery } from "@/store/api/authApi";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const PersonalInfo = () => {
-  const { role } = useUserRole();
+  const { data, isLoading, isFetching, error, refetch } = useGetMeQuery();
 
   return (
     <SafeAreaView className="flex-1 mb-28" edges={["top", "left", "right"]}>
@@ -34,7 +34,7 @@ const PersonalInfo = () => {
             <View className="flex-row items-center gap-3">
               <Ionicons name="person-outline" size={24} color="#4D4D4D" />
               <Text className="font-sf-pro-medium text-sm text-black">
-                Darlene Robertson
+                {data?.data?.fullName || "Username"}
               </Text>
             </View>
             <TouchableOpacity
@@ -51,10 +51,11 @@ const PersonalInfo = () => {
             <View className="flex-row items-center gap-3">
               <Feather name="phone-call" size={24} color="#4D4D4D" />
               <Text className="font-sf-pro-medium text-sm text-black">
-                (225) 555-0118
+                {data?.data?.phone || "Phone number"}
               </Text>
             </View>
-            <TouchableOpacity
+
+            {/* <TouchableOpacity
               onPress={() =>
                 router.push(`/(shared)/profile/update-phone-number`)
               }
@@ -62,17 +63,18 @@ const PersonalInfo = () => {
               <Text className="font-sf-pro-regular text-sm text-[#0F73F7]">
                 Edit
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
-          {/* E-Mail*/}
+          {/* E-Mail */}
           <View className="flex-row justify-between items-center mt-5 border-b border-[#E3E6F0] mx-3 py-2 pb-4">
             <View className="flex-row items-center gap-3">
               <Ionicons name="mail-outline" size={24} color="#4D4D4D" />
               <Text className="font-sf-pro-medium text-sm text-black">
-                dolores.chambers@example.com
+                {data?.data?.email || "User email"}
               </Text>
             </View>
+
             <TouchableOpacity
               onPress={() => router.push(`/(shared)/profile/update-email`)}
             >

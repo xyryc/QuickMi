@@ -11,6 +11,7 @@ export const authApi = createApi({
       return headers;
     },
   }),
+  tagTypes: ["Me"],
 
   endpoints: (builder) => ({
     signup: builder.mutation({
@@ -42,6 +43,7 @@ export const authApi = createApi({
         url: "/users/me",
         method: "GET",
       }),
+      providesTags: ["Me"],
     }),
 
     uploadProfileImage: builder.mutation({
@@ -51,10 +53,20 @@ export const authApi = createApi({
         body: formData,
       }),
     }),
+
+    updateProfile: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `/users/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["Me"],
+    }),
   }),
 });
 
 export const {
+  useUpdateProfileMutation,
   useUploadProfileImageMutation,
   useGetMeQuery,
   useSignupMutation,
