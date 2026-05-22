@@ -1,5 +1,6 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import ScreenHeader from "@/components/ScreenHeader";
+import { useUploadNationalIdMutation } from "@/store/api/authApi";
 import { Entypo } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
@@ -20,8 +21,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const NationalId = () => {
+  const [uploadNationalId, { isLoading: isUploading }] =
+    useUploadNationalIdMutation();
+
+  const [nid, setNid] = useState("");
   const [selectedNidFront, setSelectedNidFront] = useState<string | null>(null);
   const [selectedNidBack, setSelectedNidBack] = useState<string | null>(null);
+
+  console.log("nid", nid);
 
   // Request camera permission
   const requestCameraPermission = async () => {
@@ -29,7 +36,7 @@ const NationalId = () => {
     if (status !== "granted") {
       Alert.alert(
         "Permission Denied",
-        "Camera permission is required to take photos."
+        "Camera permission is required to take photos.",
       );
       return false;
     }
@@ -42,7 +49,7 @@ const NationalId = () => {
     if (status !== "granted") {
       Alert.alert(
         "Permission Denied",
-        "Media library permission is required to select photos."
+        "Media library permission is required to select photos.",
       );
       return false;
     }
@@ -130,7 +137,7 @@ const NationalId = () => {
           style: "cancel",
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -153,7 +160,7 @@ const NationalId = () => {
           style: "cancel",
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -168,7 +175,12 @@ const NationalId = () => {
   };
 
   // Handle submit with validation
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!nid) {
+      Alert.alert("Error", "Please fill up National ID number");
+      return;
+    }
+
     if (!selectedNidFront) {
       Alert.alert("Error", "Please upload National ID Front picture");
       return;
@@ -177,8 +189,35 @@ const NationalId = () => {
       Alert.alert("Error", "Please upload National ID Back picture");
       return;
     }
-    // Here you can handle the image upload to your backend
-    router.push("/(agent-verification)");
+
+    try {
+      const formData = new FormData();
+
+      const frontFileName =
+        selectedNidFront.split("/").pop() || "nid-front.jpg";
+      const backFileName = selectedNidBack.split("/").pop() || "nid-back.jpg";
+
+      formData.append("idNum", nid.trim());
+      formData.append("pictureFront", {
+        uri: selectedNidFront,
+        name: frontFileName,
+        type: "image/jpeg",
+      } as any);
+      formData.append("pictureBack", {
+        uri: selectedNidBack,
+        name: backFileName,
+        type: "image/jpeg",
+      } as any);
+
+      await uploadNationalId(formData).unwrap();
+      Alert.alert("Success", "National ID uploaded successfully");
+      router.push("/(agent-verification)");
+    } catch (error: any) {
+      Alert.alert(
+        "Update failed",
+        error?.data?.message || "Failed to upload National ID",
+      );
+    }
   };
 
   return (
@@ -203,16 +242,23 @@ const NationalId = () => {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 120 }}
           >
-            <Text className="mt-3.5 font-sf-pro-medium">National ID No</Text>
+            {/* nid number */}
+            <Text className="mt-3.5 font-sf-pro-medium">
+              National ID Number
+            </Text>
             <TextInput
               className="mt-2 p-4 border border-[#E3E6F0] rounded-xl bg-white"
-              placeholder="3264 35465 341654"
+              placeholder="xxxx xxxx xxxx"
+              value={nid}
+              onChangeText={setNid}
+              keyboardType="numeric"
             />
 
             {/* Upload National ID Front */}
             <Text className="mt-8 text-base font-sf-pro-medium text-center">
               Upload your National ID picture (Front)
             </Text>
+
             <TouchableOpacity
               onPress={handleNidFrontUpload}
               activeOpacity={0.7}
@@ -297,7 +343,11 @@ const NationalId = () => {
 
           {/* bottom button */}
           <View className="px-5 pb-32">
-            <ButtonPrimary onPress={handleSubmit} title="Submit" />
+            <ButtonPrimary
+              onPress={handleSubmit}
+              title="Submit"
+              loading={isUploading}
+            />
           </View>
         </KeyboardAvoidingView>
       </LinearGradient>

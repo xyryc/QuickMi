@@ -79,6 +79,7 @@ const SignUp = () => {
 
     // Get user's selected role
     const role = await getUserRole();
+    console.log("signup role", role);
 
     try {
       await signup({

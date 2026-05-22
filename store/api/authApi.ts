@@ -62,10 +62,19 @@ export const authApi = createApi({
       }),
       invalidatesTags: ["Me"],
     }),
+
+    uploadNationalId: builder.mutation<any, FormData>({
+      query: (formData) => ({
+        url: "/national-id",
+        method: "POST",
+        body: formData,
+      }),
+    }),
   }),
 });
 
 export const {
+  useUploadNationalIdMutation,
   useUpdateProfileMutation,
   useUploadProfileImageMutation,
   useGetMeQuery,
