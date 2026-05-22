@@ -92,8 +92,12 @@ const SignUp = () => {
         params: { phoneNumber: fullPhoneNumber },
       });
     } catch (error: any) {
-      Alert.alert("Signup failed", error?.data?.message);
-      console.log("signup error", error?.data?.message);
+      Alert.alert(error?.data?.message, error?.data?.messages[0]);
+      console.log(
+        "signup error",
+        error?.data?.message,
+        error?.data?.messages[0],
+      );
     }
   };
 

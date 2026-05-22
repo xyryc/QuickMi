@@ -1,6 +1,11 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import ButtonSecondary from "@/components/ButtonSecondary";
 import {
+  useGetMeQuery,
+  useUploadProfileImageMutation,
+} from "@/store/api/authApi";
+import { clearAuthTokens, setAuthCompleted } from "@/utils/storage";
+import {
   AntDesign,
   Feather,
   Ionicons,
@@ -9,10 +14,12 @@ import {
 } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useCallback, useMemo, useRef } from "react";
 import {
+  Alert,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -27,6 +34,10 @@ import {
 } from "react-native-safe-area-context";
 
 const Profile = () => {
+  const { data, isLoading, isFetching, error, refetch } = useGetMeQuery();
+  const [uploadProfileImage, { isLoading: isUploading }] =
+    useUploadProfileImageMutation();
+
   const insets = useSafeAreaInsets();
   const logoutConfirmRef = useRef<BottomSheetModal>(null);
   const confirmSnapPoints = useMemo(() => ["40%"], []);
@@ -35,12 +46,16 @@ const Profile = () => {
     logoutConfirmRef.current?.present();
   }, []);
 
-  const handleConfirmLogout = useCallback(() => {
-    logoutConfirmRef.current?.dismiss();
-    setTimeout(() => {
+  const handleLogout = async () => {
+    try {
+      await clearAuthTokens();
+      await setAuthCompleted(false);
+
       router.replace("/(auth)/signup");
-    }, 300);
-  }, []);
+    } catch (e) {
+      Alert.alert("Logout failed", "Please try again.");
+    }
+  };
 
   const handleCancelLogout = useCallback(() => {
     logoutConfirmRef.current?.dismiss();
@@ -119,6 +134,42 @@ const Profile = () => {
     },
   ];
 
+  const handleChangePhoto = useCallback(async () => {
+    try {
+      const permission =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          "Permission Required",
+          "Allow photo access to update profile picture.",
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.9,
+      });
+
+      const formData = new FormData();
+      const asset = result.assets?.[0];
+      if (!asset?.uri) return;
+
+      formData.append("profileImage", {
+        uri: asset.uri,
+        name: asset.fileName || `profile-${Date.now()}.jpg`,
+        type: asset.mimeType || "image/jpeg",
+      } as any);
+
+      await uploadProfileImage(formData).unwrap();
+      await refetch();
+    } catch (error) {
+      Alert.alert("Photo Error", "Could not update profile photo.");
+    }
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView className="flex-1" edges={["left", "right", "bottom"]}>
@@ -150,26 +201,30 @@ const Profile = () => {
 
             <View className="mt-4 bg-white rounded-3xl p-4 border border-[#E6EBF5]">
               <View className="self-center">
-                <Image
-                  source={{
-                    uri: "https://randomuser.me/api/portraits/men/10.jpg",
-                  }}
-                  style={{ height: 74, width: 74, borderRadius: 999 }}
-                  contentFit="cover"
-                />
+                <TouchableOpacity onPress={handleChangePhoto}>
+                  <Image
+                    source={
+                      data?.data?.profileImag
+                        ? { uri: data.data.profileImag }
+                        : require("@/assets/images/user.webp")
+                    }
+                    style={{ height: 74, width: 74, borderRadius: 999 }}
+                    contentFit="cover"
+                  />
+                </TouchableOpacity>
               </View>
 
-              <Text className="mt-3 text-center font-sf-pro-semibold text-[22px] text-[#031731]">
-                John Doe
+              <Text className="mt-3 text-center font-sf-pro-semibold text-2xl text-[#031731]">
+                {data?.data?.fullName || "Username"}
               </Text>
 
               <View className="mt-1 flex-row justify-center items-center">
                 <AntDesign name="star" size={14} color="#FFD700" />
-                <Text className="ml-1 font-sf-pro-medium text-xs text-[#1F1D1D]">
+                <Text className="ml-1 font-sf-pro-medium text-sm text-[#1F1D1D]">
                   3.35
                 </Text>
                 <Text className="mx-2 text-[#94A3B8]">|</Text>
-                <Text className="font-sf-pro-regular text-xs text-[#4D4D4D]">
+                <Text className="font-sf-pro-regular text-sm text-[#4D4D4D]">
                   150 Deliveries
                 </Text>
               </View>
@@ -196,7 +251,7 @@ const Profile = () => {
             </View>
 
             <ButtonPrimary
-              onPress={() => router.replace("/(user)/home")}
+              onPress={() => router.replace("/(user)/(tabs)/home")}
               title="Switch to User Mode"
               className="mt-3.5"
               icon={<Feather name="user" size={18} color="white" />}
@@ -295,7 +350,7 @@ const Profile = () => {
                 <ButtonPrimary
                   title="Yes"
                   className="flex-1"
-                  onPress={handleConfirmLogout}
+                  onPress={handleLogout}
                 />
               </View>
             </BottomSheetView>

@@ -1,5 +1,6 @@
 import ActivityCard from "@/components/ActivityCard";
 import TipsSection from "@/components/TipsSection";
+import { useGetMeQuery } from "@/store/api/authApi";
 import { getHomeLocationLabel } from "@/utils/storage";
 import { Ionicons } from "@expo/vector-icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -19,6 +20,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Home = () => {
+  const { data, isLoading, isFetching, error, refetch } = useGetMeQuery();
+
   const router = useRouter();
   const [locationLabel, setLocationLabel] = useState("Set location");
 
@@ -70,7 +73,11 @@ const Home = () => {
               onPress={() => router.push("/(user)/(tabs)/profile")}
             >
               <Image
-                source="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXpdpAD2WforjNOXjrovpTAGSJKeFFn3AhKCYndxUUGoepbo36bvFeDhYYiv2EXdlauQtHqMjsrKvn103gY57FgYUN1xNrSnTW1h9bt_TqPQ&s=10"
+                source={
+                  data?.data?.profileImag
+                    ? { uri: data.data.profileImag }
+                    : require("@/assets/images/user.webp")
+                }
                 style={{
                   width: 45,
                   height: 45,

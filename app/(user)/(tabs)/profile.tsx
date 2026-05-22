@@ -5,12 +5,11 @@ import {
   SimpleLineIcons,
 } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -43,9 +42,6 @@ const Profile = () => {
 
   const { role, loading } = useUserRole();
   const insets = useSafeAreaInsets();
-  const [profilePhotoUri, setProfilePhotoUri] = useState(
-    "https://randomuser.me/api/portraits/men/10.jpg",
-  );
 
   // logout Confirmation Modal
   const logoutConfirmRef = useRef<BottomSheetModal>(null);
@@ -74,10 +70,6 @@ const Profile = () => {
         aspect: [1, 1],
         quality: 0.9,
       });
-
-      if (!result.canceled && result.assets?.[0]?.uri) {
-        setProfilePhotoUri(result.assets[0].uri);
-      }
 
       const formData = new FormData();
       const asset = result.assets?.[0];
