@@ -43,10 +43,19 @@ export const authApi = createApi({
         method: "GET",
       }),
     }),
+
+    uploadProfileImage: builder.mutation({
+      query: (formData) => ({
+        url: "/users/profile-image",
+        method: "POST",
+        body: formData,
+      }),
+    }),
   }),
 });
 
 export const {
+  useUploadProfileImageMutation,
   useGetMeQuery,
   useSignupMutation,
   useSendOtpMutation,

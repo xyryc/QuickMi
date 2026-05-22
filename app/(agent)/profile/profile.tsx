@@ -76,7 +76,7 @@ const Profile = () => {
           color="#4D4D4D"
         />
       ),
-      onPress: () => router.push("/(agent)/profile/personal-info"),
+      onPress: () => router.push("/(shared)/profile/personal-info"),
     },
     {
       id: "rides",
@@ -87,9 +87,7 @@ const Profile = () => {
     {
       id: "notifications",
       label: "Notifications",
-      icon: (
-        <Ionicons name="notifications-outline" size={18} color="#4D4D4D" />
-      ),
+      icon: <Ionicons name="notifications-outline" size={18} color="#4D4D4D" />,
       onPress: () => router.push("/(shared)/notification"),
     },
   ];

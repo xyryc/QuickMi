@@ -29,12 +29,17 @@ import {
 
 import ButtonPrimary from "@/components/ButtonPrimary";
 import ButtonSecondary from "@/components/ButtonSecondary";
-import { useGetMeQuery } from "@/store/api/authApi";
+import {
+  useGetMeQuery,
+  useUploadProfileImageMutation,
+} from "@/store/api/authApi";
 import { clearAuthTokens, setAuthCompleted } from "@/utils/storage";
 import { useUserRole } from "@/utils/useUserRole";
 
 const Profile = () => {
   const { data, isLoading, isFetching, error, refetch } = useGetMeQuery();
+  const [uploadProfileImage, { isLoading: isUploading }] =
+    useUploadProfileImageMutation();
 
   const { role, loading } = useUserRole();
   const insets = useSafeAreaInsets();
@@ -73,6 +78,19 @@ const Profile = () => {
       if (!result.canceled && result.assets?.[0]?.uri) {
         setProfilePhotoUri(result.assets[0].uri);
       }
+
+      const formData = new FormData();
+      const asset = result.assets?.[0];
+      if (!asset?.uri) return;
+
+      formData.append("profileImage", {
+        uri: asset.uri,
+        name: asset.fileName || `profile-${Date.now()}.jpg`,
+        type: asset.mimeType || "image/jpeg",
+      } as any);
+
+      await uploadProfileImage(formData).unwrap();
+      await refetch();
     } catch (error) {
       Alert.alert("Photo Error", "Could not update profile photo.");
     }
@@ -222,10 +240,10 @@ const Profile = () => {
               </View>
 
               <Text className="mt-3 text-center font-sf-pro-semibold text-2xl text-[#031731]">
-                {data?.data?.fullName}
+                {data?.data?.fullName || "Username"}
               </Text>
               <Text className="mt-1 text-center font-sf-pro-medium text-sm text-[#6D7A8B]">
-                {data?.data?.phone}
+                {data?.data?.phone || "Phone number"}
               </Text>
             </View>
 
