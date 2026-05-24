@@ -1,6 +1,7 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import ScreenHeader from "@/components/ScreenHeader";
 import { useUploadNationalIdMutation } from "@/store/api/authApi";
+import { getAccessToken } from "@/utils/storage";
 import { Entypo } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
@@ -28,7 +29,8 @@ const NationalId = () => {
   const [selectedNidFront, setSelectedNidFront] = useState<string | null>(null);
   const [selectedNidBack, setSelectedNidBack] = useState<string | null>(null);
 
-  console.log("nid", nid);
+  const token = getAccessToken();
+  console.log("token from nid", token);
 
   // Request camera permission
   const requestCameraPermission = async () => {
@@ -210,13 +212,15 @@ const NationalId = () => {
       } as any);
 
       await uploadNationalId(formData).unwrap();
+
       Alert.alert("Success", "National ID uploaded successfully");
-      router.push("/(agent-verification)");
+      router.back();
     } catch (error: any) {
       Alert.alert(
         "Update failed",
         error?.data?.message || "Failed to upload National ID",
       );
+      console.log(error);
     }
   };
 

@@ -10,7 +10,7 @@ import {
   clearAuthTokens,
   setAuthCompleted,
   setAuthTokens,
-  setUserRole,
+  setUserRole
 } from "@/utils/storage";
 import {
   AntDesign,
