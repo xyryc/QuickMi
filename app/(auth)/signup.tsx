@@ -1,13 +1,11 @@
 import ButtonPrimary from "@/components/ButtonPrimary";
 import { useSendOtpMutation, useSignupMutation } from "@/store/api/authApi";
-import { getAccessToken, getRefreshToken, getUserRole } from "@/utils/storage";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import React, { useState } from "react";
 import {
-  Alert,
   ScrollView,
   StatusBar,
   Text,
@@ -27,10 +25,6 @@ const SignUp = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [phoneError, setPhoneError] = useState("");
-
-  const accessToken = getAccessToken();
-  const refreshToken = getRefreshToken();
-  console.log("after logout", accessToken, refreshToken);
 
   const validatePhoneNumber = (phone: string, country: any) => {
     if (!phone || phone.length === 0) {
@@ -67,52 +61,56 @@ const SignUp = () => {
   };
 
   const handleSignup = async () => {
-    const isPhoneValid = validatePhoneNumber(phoneNumber, selectedCountry);
-
-    if (!isPhoneValid) {
-      return;
-    }
-
-    const cleanPhone = phoneNumber.replace(/\s/g, "");
-    // @ts-ignore
-    const fullPhoneNumber = `${selectedCountry.idd.root}${cleanPhone}`;
-
-    // Get user's selected role
-    const role = await getUserRole();
-    console.log("signup role", role);
-
-    try {
-      await signup({
-        fullName: name.trim(),
-        role,
-        phone: fullPhoneNumber.trim(),
-      }).unwrap();
-
-      await sendOtp({
-        phone: fullPhoneNumber.trim(),
-      });
-
-      router.push({
-        pathname: "/(auth)/verify-code",
-        params: { phoneNumber: fullPhoneNumber },
-      });
-    } catch (error: any) {
-      console.log(
-        "signup error",
-        error?.data?.message,
-        error?.data?.messages[0],
-      );
-
-      if (error?.data?.messages[0] === "phone already exists") {
-        router.push({
-          pathname: "/(auth)/verify-code",
-          params: { phoneNumber: fullPhoneNumber },
-        });
-      } else {
-        Alert.alert(error?.data?.message, error?.data?.messages[0]);
-      }
-    }
+    router.push("/(auth)/verify-code");
   };
+
+  // const handleSignup = async () => {
+  //   const isPhoneValid = validatePhoneNumber(phoneNumber, selectedCountry);
+
+  //   if (!isPhoneValid) {
+  //     return;
+  //   }
+
+  //   const cleanPhone = phoneNumber.replace(/\s/g, "");
+  //   // @ts-ignore
+  //   const fullPhoneNumber = `${selectedCountry.idd.root}${cleanPhone}`;
+
+  //   // Get user's selected role
+  //   const role = await getUserRole();
+  //   console.log("signup role", role);
+
+  //   try {
+  //     await signup({
+  //       fullName: name.trim(),
+  //       role,
+  //       phone: fullPhoneNumber.trim(),
+  //     }).unwrap();
+
+  //     await sendOtp({
+  //       phone: fullPhoneNumber.trim(),
+  //     });
+
+  //     router.push({
+  //       pathname: "/(auth)/verify-code",
+  //       params: { phoneNumber: fullPhoneNumber },
+  //     });
+  //   } catch (error: any) {
+  //     console.log(
+  //       "signup error",
+  //       error?.data?.message,
+  //       error?.data?.messages[0],
+  //     );
+
+  //     if (error?.data?.messages[0] === "phone already exists") {
+  //       router.push({
+  //         pathname: "/(auth)/verify-code",
+  //         params: { phoneNumber: fullPhoneNumber },
+  //       });
+  //     } else {
+  //       Alert.alert(error?.data?.message, error?.data?.messages[0]);
+  //     }
+  //   }
+  // };
 
   return (
     <SafeAreaView className="border flex-1" edges={["left", "right", "bottom"]}>

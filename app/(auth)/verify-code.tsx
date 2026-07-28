@@ -1,5 +1,5 @@
 import { useSendOtpMutation, useVerifyOtpMutation } from "@/store/api/authApi";
-import { getUserRole, setAuthCompleted, setAuthTokens } from "@/utils/storage";
+import { getUserRole } from "@/utils/storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -41,32 +41,42 @@ const VerifyCode = () => {
   }, [value]);
 
   const handleVerifySuccess = async () => {
-    if (!phoneNumber || value.length !== CELL_COUNT || isVerifying) return;
-
-    try {
-      const res = await verifyOtp({
-        phone: phoneNumber,
-        code: value,
-      }).unwrap();
-
-      // store token
-      const { accessToken, refreshToken } = res.data;
-      console.log("verifycode", accessToken, refreshToken);
-      await setAuthTokens(accessToken, refreshToken);
-      await setAuthCompleted();
-
-      const role = await getUserRole();
-      // Navigate based on role
-      if (role === "RIDER") {
-        router.replace("/(agent-verification)");
-      } else {
-        router.replace("/(user)/(tabs)/home");
-      }
-    } catch (error) {
-      Alert.alert("Verification failed", error?.data?.message);
-      setValue("");
+    const role = await getUserRole();
+    // Navigate based on role
+    if (role === "RIDER") {
+      router.replace("/(agent-verification)");
+    } else {
+      router.replace("/(user)/(tabs)/home");
     }
   };
+
+  // const handleVerifySuccess = async () => {
+  //   if (!phoneNumber || value.length !== CELL_COUNT || isVerifying) return;
+
+  //   try {
+  //     const res = await verifyOtp({
+  //       phone: phoneNumber,
+  //       code: value,
+  //     }).unwrap();
+
+  //     // store token
+  //     const { accessToken, refreshToken } = res.data;
+  //     console.log("verifycode", accessToken, refreshToken);
+  //     await setAuthTokens(accessToken, refreshToken);
+  //     await setAuthCompleted();
+
+  //     const role = await getUserRole();
+  //     // Navigate based on role
+  //     if (role === "RIDER") {
+  //       router.replace("/(agent-verification)");
+  //     } else {
+  //       router.replace("/(user)/(tabs)/home");
+  //     }
+  //   } catch (error) {
+  //     Alert.alert("Verification failed", error?.data?.message);
+  //     setValue("");
+  //   }
+  // };
 
   const handleResendCode = async () => {
     if (!phoneNumber || isResending) return;
